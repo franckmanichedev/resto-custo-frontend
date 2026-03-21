@@ -1,7 +1,7 @@
 (function attachTestApi() {
     const DEFAULT_API_BASE_URLS = {
         development: 'http://localhost:5000/api',
-        production: 'https://resto-custo.onrender.com/api'
+        production: 'https://resto-custo-backend.onrender.com/api'
     };
     const normalizeBaseUrl = (value) => String(value || '').trim().replace(/\/$/, '');
     const isLocalHostname = (hostname) => (
