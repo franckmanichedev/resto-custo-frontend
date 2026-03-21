@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Test Auth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./assets/test-api.js"></script>
+</head>
+<body class="min-h-screen bg-[linear-gradient(135deg,_#fff7ed,_#fffbeb_45%,_#ffffff)] text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <header class="mb-8 overflow-hidden rounded-[2rem] border border-amber-200 bg-white shadow-[0_25px_70px_-35px_rgba(146,64,14,0.45)]">
+            <div class="grid gap-8 px-6 py-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10">
+                <div>
+                    <p class="mb-3 inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-amber-800">
+                        Frontend de test
+                    </p>
+                    <h1 class="text-3xl font-black tracking-tight sm:text-5xl">Validation rapide du backend Resto QRCode</h1>
+                    <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+                        Cette page centralise l authentification, le stockage du token et la navigation vers les ecrans de test
+                        des compositions et des plats.
+                    </p>
+                </div>
+
+                <div class="rounded-[1.5rem] bg-slate-950 p-5 text-slate-100">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-amber-300">Etat courant</p>
+                    <div class="mt-4 space-y-3 text-sm">
+                        <p class="rounded-2xl bg-white/10 px-4 py-3">Utilisateur: <span data-user-state class="font-semibold">aucun utilisateur</span></p>
+                        <p class="rounded-2xl bg-white/10 px-4 py-3">Token: <span data-token-state class="font-semibold">aucun token</span></p>
+                    </div>
+                    <nav class="mt-5 grid gap-3">
+                        <a href="./compositions.html" class="rounded-2xl bg-amber-400 px-4 py-3 text-center font-bold text-slate-950 transition hover:bg-amber-300">
+                            Tester les compositions
+                        </a>
+                        <a href="./plats.html" class="rounded-2xl border border-white/20 px-4 py-3 text-center font-bold transition hover:bg-white/10">
+                            Tester les plats
+                        </a>
+                        <a href="./tables.html" class="rounded-2xl border border-white/20 px-4 py-3 text-center font-bold transition hover:bg-white/10">
+                            Tester les tables
+                        </a>
+                        <a href="./orders.html" class="rounded-2xl border border-white/20 px-4 py-3 text-center font-bold transition hover:bg-white/10">
+                            Gerer les commandes
+                        </a>
+                        <a href="./menu.html" class="rounded-2xl border border-white/20 px-4 py-3 text-center font-bold transition hover:bg-white/10">
+                            Voir le menu QR
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="grid gap-6 lg:grid-cols-2">
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-5 flex items-center gap-3">
+                    <button id="show-signin" type="button" class="rounded-full bg-slate-900 px-4 py-2 text-sm font-bold text-white">Connexion</button>
+                    <button id="show-signup" type="button" class="rounded-full px-4 py-2 text-sm font-bold text-slate-600">Inscription</button>
+                </div>
+
+                <form id="signin-form" class="space-y-4">
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Email</label>
+                        <input id="signin-email" type="email" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="admin@resto.com" required>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Mot de passe</label>
+                        <input id="signin-password" type="password" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Votre mot de passe" required>
+                    </div>
+                    <button id="signin-btn" type="submit" class="w-full rounded-2xl bg-slate-900 px-4 py-3 font-bold text-white transition hover:bg-slate-800">
+                        Se connecter
+                    </button>
+                </form>
+
+                <form id="signup-form" class="hidden space-y-4">
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Nom complet</label>
+                        <input id="signup-name" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Nom complet" required>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Email</label>
+                        <input id="signup-email" type="email" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="admin@resto.com" required>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Telephone</label>
+                        <input id="signup-phone" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="+237...">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Mot de passe</label>
+                        <input id="signup-password" type="password" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Minimum 6 caracteres" required>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Confirmer</label>
+                        <input id="signup-password-confirm" type="password" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Confirmer le mot de passe" required>
+                    </div>
+                    <button id="signup-btn" type="submit" class="w-full rounded-2xl bg-amber-500 px-4 py-3 font-bold text-slate-950 transition hover:bg-amber-400">
+                        Creer le compte
+                    </button>
+                </form>
+
+                <div id="auth-feedback" class="mt-4 hidden rounded-2xl border px-4 py-3 text-sm"></div>
+            </section>
+
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 class="text-xl font-bold">Token Firebase</h2>
+                <p class="mt-2 text-sm text-slate-500">
+                    Les routes protegees utilisent <code>Authorization: Bearer ...</code>. Si besoin, collez un vrai ID token Firebase ici.
+                </p>
+
+                <textarea id="manual-token" rows="8" class="mt-4 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Collez un ID token Firebase"></textarea>
+
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button id="save-token" type="button" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">Enregistrer</button>
+                    <button id="check-me" type="button" class="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-900 hover:bg-amber-100">Tester /auth/me</button>
+                    <button id="clear-session" type="button" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Vider session</button>
+                </div>
+
+                <div class="mt-5 rounded-[1.5rem] bg-slate-950 p-4">
+                    <div id="auth-log" class="space-y-2 font-mono text-xs leading-6 text-emerald-300"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const { request, setToken, getToken, setUser, renderHeaderState, pushLog } = window.TestApi;
+
+        const showFeedback = (message, type) => {
+            const box = document.getElementById('auth-feedback');
+            const styles = {
+                success: 'border-emerald-200 bg-emerald-50 text-emerald-800',
+                error: 'border-rose-200 bg-rose-50 text-rose-800',
+                info: 'border-sky-200 bg-sky-50 text-sky-800'
+            };
+
+            box.className = `mt-4 rounded-2xl border px-4 py-3 text-sm ${styles[type] || styles.info}`;
+            box.textContent = message;
+            box.classList.remove('hidden');
+        };
+
+        const switchTab = (tab) => {
+            const signinVisible = tab === 'signin';
+            document.getElementById('signin-form').classList.toggle('hidden', !signinVisible);
+            document.getElementById('signup-form').classList.toggle('hidden', signinVisible);
+            document.getElementById('show-signin').className = signinVisible
+                ? 'rounded-full bg-slate-900 px-4 py-2 text-sm font-bold text-white'
+                : 'rounded-full px-4 py-2 text-sm font-bold text-slate-600';
+            document.getElementById('show-signup').className = signinVisible
+                ? 'rounded-full px-4 py-2 text-sm font-bold text-slate-600'
+                : 'rounded-full bg-amber-500 px-4 py-2 text-sm font-bold text-slate-950';
+        };
+
+        document.getElementById('show-signin').addEventListener('click', () => switchTab('signin'));
+        document.getElementById('show-signup').addEventListener('click', () => switchTab('signup'));
+
+        document.getElementById('signin-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await request('/auth/login', {
+                    method: 'POST',
+                    auth: false,
+                    body: {
+                        email: document.getElementById('signin-email').value.trim().toLowerCase(),
+                        password: document.getElementById('signin-password').value
+                    }
+                });
+
+                if (response.data.role !== 'admin') {
+                    setUser(null);
+                    setToken('');
+                    document.getElementById('manual-token').value = '';
+                    renderHeaderState();
+                    showFeedback('Cette interface est reservee aux admins.', 'error');
+                    pushLog('auth-log', 'Connexion refusee: role non admin', 'error', response.data);
+                    return;
+                }
+
+                setUser(response.data);
+                if (response.idToken) {
+                    setToken(response.idToken);
+                    document.getElementById('manual-token').value = response.idToken;
+                }
+                renderHeaderState();
+                showFeedback('Connexion backend reussie. Le token Firebase a ete enregistre pour les routes protegees.', 'success');
+                pushLog('auth-log', 'Connexion reussie', 'success', response.data);
+            } catch (error) {
+                showFeedback(error.message, 'error');
+                pushLog('auth-log', 'Echec connexion', 'error', error.payload || { message: error.message });
+            }
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await request('/auth/signup', {
+                    method: 'POST',
+                    auth: false,
+                    body: {
+                        email: document.getElementById('signup-email').value.trim().toLowerCase(),
+                        password: document.getElementById('signup-password').value,
+                        passwordConfirm: document.getElementById('signup-password-confirm').value,
+                        name: document.getElementById('signup-name').value.trim(),
+                        phoneNumber: document.getElementById('signup-phone').value.trim() || null
+                    }
+                });
+
+                if (response.data.role !== 'admin') {
+                    setUser(null);
+                    setToken('');
+                    document.getElementById('manual-token').value = '';
+                    renderHeaderState();
+                    showFeedback('Compte cree, mais cette interface reste reservee aux admins.', 'error');
+                    pushLog('auth-log', 'Inscription refusee pour back-office: role non admin', 'error', response.data);
+                    return;
+                }
+
+                setUser(response.data);
+                if (response.customToken) {
+                    setToken(response.customToken);
+                }
+                document.getElementById('manual-token').value = getToken();
+                renderHeaderState();
+                showFeedback('Compte cree. Pensez a coller un vrai ID token Firebase si les routes protegees repondent 401.', 'success');
+                pushLog('auth-log', 'Inscription reussie', 'success', response.data);
+            } catch (error) {
+                showFeedback(error.message, 'error');
+                pushLog('auth-log', 'Echec inscription', 'error', error.payload || { message: error.message });
+            }
+        });
+
+        document.getElementById('save-token').addEventListener('click', () => {
+            setToken(document.getElementById('manual-token').value.trim());
+            renderHeaderState();
+            pushLog('auth-log', 'Token enregistre manuellement', 'info');
+            showFeedback('Token enregistre dans le localStorage.', 'info');
+        });
+
+        document.getElementById('check-me').addEventListener('click', async () => {
+            try {
+                const response = await request('/auth/me');
+                pushLog('auth-log', 'Verification /auth/me OK', 'success', response.data);
+                showFeedback('Le token fonctionne pour /auth/me.', 'success');
+            } catch (error) {
+                pushLog('auth-log', 'Verification /auth/me KO', 'error', error.payload || { message: error.message });
+                showFeedback(error.message, 'error');
+            }
+        });
+
+        document.getElementById('clear-session').addEventListener('click', () => {
+            setToken('');
+            setUser(null);
+            document.getElementById('manual-token').value = '';
+            renderHeaderState();
+            pushLog('auth-log', 'Session locale videe', 'info');
+            showFeedback('Session locale videe.', 'info');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('signin');
+            document.getElementById('manual-token').value = getToken();
+            renderHeaderState();
+            pushLog('auth-log', 'Page auth initialisee');
+        });
+    </script>
+</body>
+</html>

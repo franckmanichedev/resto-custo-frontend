@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Test Compositions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./assets/test-api.js"></script>
+</head>
+<body class="min-h-screen bg-[linear-gradient(160deg,_#f8fafc,_#fff7ed_55%,_#ffffff)] text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <header class="mb-8 rounded-[2rem] border border-slate-200 bg-white px-6 py-6 shadow-sm">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-amber-700">Compositions</p>
+                    <h1 class="mt-2 text-3xl font-black tracking-tight">CRUD des compositions</h1>
+                    <p class="mt-2 text-sm text-slate-500">Creation, listing et suppression pour verifier le backend.</p>
+                </div>
+                <nav class="flex flex-wrap gap-3">
+                    <a href="./index.html" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Auth</a>
+                    <a href="./plats.html" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">Tester les plats</a>
+                </nav>
+            </div>
+            <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                <p class="rounded-2xl bg-slate-100 px-4 py-3 text-sm">Utilisateur: <span data-user-state class="font-semibold">aucun utilisateur</span></p>
+                <p class="rounded-2xl bg-slate-100 px-4 py-3 text-sm">Token: <span data-token-state class="font-semibold">aucun token</span></p>
+            </div>
+        </header>
+
+        <main class="grid gap-6 lg:grid-cols-[380px_minmax(0,1fr)]">
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-4">
+                    <h2 class="text-xl font-bold">Nouvelle composition</h2>
+                    <p class="mt-1 text-sm text-slate-500">Assurez-vous d avoir un token valide pour les routes protegees.</p>
+                </div>
+
+                <form id="composition-form" class="space-y-4">
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Nom</label>
+                        <input id="composition-name" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Ex: Oignons" required>
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Description</label>
+                        <textarea id="composition-description" rows="4" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Description optionnelle"></textarea>
+                    </div>
+                    <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">
+                        <input id="composition-allergen" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-400">
+                        Cet element est un allergene
+                    </label>
+                    <button type="submit" class="w-full rounded-2xl bg-amber-500 px-4 py-3 font-bold text-slate-950 hover:bg-amber-400">
+                        Creer la composition
+                    </button>
+                </form>
+
+                <div class="mt-5 rounded-[1.5rem] bg-slate-950 p-4">
+                    <div id="composition-log" class="space-y-2 font-mono text-xs leading-6 text-emerald-300"></div>
+                </div>
+            </section>
+
+            <section class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold">Liste des compositions</h2>
+                        <p class="mt-1 text-sm text-slate-500">Les compositions nouvellement creees doivent apparaitre ici.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <input id="composition-search" type="text" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Recherche">
+                        <button id="refresh-compositions" type="button" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Actualiser</button>
+                    </div>
+                </div>
+
+                <div id="composition-list" class="space-y-3"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const { request, renderHeaderState, pushLog, escapeHtml, ensureAdminAccess } = window.TestApi;
+
+        const renderCompositions = (items) => {
+            const list = document.getElementById('composition-list');
+
+            if (!items.length) {
+                list.innerHTML = '<div class="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">Aucune composition a afficher.</div>';
+                return;
+            }
+
+            list.innerHTML = items.map((item) => `
+                <article class="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h3 class="text-lg font-bold">${escapeHtml(item.name)}</h3>
+                                ${item.is_allergen ? '<span class="rounded-full bg-rose-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-700">Allergene</span>' : ''}
+                            </div>
+                            <p class="mt-2 text-sm text-slate-600">${escapeHtml(item.description || 'Aucune description')}</p>
+                            <p class="mt-2 text-xs text-slate-400">ID: ${escapeHtml(item.id)}</p>
+                        </div>
+                        <button type="button" data-id="${escapeHtml(item.id)}" class="delete-composition rounded-2xl border border-rose-200 bg-white px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50">
+                            Supprimer
+                        </button>
+                    </div>
+                </article>
+            `).join('');
+        };
+
+        const loadCompositions = async () => {
+            try {
+                const search = document.getElementById('composition-search').value.trim();
+                const query = search ? `?search=${encodeURIComponent(search)}` : '';
+                const response = await request(`/compositions${query}`, { auth: false });
+                renderCompositions(response.data || []);
+                pushLog('composition-log', 'Compositions rechargees', 'success', { count: response.count || 0 });
+            } catch (error) {
+                pushLog('composition-log', 'Erreur chargement compositions', 'error', error.payload || { message: error.message });
+            }
+        };
+
+        document.getElementById('composition-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            try {
+                const response = await request('/compositions', {
+                    method: 'POST',
+                    body: {
+                        name: document.getElementById('composition-name').value.trim(),
+                        description: document.getElementById('composition-description').value.trim(),
+                        is_allergen: document.getElementById('composition-allergen').checked
+                    }
+                });
+
+                pushLog('composition-log', 'Composition creee', 'success', response.data);
+                document.getElementById('composition-form').reset();
+                await loadCompositions();
+            } catch (error) {
+                pushLog('composition-log', 'Erreur creation composition', 'error', error.payload || { message: error.message });
+                alert(error.message);
+            }
+        });
+
+        document.getElementById('refresh-compositions').addEventListener('click', loadCompositions);
+        document.getElementById('composition-search').addEventListener('input', loadCompositions);
+
+        document.getElementById('composition-list').addEventListener('click', async (event) => {
+            const button = event.target.closest('.delete-composition');
+            if (!button) {
+                return;
+            }
+
+            if (!confirm('Supprimer cette composition ?')) {
+                return;
+            }
+
+            try {
+                await request(`/compositions/${button.dataset.id}`, { method: 'DELETE' });
+                pushLog('composition-log', 'Composition supprimee', 'success', { id: button.dataset.id });
+                await loadCompositions();
+            } catch (error) {
+                pushLog('composition-log', 'Erreur suppression composition', 'error', error.payload || { message: error.message });
+                alert(error.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!ensureAdminAccess()) {
+                return;
+            }
+            pushLog('composition-log', 'Page compositions initialisee');
+            await loadCompositions();
+        });
+    </script>
+</body>
+</html>

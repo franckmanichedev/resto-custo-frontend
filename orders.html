@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Commandes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./assets/test-api.js"></script>
+</head>
+<body class="min-h-screen bg-[linear-gradient(155deg,_#f8fafc,_#fff7ed_50%,_#ffffff)] text-slate-900">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <header class="mb-8 rounded-[2rem] border border-slate-200 bg-white px-6 py-6 shadow-sm">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-amber-700">Commandes</p>
+                    <h1 class="mt-2 text-3xl font-black tracking-tight">Suivi back-office des commandes</h1>
+                    <p class="mt-2 text-sm text-slate-500">Consultez toutes les commandes et changez leur statut.</p>
+                </div>
+                <nav class="flex flex-wrap gap-3">
+                    <a href="./index.html" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Auth</a>
+                    <a href="./plats.html" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Plats</a>
+                    <a href="./tables.html" class="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">Tables</a>
+                </nav>
+            </div>
+            <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                <p class="rounded-2xl bg-slate-100 px-4 py-3 text-sm">Utilisateur: <span data-user-state class="font-semibold">aucun utilisateur</span></p>
+                <p class="rounded-2xl bg-slate-100 px-4 py-3 text-sm">Token: <span data-token-state class="font-semibold">aucun token</span></p>
+            </div>
+        </header>
+
+        <section class="mb-6 rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-xl font-bold">Filtres</h2>
+                    <p class="mt-1 text-sm text-slate-500">Filtrez les commandes par statut si besoin.</p>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <select id="status-filter" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                        <option value="">Tous les statuts</option>
+                        <option value="pending">pending</option>
+                        <option value="preparing">preparing</option>
+                        <option value="served">served</option>
+                        <option value="cancelled">cancelled</option>
+                    </select>
+                    <button id="refresh-orders" type="button" class="rounded-2xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Actualiser</button>
+                </div>
+            </div>
+        </section>
+
+        <main>
+            <div id="orders-list" class="space-y-4"></div>
+        </main>
+    </div>
+
+    <script>
+        const { request, renderHeaderState, escapeHtml, ensureAdminAccess, formatPrice } = window.TestApi;
+
+        const renderCountdown = (entity, status) => {
+            if (entity?.countdown_active && entity?.remaining_seconds != null) {
+                const minutes = Math.floor(Number(entity.remaining_seconds || 0) / 60);
+                const seconds = Number(entity.remaining_seconds || 0) % 60;
+                return `<span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}</span>`;
+            }
+
+            if (status === 'served') {
+                return '<span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">Servi</span>';
+            }
+
+            if (status === 'cancelled') {
+                return '<span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-700">Annule</span>';
+            }
+
+            return '<span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">En attente de preparation</span>';
+        };
+
+        const renderOrders = (orders) => {
+            const list = document.getElementById('orders-list');
+            if (!orders.length) {
+                list.innerHTML = '<div class="rounded-[1.75rem] border border-dashed border-slate-200 bg-white px-6 py-12 text-center text-sm text-slate-500">Aucune commande a afficher.</div>';
+                return;
+            }
+
+            list.innerHTML = orders.map((order) => `
+                <article class="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="text-lg font-black">Commande ${escapeHtml(order.id)}</h2>
+                                <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">${escapeHtml(order.status)}</span>
+                            </div>
+                            <p class="mt-2 text-sm text-slate-600">Table: <span class="font-semibold">${escapeHtml(order.table?.name || order.table_id)}</span></p>
+                            <p class="text-sm text-slate-600">Client: <span class="font-semibold">${escapeHtml(order.customer?.name || '-')}</span> - ${escapeHtml(order.customer?.phone || '-')}</p>
+                            <p class="text-sm text-slate-600">Note: <span class="font-semibold">${escapeHtml(order.note || 'Aucune')}</span></p>
+                            <p class="text-sm text-slate-600">Total commande: <span class="font-semibold">${formatPrice(order.total_price || 0)}</span></p>
+                            <p class="text-sm text-slate-600">Temps max de preparation: <span class="font-semibold">${escapeHtml(order.preparation_total_minutes || 0)} min</span></p>
+                            ${order.session?.was_extended
+                                ? `<p class="mt-2 inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">Session prolongee automatiquement</p>`
+                                : ''}
+                        </div>
+                        <div class="min-w-[220px]">
+                            <label class="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Changer le statut</label>
+                            <div class="flex gap-2">
+                                <select data-id="${escapeHtml(order.id)}" class="order-status w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                                    ${['pending', 'preparing', 'served', 'cancelled'].map((status) => `
+                                        <option value="${status}" ${order.status === status ? 'selected' : ''}>${status}</option>
+                                    `).join('')}
+                                </select>
+                                <button type="button" data-id="${escapeHtml(order.id)}" class="save-status rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white hover:bg-slate-800">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid gap-3 md:grid-cols-2">
+                        ${(order.items || []).map((item) => `
+                            <div class="rounded-2xl bg-slate-50 p-4">
+                                <div class="flex items-center justify-between gap-3">
+                                    <p class="text-sm font-bold text-slate-800">${escapeHtml(item.plat_name || item.plat_id)}</p>
+                                    <p class="text-sm font-black">${formatPrice((item.plat_price || 0) * (item.quantity || 0))}</p>
+                                </div>
+                                <p class="mt-1 text-xs text-slate-500">Quantite: ${escapeHtml(item.quantity)}</p>
+                                <p class="text-xs text-slate-500">Temps imparti: ${escapeHtml(item.preparation_total_minutes || 0)} min</p>
+                                <div class="mt-2">${renderCountdown(item, order.status)}</div>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    ${(item.compositions || []).length
+                                        ? item.compositions.map((composition) => `
+                                            <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+                                                ${escapeHtml(composition.action)} - ${escapeHtml(composition.composition_name || composition.composition_id)}
+                                            </span>
+                                        `).join('')
+                                        : '<span class="text-xs text-slate-500">Aucune modification</span>'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </article>
+            `).join('');
+        };
+
+        const loadOrders = async () => {
+            try {
+                const status = document.getElementById('status-filter').value;
+                const query = status ? `?status=${encodeURIComponent(status)}` : '';
+                const response = await request(`/orders${query}`);
+                renderOrders(response.data || []);
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+        document.getElementById('refresh-orders').addEventListener('click', loadOrders);
+        document.getElementById('status-filter').addEventListener('change', loadOrders);
+
+        document.getElementById('orders-list').addEventListener('click', async (event) => {
+            const button = event.target.closest('.save-status');
+            if (!button) return;
+            const orderId = button.dataset.id;
+            const select = document.querySelector(`.order-status[data-id="${orderId}"]`);
+            try {
+                await request(`/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    body: { status: select.value }
+                });
+                await loadOrders();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!ensureAdminAccess()) return;
+            renderHeaderState();
+            await loadOrders();
+        });
+    </script>
+</body>
+</html>
