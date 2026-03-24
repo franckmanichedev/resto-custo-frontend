@@ -2,9 +2,9 @@
  * Gestion du panier client
  */
 
-import { api, formatPrice } from '../../shared/js/api.js';
-import { store } from '../../shared/js/store.js';
-import { showToast, confirmDialog, groupItemsByVariant, escapeHtml } from '../../shared/js/utils.js';
+import { api, formatPrice } from '../../../shared/js/api.js';
+import { store } from '../../../shared/js/store.js';
+import { showToast, confirmDialog, groupItemsByVariant, escapeHtml } from '../../../shared/js/utils.js';
 import { sessionManager } from './session.js';
 
 let cartItemsContainer = null;

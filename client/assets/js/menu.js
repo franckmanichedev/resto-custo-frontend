@@ -2,9 +2,9 @@
  * Menu client - Affichage et gestion du menu
  */
 
-import { api, formatPrice, getWeekDayLabel, WEEK_DAYS, getCurrentDay } from '../../shared/js/api.js';
-import { store, CATEGORY_ORDER, CATEGORY_LABELS } from '../../shared/js/store.js';
-import { showToast, debounce, escapeHtml } from '../../shared/js/utils.js';
+import { api, formatPrice, getWeekDayLabel, WEEK_DAYS, getCurrentDay } from '../../../shared/js/api.js';
+import { store, CATEGORY_ORDER, CATEGORY_LABELS } from '../../../shared/js/store.js';
+import { showToast, debounce, escapeHtml } from '../../../shared/js/utils.js';
 import { sessionManager } from './session.js';
 import { openPlatModal } from './plat-detail.js';
 

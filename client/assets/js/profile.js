@@ -2,8 +2,8 @@
  * Profil client - Gestion des informations client
  */
 
-import { store } from '../../shared/js/store.js';
-import { showToast } from '../../shared/js/utils.js';
+import { store } from '../../../shared/js/store.js';
+import { showToast } from '../../../shared/js/utils.js';
 
 export async function initProfile() {
     // Charger les données sauvegardées

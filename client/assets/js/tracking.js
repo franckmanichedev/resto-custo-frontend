@@ -2,9 +2,9 @@
  * Suivi des commandes - Affichage et suivi en temps réel
  */
 
-import { formatPrice, formatDuration } from '../../shared/js/api.js';
-import { store, getStatusInfo } from '../../shared/js/store.js';
-import { escapeHtml, groupItemsByVariant, getVariantLabel } from '../../shared/js/utils.js';
+import { formatPrice, formatDuration } from '../../../shared/js/api.js';
+import { store, getStatusInfo } from '../../../shared/js/store.js';
+import { escapeHtml, groupItemsByVariant, getVariantLabel } from '../../../shared/js/utils.js';
 import { sessionManager } from './session.js';
 
 let refreshInterval = null;

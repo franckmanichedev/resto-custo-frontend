@@ -2,9 +2,9 @@
  * Détail du plat et personnalisation
  */
 
-import { api, formatPrice, getWeekDayLabel } from '../../shared/js/api.js';
-import { store } from '../../shared/js/store.js';
-import { showToast, escapeHtml } from '../../shared/js/utils.js';
+import { api, formatPrice, getWeekDayLabel } from '../../../shared/js/api.js';
+import { store } from '../../../shared/js/store.js';
+import { showToast, escapeHtml } from '../../../shared/js/utils.js';
 import { sessionManager } from './session.js';
 
 let currentPlat = null;

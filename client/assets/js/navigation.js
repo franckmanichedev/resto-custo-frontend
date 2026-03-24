@@ -3,7 +3,7 @@
  */
 
 import { store } from '../../../shared/js/store.js';
-// import { showToast, showLoading, hideLoading } from '../../shared/js/utils.js';
+// import { showToast, showLoading, hideLoading } from '../../../shared/js/utils.js';
 import { showToast } from '../../../shared/js/utils.js';
 
 class ClientNavigation {
