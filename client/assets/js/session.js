@@ -2,9 +2,9 @@
  * Gestion de session client
  */
 
-import { api, getCurrentDay, formatDuration } from '../../shared/js/api.js';
-import { store } from '../../shared/js/store.js';
-import { showToast, showLoading, hideLoading } from '../../shared/js/utils.js';
+import { api, getCurrentDay, formatDuration } from '../../../shared/js/api.js';
+import { store } from '../../../shared/js/store.js';
+import { showToast, showLoading, hideLoading } from '../../../shared/js/utils.js';
 
 class SessionManager {
     constructor() {
