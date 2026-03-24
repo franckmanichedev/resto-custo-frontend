@@ -11,23 +11,33 @@ const DEFAULT_API_BASE_URLS = {
 const normalizeBaseUrl = (value) => String(value || '').trim().replace(/\/$/, '');
 
 const resolveApiBaseUrl = () => {
+    // 1. Vérifier si une variable d'environnement est définie
     const configuredValue = window.API_BASE_URL
-        || document.querySelector('meta[name="api-base-url"]')?.content;
+        || document.querySelector('meta[name="api-base-url"]')?.content
+        || import.meta.env.API_BASE_URL;
 
     if (configuredValue) {
+        console.log('API URL from config:', configuredValue);
         return normalizeBaseUrl(configuredValue);
     }
 
+    // 2. Détecter l'environnement
     const hostname = window.location.hostname;
     const isLocal = hostname === 'localhost' 
         || hostname === '127.0.0.1' 
+        || hostname === '192.168.0.106'
         || hostname.startsWith('192.168.')
         || hostname.endsWith('.local');
 
-    return isLocal ? DEFAULT_API_BASE_URLS.development : DEFAULT_API_BASE_URLS.production;
+    const env = isLocal ? 'development' : 'production';
+    const url = DEFAULT_API_BASE_URLS[env];
+    console.log(`API URL resolved (${env}):`, url);
+    
+    return url;
 };
 
 const API_BASE_URL = resolveApiBaseUrl();
+console.log('Final API_BASE_URL:', API_BASE_URL);
 
 class ApiClient {
     constructor() {
