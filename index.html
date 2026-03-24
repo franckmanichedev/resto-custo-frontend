@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./assets/test-api.js"></script>
 </head>
-<body class="min-h-screen bg-[linear-gradient(135deg,_#fff7ed,_#fffbeb_45%,_#ffffff)] text-slate-900">
-    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+<body data-layout="admin" class="min-h-screen bg-[linear-gradient(135deg,_#fff7ed,_#fffbeb_45%,_#ffffff)] text-slate-900">
+    <div class="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:px-8">
         <header class="mb-8 overflow-hidden rounded-[2rem] border border-amber-200 bg-white shadow-[0_25px_70px_-35px_rgba(146,64,14,0.45)]">
             <div class="grid gap-8 px-6 py-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10">
                 <div>
@@ -148,6 +148,25 @@
                 : 'rounded-full bg-amber-500 px-4 py-2 text-sm font-bold text-slate-950';
         };
 
+        const activateUiShell = () => {
+            const nav = document.createElement('nav');
+            nav.className = 'fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white/95 px-4 py-2 backdrop-blur lg:hidden';
+            nav.innerHTML = `
+                <div class="mx-auto flex max-w-6xl items-center justify-between"> 
+                    <a href="./menu.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">🍽<span class="text-xs font-bold">Menu</span></a>
+                    <a href="./orders.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">🧾<span class="text-xs font-bold">Commandes</span></a>
+                    <a href="./plats.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">🍔<span class="text-xs font-bold">Plats</span></a>
+                    <a href="./tables.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">📋<span class="text-xs font-bold">Tables</span></a>
+                    <a href="./index.html" class="flex flex-col items-center gap-1 text-slate-500 hover:text-amber-600">⚙️<span class="text-xs font-bold">Admin</span></a>
+                </div>
+            `;
+            document.body.appendChild(nav);
+
+            const spacer = document.createElement('div');
+            spacer.className = 'h-16 lg:hidden';
+            document.body.appendChild(spacer);
+        };
+
         document.getElementById('show-signin').addEventListener('click', () => switchTab('signin'));
         document.getElementById('show-signup').addEventListener('click', () => switchTab('signup'));
 
@@ -258,6 +277,7 @@
             document.getElementById('manual-token').value = getToken();
             renderHeaderState();
             pushLog('auth-log', 'Page auth initialisee');
+            activateUiShell();
         });
     </script>
 </body>

@@ -41,8 +41,9 @@
     };
 
     const request = async (endpoint, options = {}) => {
+        const isFormDataBody = typeof FormData !== 'undefined' && options.body instanceof FormData;
         const headers = {
-            'Content-Type': 'application/json',
+            ...(isFormDataBody ? {} : { 'Content-Type': 'application/json' }),
             ...(options.headers || {})
         };
 
@@ -54,7 +55,9 @@
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: options.method || 'GET',
             headers,
-            body: options.body ? JSON.stringify(options.body) : undefined
+            body: options.body
+                ? (isFormDataBody ? options.body : JSON.stringify(options.body))
+                : undefined
         });
 
         const data = await parseJsonSafely(response);

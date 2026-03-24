@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Gestion des tables</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/css/main.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-utensils text-2xl text-primary"></i>
+                    <span class="font-bold text-lg text-gray-800">Resto QRCode</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Espace administrateur</p>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-hamburger w-5"></i>
+                    <span>Plats</span>
+                </a>
+                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-pepper-hot w-5"></i>
+                    <span>Compositions</span>
+                </a>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                    <i class="fas fa-table w-5"></i>
+                    <span>Tables</span>
+                </a>
+                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-clipboard-list w-5"></i>
+                    <span>Commandes</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-200">
+                <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5"></i>
+                    <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des tables</h1>
+                <p class="text-sm text-gray-500 mt-1">Créez et gérez les tables du restaurant avec leurs QR codes</p>
+            </header>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Formulaire d'ajout -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h2 id="form-title" class="text-lg font-semibold mb-4">Nouvelle table</h2>
+                        <form id="table-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nom de la table *</label>
+                                <input type="text" id="table-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Terrasse Sud">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Numéro *</label>
+                                <input type="text" id="table-number" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Table 12">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Code QR (optionnel)</label>
+                                <input type="text" id="table-qr-code" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Laissez vide pour génération automatique">
+                                <p class="text-xs text-gray-500 mt-1">Si vide, un code sera généré automatiquement</p>
+                            </div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="table-active" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="text-sm">Table active</span>
+                            </label>
+                            <div class="flex gap-3">
+                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-colors">
+                                    Enregistrer
+                                </button>
+                                <button type="button" id="cancel-edit" class="hidden px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Liste des tables -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold">Liste des tables</h2>
+                            <button id="refresh-tables" class="px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-gray-50">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div id="tables-list" class="space-y-3 max-h-[500px] overflow-auto">
+                            <div class="text-center py-8 text-gray-500">Chargement...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module">
+        import { auth } from '../shared/js/auth.js';
+        import { api } from '../shared/js/api.js';
+        import { showToast, confirmDialog, escapeHtml } from '../shared/js/utils.js';
+        
+        // Vérifier l'accès admin
+        if (!auth.isAdmin()) {
+            window.location.href = './index.html';
+        }
+        
+        let editingTableId = null;
+        const tablesList = document.getElementById('tables-list');
+        const refreshBtn = document.getElementById('refresh-tables');
+        const tableForm = document.getElementById('table-form');
+        const formTitle = document.getElementById('form-title');
+        const cancelEdit = document.getElementById('cancel-edit');
+        
+        async function loadTables() {
+            try {
+                const response = await api.tables.getAll();
+                renderTables(response.data || []);
+            } catch (error) {
+                showToast(error.message, 'error');
+                tablesList.innerHTML = '<div class="text-center py-8 text-red-500">Erreur de chargement</div>';
+            }
+        }
+        
+        function renderTables(tables) {
+            if (!tables.length) {
+                tablesList.innerHTML = '<div class="text-center py-8 text-gray-500">Aucune table trouvée</div>';
+                return;
+            }
+            
+            tablesList.innerHTML = tables.map(table => `
+                <div class="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:shadow-sm transition-shadow">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-table text-primary"></i>
+                            <div>
+                                <p class="font-semibold">${escapeHtml(table.name)}</p>
+                                <p class="text-sm text-gray-500">${escapeHtml(table.number)}</p>
+                            </div>
+                            ${!table.is_active ? '<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Inactive</span>' : ''}
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-xs text-gray-400 break-all">
+                                <i class="fas fa-qrcode mr-1"></i>QR: ${escapeHtml(table.qr_code || 'Généré automatiquement')}
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1 break-all">
+                                <i class="fas fa-link mr-1"></i>
+                                <a href="../client/menu.html?table=${escapeHtml(table.id)}" target="_blank" class="text-primary hover:underline">
+                                    ${escapeHtml(table.menu_url || `../client/menu.html?table=${table.id}`)}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="edit-table text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-sm" data-id="${escapeHtml(table.id)}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-table text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm" data-id="${escapeHtml(table.id)}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Attacher les événements
+            document.querySelectorAll('.edit-table').forEach(btn => {
+                btn.addEventListener('click', () => editTable(btn.dataset.id));
+            });
+            document.querySelectorAll('.delete-table').forEach(btn => {
+                btn.addEventListener('click', () => deleteTable(btn.dataset.id));
+            });
+        }
+        
+        async function editTable(id) {
+            try {
+                const response = await api.tables.getById(id);
+                const table = response.data;
+                editingTableId = table.id;
+                
+                formTitle.textContent = `Modifier: ${table.name}`;
+                document.getElementById('table-name').value = table.name || '';
+                document.getElementById('table-number').value = table.number || '';
+                document.getElementById('table-qr-code').value = table.qr_code || '';
+                document.getElementById('table-active').checked = table.is_active !== false;
+                cancelEdit.classList.remove('hidden');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function deleteTable(id) {
+            const confirmed = await confirmDialog('Supprimer cette table ? Les sessions associées seront également supprimées.', 'Confirmation');
+            if (!confirmed) return;
+            
+            try {
+                await api.tables.delete(id);
+                showToast('Table supprimée', 'success');
+                if (editingTableId === id) resetForm();
+                loadTables();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        function resetForm() {
+            editingTableId = null;
+            formTitle.textContent = 'Nouvelle table';
+            tableForm.reset();
+            document.getElementById('table-active').checked = true;
+            cancelEdit.classList.add('hidden');
+        }
+        
+        // Sauvegarder
+        tableForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                name: document.getElementById('table-name').value.trim(),
+                number: document.getElementById('table-number').value.trim(),
+                qr_code: document.getElementById('table-qr-code').value.trim() || undefined,
+                is_active: document.getElementById('table-active').checked
+            };
+            
+            if (!payload.name || !payload.number) {
+                showToast('Le nom et le numéro sont requis', 'warning');
+                return;
+            }
+            
+            try {
+                if (editingTableId) {
+                    await api.tables.update(editingTableId, payload);
+                    showToast('Table modifiée', 'success');
+                } else {
+                    await api.tables.create(payload);
+                    showToast('Table créée', 'success');
+                }
+                
+                resetForm();
+                loadTables();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+        
+        cancelEdit.addEventListener('click', resetForm);
+        refreshBtn.addEventListener('click', loadTables);
+        
+        // Déconnexion
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await auth.logout();
+            window.location.href = './index.html';
+        });
+        
+        // Initialisation
+        loadTables();
+    </script>
+</body>
+</html>

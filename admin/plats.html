@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Gestion des plats</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../shared/css/main.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-utensils text-2xl text-primary"></i>
+                    <span class="font-bold text-lg text-gray-800">Resto QRCode</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Espace administrateur</p>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
+                    <i class="fas fa-hamburger w-5"></i>
+                    <span>Plats</span>
+                </a>
+                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-pepper-hot w-5"></i>
+                    <span>Compositions</span>
+                </a>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-table w-5"></i>
+                    <span>Tables</span>
+                </a>
+                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-clipboard-list w-5"></i>
+                    <span>Commandes</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-200">
+                <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5"></i>
+                    <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des plats</h1>
+                <p class="text-sm text-gray-500 mt-1">Créez, modifiez et gérez le menu du restaurant</p>
+            </header>
+            
+            <div class="p-8">
+                <!-- Bouton ajouter -->
+                <div class="mb-6">
+                    <button id="new-plat-btn" class="bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-colors">
+                        <i class="fas fa-plus"></i>
+                        <span>Nouveau plat</span>
+                    </button>
+                </div>
+                
+                <!-- Filtres -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="text" id="search-plats" placeholder="Rechercher un plat..." class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                        <select id="category-filter" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="all">Toutes catégories</option>
+                            <option value="entree">Entrées</option>
+                            <option value="plat">Plats</option>
+                            <option value="boisson">Boissons</option>
+                        </select>
+                        <select id="sort-plats" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="created_at:desc">Plus récents</option>
+                            <option value="name:asc">Nom A-Z</option>
+                            <option value="price:asc">Prix croissant</option>
+                            <option value="price:desc">Prix décroissant</option>
+                        </select>
+                        <button id="refresh-plats" class="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-sync-alt mr-2"></i>Actualiser
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Liste des plats -->
+                <div id="plats-list" class="space-y-4">
+                    <div class="text-center py-12 text-gray-500">Chargement...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Modal Formulaire Plat -->
+    <div id="plat-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+        <div class="max-w-2xl w-full max-h-[90vh] overflow-auto bg-white rounded-2xl shadow-xl">
+            <div class="sticky top-0 bg-white border-b border-gray-100 p-4 flex items-center justify-between">
+                <h2 id="modal-title" class="text-xl font-bold">Nouveau plat</h2>
+                <button id="close-modal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <form id="plat-form" class="p-6 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Nom du plat *</label>
+                        <input type="text" id="plat-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Catégorie</label>
+                        <select id="plat-category" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="entree">Entrée</option>
+                            <option value="plat">Plat</option>
+                            <option value="boisson">Boisson</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Description</label>
+                    <textarea id="plat-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Prix (FCFA) *</label>
+                        <input type="number" id="plat-price" step="0.01" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Temps de préparation (min)</label>
+                        <input type="number" id="plat-prep-time" value="15" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">URL de l'image</label>
+                    <input type="text" id="plat-image-url" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://...">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Ou uploader une image</label>
+                    <input type="file" id="plat-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl">
+                </div>
+                
+                <div class="flex gap-4">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="plat-promo" class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-sm">En promotion</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="plat-available" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-sm">Disponible</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" id="plat-decomposable" class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-sm">Décomposable (personnalisable)</span>
+                    </label>
+                </div>
+                
+                <div class="border-t border-gray-100 pt-4">
+                    <p class="text-sm font-medium mb-2">Disponibilité par jour</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="availability-mode" value="everyday" checked class="text-primary focus:ring-primary">
+                            <span class="text-sm">Tous les jours</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="radio" name="availability-mode" value="selected_days" class="text-primary focus:ring-primary">
+                            <span class="text-sm">Jours spécifiques</span>
+                        </label>
+                    </div>
+                    <div id="day-picker" class="mt-3 grid grid-cols-2 gap-2">
+                        <label class="flex items-center gap-2"><input type="checkbox" value="monday" class="availability-day"><span>Lundi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="tuesday" class="availability-day"><span>Mardi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="wednesday" class="availability-day"><span>Mercredi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="thursday" class="availability-day"><span>Jeudi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="friday" class="availability-day"><span>Vendredi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="saturday" class="availability-day"><span>Samedi</span></label>
+                        <label class="flex items-center gap-2"><input type="checkbox" value="sunday" class="availability-day"><span>Dimanche</span></label>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-100 pt-4">
+                    <p class="text-sm font-medium mb-2">Message personnalisé</p>
+                    <label class="flex items-center gap-2 mb-2">
+                        <input type="checkbox" id="allow-custom-message" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                        <span class="text-sm">Autoriser un message au cuisinier</span>
+                    </label>
+                    <input type="text" id="custom-message-hint" placeholder="Ex: Précisez les ingrédients à retirer" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div class="border-t border-gray-100 pt-4">
+                    <p class="text-sm font-medium mb-2">Compositions associées</p>
+                    <div id="compositions-picker" class="max-h-48 overflow-auto space-y-1 border border-gray-200 rounded-xl p-3">
+                        <p class="text-sm text-gray-500">Chargement des compositions...</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nouvelles compositions (une par ligne)</label>
+                    <textarea id="new-compositions" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Sauce barbecue&#10;Oignons caramélisés&#10;Fromage supplémentaire"></textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-colors">
+                        Enregistrer
+                    </button>
+                    <button type="button" id="cancel-modal" class="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script type="module">
+        import { auth } from '../shared/js/auth.js';
+        import { api, formatPrice, getWeekDayLabel } from '../shared/js/api.js';
+        import { showToast, confirmDialog, escapeHtml, debounce } from '../shared/js/utils.js';
+        
+        // Vérifier l'accès admin
+        if (!auth.isAdmin()) {
+            window.location.href = './index.html';
+        }
+        
+        let editingPlatId = null;
+        let compositionsCache = [];
+        
+        // Éléments DOM
+        const platsList = document.getElementById('plats-list');
+        const searchInput = document.getElementById('search-plats');
+        const categoryFilter = document.getElementById('category-filter');
+        const sortSelect = document.getElementById('sort-plats');
+        const refreshBtn = document.getElementById('refresh-plats');
+        const newPlatBtn = document.getElementById('new-plat-btn');
+        const modal = document.getElementById('plat-modal');
+        const platForm = document.getElementById('plat-form');
+        const modalTitle = document.getElementById('modal-title');
+        const closeModal = document.getElementById('close-modal');
+        const cancelModal = document.getElementById('cancel-modal');
+        
+        // Charger les compositions
+        async function loadCompositions() {
+            try {
+                const response = await api.compositions.getAll();
+                compositionsCache = response.data || [];
+                renderCompositionsPicker();
+            } catch (error) {
+                console.error('Erreur chargement compositions:', error);
+            }
+        }
+        
+        function renderCompositionsPicker() {
+            const picker = document.getElementById('compositions-picker');
+            if (!picker) return;
+            
+            if (!compositionsCache.length) {
+                picker.innerHTML = '<p class="text-sm text-gray-500">Aucune composition disponible</p>';
+                return;
+            }
+            
+            picker.innerHTML = compositionsCache.map(comp => `
+                <label class="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                    <input type="checkbox" value="${escapeHtml(comp.id)}" class="composition-choice rounded border-gray-300 text-primary focus:ring-primary">
+                    <span class="text-sm">${escapeHtml(comp.name)}</span>
+                    ${comp.is_allergen ? '<span class="text-xs text-red-500 ml-auto">⚠️ Allergène</span>' : ''}
+                </label>
+            `).join('');
+        }
+        
+        // Charger les plats
+        async function loadPlats() {
+            try {
+                const search = searchInput.value.trim();
+                const category = categoryFilter.value;
+                const [sortBy, sortOrder] = sortSelect.value.split(':');
+                
+                const params = {};
+                if (search) params.search = search;
+                if (category !== 'all') params.category = category;
+                if (sortBy) params.sort_by = sortBy;
+                if (sortOrder) params.sort_order = sortOrder;
+                
+                const response = await api.plats.getAll(params);
+                renderPlats(response.data || []);
+            } catch (error) {
+                showToast(error.message, 'error');
+                platsList.innerHTML = '<div class="text-center py-12 text-red-500">Erreur de chargement</div>';
+            }
+        }
+        
+        function renderPlats(plats) {
+            if (!plats.length) {
+                platsList.innerHTML = '<div class="text-center py-12 text-gray-500">Aucun plat trouvé</div>';
+                return;
+            }
+            
+            platsList.innerHTML = plats.map(plat => `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="flex flex-col md:flex-row">
+                        ${plat.image_url ? `
+                            <div class="md:w-48 h-32 md:h-auto">
+                                <img src="${escapeHtml(plat.image_url)}" alt="${escapeHtml(plat.name)}" class="w-full h-full object-cover">
+                            </div>
+                        ` : `
+                            <div class="md:w-48 h-32 md:h-auto bg-gray-100 flex items-center justify-center">
+                                <i class="fas fa-utensils text-3xl text-gray-400"></i>
+                            </div>
+                        `}
+                        <div class="flex-1 p-4">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="font-semibold text-lg">${escapeHtml(plat.name)}</h3>
+                                        <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100">${getCategoryLabel(plat.category)}</span>
+                                        ${plat.is_promo ? '<span class="px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Promo</span>' : ''}
+                                        ${!plat.is_available ? '<span class="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Indisponible</span>' : ''}
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-1 line-clamp-2">${escapeHtml(plat.description || 'Aucune description')}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-primary">${formatPrice(plat.price)}</p>
+                                    <p class="text-xs text-gray-500">${plat.prep_time || 0} min</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 flex items-center justify-between flex-wrap gap-2">
+                                <div class="flex flex-wrap gap-1">
+                                    ${(plat.compositions || []).slice(0, 3).map(comp => `
+                                        <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${escapeHtml(comp.name)}</span>
+                                    `).join('')}
+                                    ${(plat.compositions || []).length > 3 ? `<span class="text-xs text-gray-400">+${plat.compositions.length - 3}</span>` : ''}
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="edit-plat text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-sm transition-colors" data-id="${escapeHtml(plat.id)}">
+                                        <i class="fas fa-edit mr-1"></i>Modifier
+                                    </button>
+                                    <button class="toggle-plat ${plat.is_available ? 'text-amber-600 hover:bg-amber-50' : 'text-green-600 hover:bg-green-50'} px-3 py-1.5 rounded-lg text-sm transition-colors" data-id="${escapeHtml(plat.id)}">
+                                        <i class="fas ${plat.is_available ? 'fa-eye-slash' : 'fa-eye'} mr-1"></i>
+                                        ${plat.is_available ? 'Désactiver' : 'Activer'}
+                                    </button>
+                                    <button class="delete-plat text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm transition-colors" data-id="${escapeHtml(plat.id)}">
+                                        <i class="fas fa-trash-alt mr-1"></i>Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Attacher les événements
+            document.querySelectorAll('.edit-plat').forEach(btn => {
+                btn.addEventListener('click', () => editPlat(btn.dataset.id));
+            });
+            document.querySelectorAll('.toggle-plat').forEach(btn => {
+                btn.addEventListener('click', () => togglePlat(btn.dataset.id));
+            });
+            document.querySelectorAll('.delete-plat').forEach(btn => {
+                btn.addEventListener('click', () => deletePlat(btn.dataset.id));
+            });
+        }
+        
+        function getCategoryLabel(category) {
+            const labels = { entree: 'Entrée', plat: 'Plat', boisson: 'Boisson' };
+            return labels[category] || 'Plat';
+        }
+        
+        // Éditer un plat
+        async function editPlat(id) {
+            try {
+                const response = await api.plats.getById(id);
+                const plat = response.data;
+                editingPlatId = plat.id;
+                
+                modalTitle.textContent = `Modifier: ${plat.name}`;
+                document.getElementById('plat-name').value = plat.name || '';
+                document.getElementById('plat-category').value = plat.category || 'plat';
+                document.getElementById('plat-description').value = plat.description || '';
+                document.getElementById('plat-price').value = plat.price || '';
+                document.getElementById('plat-prep-time').value = plat.prep_time || 15;
+                document.getElementById('plat-image-url').value = plat.image_url || '';
+                document.getElementById('plat-promo').checked = plat.is_promo || false;
+                document.getElementById('plat-available').checked = plat.is_available !== false;
+                document.getElementById('plat-decomposable').checked = plat.is_decomposable || false;
+                document.getElementById('allow-custom-message').checked = plat.allow_custom_message !== false;
+                document.getElementById('custom-message-hint').value = plat.custom_message_hint || '';
+                document.getElementById('new-compositions').value = '';
+                
+                // Mode de disponibilité
+                const mode = plat.availability_mode === 'selected_days' ? 'selected_days' : 'everyday';
+                document.querySelector(`input[name="availability-mode"][value="${mode}"]`).checked = true;
+                
+                // Jours sélectionnés
+                const selectedDays = new Set(plat.available_days || []);
+                document.querySelectorAll('.availability-day').forEach(day => {
+                    day.checked = selectedDays.has(day.value);
+                });
+                
+                // Compositions sélectionnées
+                const selectedComps = new Set((plat.compositions || []).map(c => c.id));
+                document.querySelectorAll('.composition-choice').forEach(comp => {
+                    comp.checked = selectedComps.has(comp.value);
+                });
+                
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Basculer la disponibilité
+        async function togglePlat(id) {
+            try {
+                await api.plats.toggleAvailability(id);
+                showToast('Disponibilité modifiée', 'success');
+                loadPlats();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Supprimer un plat
+        async function deletePlat(id) {
+            const confirmed = await confirmDialog('Supprimer définitivement ce plat ?', 'Confirmation');
+            if (!confirmed) return;
+            
+            try {
+                await api.plats.delete(id);
+                showToast('Plat supprimé', 'success');
+                if (editingPlatId === id) resetForm();
+                loadPlats();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        }
+        
+        // Réinitialiser le formulaire
+        function resetForm() {
+            editingPlatId = null;
+            modalTitle.textContent = 'Nouveau plat';
+            platForm.reset();
+            document.getElementById('plat-available').checked = true;
+            document.getElementById('allow-custom-message').checked = true;
+            document.querySelector('input[name="availability-mode"][value="everyday"]').checked = true;
+            document.querySelectorAll('.availability-day').forEach(day => day.checked = false);
+            document.querySelectorAll('.composition-choice').forEach(comp => comp.checked = false);
+            document.getElementById('new-compositions').value = '';
+        }
+        
+        // Sauvegarder
+        platForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const payload = {
+                name: document.getElementById('plat-name').value.trim(),
+                category: document.getElementById('plat-category').value,
+                description: document.getElementById('plat-description').value.trim(),
+                price: parseFloat(document.getElementById('plat-price').value),
+                prep_time: parseInt(document.getElementById('plat-prep-time').value) || 15,
+                image_url: document.getElementById('plat-image-url').value.trim(),
+                is_promo: document.getElementById('plat-promo').checked,
+                is_available: document.getElementById('plat-available').checked,
+                is_decomposable: document.getElementById('plat-decomposable').checked,
+                allow_custom_message: document.getElementById('allow-custom-message').checked,
+                custom_message_hint: document.getElementById('custom-message-hint').value.trim(),
+                availability_mode: document.querySelector('input[name="availability-mode"]:checked').value,
+                available_days: Array.from(document.querySelectorAll('.availability-day:checked')).map(d => d.value),
+                compositionIds: Array.from(document.querySelectorAll('.composition-choice:checked')).map(c => c.value),
+                newCompositions: document.getElementById('new-compositions').value.split('\n').filter(l => l.trim())
+            };
+            
+            const imageFile = document.getElementById('plat-image-file').files[0];
+            formData.append('payload', JSON.stringify(payload));
+            if (imageFile) formData.append('image', imageFile);
+            
+            try {
+                if (editingPlatId) {
+                    await api.plats.update(editingPlatId, formData);
+                    showToast('Plat modifié avec succès', 'success');
+                } else {
+                    await api.plats.create(formData);
+                    showToast('Plat créé avec succès', 'success');
+                }
+                
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                resetForm();
+                loadPlats();
+                loadCompositions();
+                
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
+        });
+        
+        // Gestion du modal
+        function openModal() {
+            resetForm();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function closeModalFn() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            resetForm();
+        }
+        
+        newPlatBtn.addEventListener('click', openModal);
+        closeModal.addEventListener('click', closeModalFn);
+        cancelModal.addEventListener('click', closeModalFn);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModalFn();
+        });
+        
+        // Filtres
+        const debouncedLoad = debounce(loadPlats, 300);
+        searchInput.addEventListener('input', debouncedLoad);
+        categoryFilter.addEventListener('change', loadPlats);
+        sortSelect.addEventListener('change', loadPlats);
+        refreshBtn.addEventListener('click', loadPlats);
+        
+        // Gestion de la sélection des jours
+        document.querySelectorAll('input[name="availability-mode"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const isSelected = radio.value === 'selected_days';
+                document.querySelectorAll('.availability-day').forEach(day => {
+                    day.disabled = !isSelected;
+                    day.closest('label').style.opacity = isSelected ? '1' : '0.5';
+                });
+            });
+        });
+        
+        // Déconnexion
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await auth.logout();
+            window.location.href = './index.html';
+        });
+        
+        // Initialisation
+        await loadCompositions();
+        await loadPlats();
+        
+        // Initialiser l'état des jours
+        document.querySelectorAll('.availability-day').forEach(day => {
+            day.disabled = true;
+            day.closest('label').style.opacity = '0.5';
+        });
+    </script>
+</body>
+</html>

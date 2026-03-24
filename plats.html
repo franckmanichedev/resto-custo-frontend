@@ -61,8 +61,21 @@
                         </div>
                     </div>
                     <div>
+                        <label class="mb-2 block text-sm font-semibold">Categorie</label>
+                        <select id="plat-category" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                            <option value="plat">Plat</option>
+                            <option value="entree">Entree</option>
+                            <option value="boisson">Boisson</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="mb-2 block text-sm font-semibold">Image URL</label>
                         <input id="plat-image-url" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="https://...">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-sm font-semibold">Ou uploader une image</label>
+                        <input id="plat-image-file" type="file" accept="image/*" class="w-full rounded-2xl border border-dashed border-slate-300 px-4 py-3 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                        <p class="mt-2 text-xs text-slate-500">Si un fichier est choisi, il sera utilise a la place de l URL.</p>
                     </div>
 
                     <label class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">
@@ -124,6 +137,20 @@
                         <p class="mt-1 text-sm text-slate-500">Chaque carte affiche l etat, les jours de service et permet l edition.</p>
                     </div>
                     <div class="flex flex-wrap gap-3">
+                        <input id="plat-search" type="search" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" placeholder="Rechercher...">
+                        <select id="plat-category-filter" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                            <option value="all">Toutes categories</option>
+                            <option value="plat">Plats</option>
+                            <option value="entree">Entrees</option>
+                            <option value="boisson">Boissons</option>
+                        </select>
+                        <select id="plat-sort" class="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">
+                            <option value="created_at:desc">Plus recents</option>
+                            <option value="name:asc">Nom A-Z</option>
+                            <option value="price:asc">Prix croissant</option>
+                            <option value="price:desc">Prix decroissant</option>
+                            <option value="category:asc">Categorie</option>
+                        </select>
                         <label class="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-sm text-slate-700">
                             <input id="filter-available-today" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-amber-500 focus:ring-amber-400">
                             Disponibles aujourd hui
@@ -141,6 +168,13 @@
 
         let compositionsCache = [];
         let editingPlatId = null;
+        const CATEGORY_LABELS = {
+            plat: 'Plat',
+            entree: 'Entree',
+            boisson: 'Boisson'
+        };
+
+        const getCategoryLabel = (category) => CATEGORY_LABELS[category] || 'Plat';
 
         const renderDayPicker = () => {
             const picker = document.getElementById('day-picker');
@@ -176,6 +210,8 @@
             });
             document.getElementById('plat-available').checked = true;
             document.getElementById('allow-custom-message').checked = true;
+            document.getElementById('plat-image-file').value = '';
+            document.getElementById('plat-category').value = 'plat';
             updateDayPickerState();
         };
 
@@ -190,6 +226,8 @@
                 .split('\n')
                 .map((line) => line.trim())
                 .filter(Boolean);
+
+        let platSearchTimeout = null;
 
         const renderCompositionPicker = () => {
             const picker = document.getElementById('composition-picker');
@@ -234,10 +272,14 @@
 
             list.innerHTML = items.map((plat) => `
                 <article class="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
+                    ${plat.image_url
+                        ? `<img src="${escapeHtml(plat.image_url)}" alt="${escapeHtml(plat.name)}" class="mb-4 h-48 w-full rounded-[1.25rem] object-cover ring-1 ring-slate-200">`
+                        : '<div class="mb-4 flex h-48 w-full items-center justify-center rounded-[1.25rem] border border-dashed border-slate-200 bg-white text-sm text-slate-400">Aucune image</div>'}
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <div class="flex flex-wrap items-center gap-2">
                                 <h3 class="text-lg font-bold">${escapeHtml(plat.name)}</h3>
+                                <span class="rounded-full bg-slate-900 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">${escapeHtml(getCategoryLabel(plat.category || 'plat'))}</span>
                                 ${plat.is_promo ? '<span class="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-800">Promo</span>' : ''}
                                 ${plat.is_decomposable ? '<span class="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Decomposable</span>' : ''}
                                 ${plat.is_available ? '<span class="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Disponible</span>' : '<span class="rounded-full bg-rose-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-700">Indisponible</span>'}
@@ -304,7 +346,28 @@
 
         const loadPlats = async () => {
             try {
-                const query = document.getElementById('filter-available-today').checked ? '?available_today=true' : '';
+                const search = document.getElementById('plat-search').value.trim();
+                const category = document.getElementById('plat-category-filter').value;
+                const [sortBy, sortOrder] = document.getElementById('plat-sort').value.split(':');
+                const params = new URLSearchParams();
+
+                if (document.getElementById('filter-available-today').checked) {
+                    params.set('available_today', 'true');
+                }
+                if (search) {
+                    params.set('search', search);
+                }
+                if (category !== 'all') {
+                    params.set('category', category);
+                }
+                if (sortBy) {
+                    params.set('sort_by', sortBy);
+                }
+                if (sortOrder) {
+                    params.set('sort_order', sortOrder);
+                }
+
+                const query = params.toString() ? `?${params.toString()}` : '';
                 const response = await request(`/plats${query}`, { auth: false });
                 renderPlats(response.data || []);
                 pushLog('plat-log', 'Plats recharges', 'success', { count: response.count || 0 });
@@ -323,7 +386,9 @@
             document.getElementById('plat-description').value = plat.description || '';
             document.getElementById('plat-price').value = plat.price ?? '';
             document.getElementById('plat-prep-time').value = plat.prep_time ?? 0;
+            document.getElementById('plat-category').value = plat.category || 'plat';
             document.getElementById('plat-image-url').value = plat.image_url || '';
+            document.getElementById('plat-image-file').value = '';
             document.getElementById('plat-promo').checked = plat.is_promo === true;
             document.getElementById('plat-available').checked = plat.is_available !== false;
             document.getElementById('allow-custom-message').checked = plat.allow_custom_message !== false;
@@ -357,6 +422,7 @@
                     description: document.getElementById('plat-description').value.trim(),
                     price: Number(document.getElementById('plat-price').value),
                     prep_time: Number(document.getElementById('plat-prep-time').value || 0),
+                    category: document.getElementById('plat-category').value,
                     image_url: document.getElementById('plat-image-url').value.trim(),
                     is_promo: document.getElementById('plat-promo').checked,
                     is_available: document.getElementById('plat-available').checked,
@@ -367,10 +433,17 @@
                     compositionIds: getSelectedCompositionIds(),
                     newCompositions: getNewCompositions()
                 };
+                const formData = new FormData();
+                const selectedImage = document.getElementById('plat-image-file').files[0];
+
+                formData.append('payload', JSON.stringify(payload));
+                if (selectedImage) {
+                    formData.append('image', selectedImage);
+                }
 
                 const response = await request(editingPlatId ? `/plats/${editingPlatId}` : '/plats', {
                     method: editingPlatId ? 'PUT' : 'POST',
-                    body: payload
+                    body: formData
                 });
 
                 pushLog('plat-log', editingPlatId ? 'Plat mis a jour' : 'Plat cree', 'success', response.data);
@@ -384,6 +457,12 @@
 
         document.getElementById('refresh-plats').addEventListener('click', loadPlats);
         document.getElementById('filter-available-today').addEventListener('change', loadPlats);
+        document.getElementById('plat-category-filter').addEventListener('change', loadPlats);
+        document.getElementById('plat-sort').addEventListener('change', loadPlats);
+        document.getElementById('plat-search').addEventListener('input', () => {
+            clearTimeout(platSearchTimeout);
+            platSearchTimeout = setTimeout(loadPlats, 250);
+        });
         document.getElementById('reset-plat-form').addEventListener('click', resetPlatForm);
         document.getElementById('availability-everyday').addEventListener('change', updateDayPickerState);
         document.getElementById('availability-selected').addEventListener('change', updateDayPickerState);
