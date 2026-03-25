@@ -3,7 +3,7 @@
 /* Tailwind est chargé via CDN, ce fichier contient les surcharges personnalisées */
 
 :root {
-    --primary: #C17B4A;
+    --primary: #c17b4a;
     --primary-dark: #A55E2E;
     --primary-light: #E6C9A8;
     --secondary: #6B8F7A;
@@ -110,14 +110,62 @@ body {
     overflow: hidden;
 }
 
-/* Hide scrollbar but keep functionality */
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
+/* Scroll horizontal personnalisé */
+.hide-scrollbar {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;     /* Firefox */
 }
 
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;             /* Safari and Chrome */
+}
+
+/* Style pour la zone scrollable */
+#modal-plat-days {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Optionnel : style pour les éléments dans la zone scrollable */
+#modal-plat-days > span {
+    flex-shrink: 0;  /* Empêche les éléments de se rétrécir */
+}
+
+/* Animation pour le collapse/expand */
+#unit-configurations {
+    transition: max-height 0.3s ease-out;
+}
+
+#unit-configurations.collapsed {
+    max-height: 200px;
+    overflow-y: hidden;
+    position: relative;
+}
+
+#unit-configurations.collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, white);
+    pointer-events: none;
+}
+
+/* Style personnalisé pour la scrollbar */
+#unit-configurations::-webkit-scrollbar {
+    width: 4px;
+}
+
+#unit-configurations::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-radius: 10px;
+}
+
+#unit-configurations::-webkit-scrollbar-thumb {
+    background: #C17B4A;
+    border-radius: 10px;
 }
 
 /* Status badges */

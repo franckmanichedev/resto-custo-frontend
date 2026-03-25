@@ -9,75 +9,166 @@ import { sessionManager } from './session.js';
 
 let currentPlat = null;
 let unitCustomizations = [];
+let currentQuantity = 1;
+let isConfigExpanded = false;
+
+// Helper pour vérifier l'existence des éléments
+function getElement(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.warn(`Element with id "${id}" not found`);
+    }
+    return element;
+}
 
 export function openPlatModal(plat) {
     currentPlat = plat;
     unitCustomizations = [];
+    currentQuantity = 1;
+    isConfigExpanded = false;
     
+    // Définir isOrderable
+    const isOrderable = store.get('selectedDay') === store.get('currentDay') && plat.is_orderable_today;
+
+    // Vérifier que tous les éléments existent avant de continuer
+    const nameEl = getElement('modal-plat-name');
+    const descEl = getElement('modal-plat-description');
+    const priceEl = getElement('modal-plat-price');
+    const prepEl = getElement('modal-plat-prep');
+    const imgEl = getElement('modal-plat-image');
+    const orderableEl = getElement('modal-plat-orderable');
+    const daysContainer = getElement('modal-plat-days');
+    const quantitySpan = getElement('order-quantity');
+    const totalPriceEl = getElement('modal-total-price');
+    const configSection = getElement('unit-configurations-section');
+    const configContainer = getElement('unit-configurations');
+    const toggleBtn = getElement('toggle-configurations');
+
+    // Si un élément essentiel manque, ne pas continuer
+    if (!nameEl || !descEl || !priceEl || !prepEl) {
+        console.error('Modal elements missing');
+        showToast('Erreur d\'affichage du plat', 'error');
+        return;
+    }
+
     // Remplir les informations
-    document.getElementById('modal-plat-name').textContent = plat.name;
-    document.getElementById('modal-plat-description').textContent = plat.description || 'Aucune description';
-    document.getElementById('modal-plat-price').textContent = formatPrice(plat.price);
-    document.getElementById('modal-plat-prep').textContent = `${plat.prep_time || 0} min`;
+    nameEl.textContent = plat.name || 'Sans nom';
+    descEl.textContent = plat.description || 'Aucune description';
+    priceEl.textContent = formatPrice(plat.price || 0);
+    prepEl.textContent = `${plat.prep_time || 0} min`;
     
     // Image
-    const img = document.getElementById('modal-plat-image');
-    if (plat.image_url) {
-        img.src = plat.image_url;
-        img.alt = plat.name;
-        img.classList.remove('hidden');
-    } else {
-        img.classList.add('hidden');
+    if (imgEl) {
+        if (plat.image_url) {
+            imgEl.src = plat.image_url;
+            imgEl.alt = plat.name || 'Image du plat';
+            imgEl.classList.remove('hidden');
+        } else {
+            imgEl.classList.add('hidden');
+        }
     }
     
-    // Disponibilité
-    const isOrderable = store.get('selectedDay') === store.get('currentDay') && plat.is_orderable_today;
-    document.getElementById('modal-plat-orderable').textContent = isOrderable ? 'Oui' : 'Non';
-    document.getElementById('modal-plat-orderable').className = isOrderable ? 'text-green-600 font-bold' : 'text-red-500 font-bold';
+    // Disponibilité aujourd'hui
+    if (orderableEl) {
+        orderableEl.textContent = isOrderable ? '✅ Commandable aujourd\'hui' : '❌ Non commandable aujourd\'hui';
+        orderableEl.className = isOrderable ? 'text-green-600 font-medium' : 'text-red-500';
+    }
     
     // Jours consultables
-    const daysContainer = document.getElementById('modal-plat-days');
-    if (plat.consultable_days?.length) {
-        daysContainer.innerHTML = plat.consultable_days.map(day => `
-            <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">${escapeHtml(getWeekDayLabel(day))}</span>
-        `).join('');
-    } else {
-        daysContainer.innerHTML = '<span class="text-sm text-gray-500">Tous les jours</span>';
+    if (daysContainer) {
+        if (plat.consultable_days && plat.consultable_days.length) {
+            daysContainer.innerHTML = plat.consultable_days.map(day => `
+                <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 whitespace-nowrap">
+                    ${escapeHtml(getWeekDayLabel(day))}
+                </span>
+            `).join('');
+        } else {
+            daysContainer.innerHTML = '<span class="text-sm text-gray-500">Tous les jours</span>';
+        }
     }
     
     // Compositions
     const compositions = plat.compositions || [];
-    const hasCompositions = compositions.length > 0;
-    const configSection = document.getElementById('unit-configurations-section');
+    const hasCompositions = compositions.length > 0 && plat.is_decomposable === true;
     
-    if (hasCompositions && isOrderable) {
-        configSection.classList.remove('hidden');
-        renderUnitConfigurations(compositions);
-    } else {
-        configSection.classList.add('hidden');
+    if (configSection && configContainer && toggleBtn) {
+        if (hasCompositions && isOrderable) {
+            configSection.classList.remove('hidden');
+            renderUnitConfigurations(compositions);
+            
+            // Réinitialiser l'état du bouton "Voir plus"
+            isConfigExpanded = false;
+            toggleBtn.textContent = 'Voir plus';
+            configContainer.classList.add('collapsed');
+            
+            // Vérifier si le contenu dépasse la hauteur maximale
+            setTimeout(() => {
+                checkConfigHeight();
+            }, 100);
+        } else {
+            configSection.classList.add('hidden');
+        }
     }
     
-    // Restaurer les infos client
-    const savedName = localStorage.getItem('frontOfficeCustomerName');
-    const savedPhone = localStorage.getItem('frontOfficeCustomerPhone');
-    if (savedName) document.getElementById('customer-name').value = savedName;
-    if (savedPhone) document.getElementById('customer-phone').value = savedPhone;
-    
-    // Quantité
-    document.getElementById('order-quantity').value = 1;
-    updateOrderTotal();
+    // Quantité - initialiser l'affichage
+    if (quantitySpan) {
+        quantitySpan.textContent = currentQuantity;
+        updateOrderTotal();
+    }
     
     // Afficher la modal
-    const modal = document.getElementById('plat-modal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
+    const modal = getElement('plat-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
     
     // Setup événements
     setupModalEvents(compositions);
 }
 
+function checkConfigHeight() {
+    const configContainer = document.getElementById('unit-configurations');
+    const toggleBtn = document.getElementById('toggle-configurations');
+    
+    if (!configContainer || !toggleBtn) return;
+    
+    const actualHeight = configContainer.scrollHeight;
+    const maxHeight = 400;
+    
+    if (actualHeight > maxHeight) {
+        toggleBtn.classList.remove('hidden');
+    } else {
+        toggleBtn.classList.add('hidden');
+        configContainer.classList.remove('collapsed');
+    }
+}
+
+function toggleConfigExpand() {
+    const configContainer = document.getElementById('unit-configurations');
+    const toggleBtn = document.getElementById('toggle-configurations');
+    
+    if (!configContainer || !toggleBtn) return;
+    
+    isConfigExpanded = !isConfigExpanded;
+    
+    if (isConfigExpanded) {
+        configContainer.classList.remove('collapsed');
+        toggleBtn.textContent = 'Voir moins';
+    } else {
+        configContainer.classList.add('collapsed');
+        toggleBtn.textContent = 'Voir plus';
+        configContainer.scrollTop = 0;
+    }
+}
+
 function renderUnitConfigurations(compositions) {
-    const quantity = Math.max(1, Number(document.getElementById('order-quantity').value || 1));
+    const container = document.getElementById('unit-configurations');
+    const toggleBtn = document.getElementById('toggle-configurations');
+    
+    if (!container) return;
+    
+    const quantity = currentQuantity;
     
     // Ajuster le nombre de configurations
     while (unitCustomizations.length < quantity) {
@@ -89,11 +180,9 @@ function renderUnitConfigurations(compositions) {
         unitCustomizations.pop();
     }
     
-    const container = document.getElementById('unit-configurations');
-    if (!container) return;
-    
     if (!compositions.length) {
         container.innerHTML = '<p class="text-sm text-gray-500">Aucune composition configurable pour ce plat.</p>';
+        if (toggleBtn) toggleBtn.classList.add('hidden');
         return;
     }
     
@@ -103,7 +192,7 @@ function renderUnitConfigurations(compositions) {
                 <p class="font-medium text-gray-800">Exemplaire ${index + 1}</p>
                 <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${unitConfig.removedCompositionIds.size} retrait(s)</span>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
                 ${compositions.map(comp => {
                     const removed = unitConfig.removedCompositionIds.has(comp.id);
                     return `
@@ -111,7 +200,7 @@ function renderUnitConfigurations(compositions) {
                             type="button"
                             data-unit-index="${index}"
                             data-composition-id="${escapeHtml(comp.id)}"
-                            class="toggle-composition rounded-full px-3 py-2 text-xs font-medium transition-all ${removed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                            class="toggle-composition rounded-full px-3 py-2 text-xs font-medium transition-all flex-shrink-0 ${removed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
                         >
                             ${removed ? '✕ ' : ''}${escapeHtml(comp.name)}${comp.is_allergen ? ' ⚠️' : ''}
                         </button>
@@ -137,31 +226,66 @@ function renderUnitConfigurations(compositions) {
             renderUnitConfigurations(compositions);
         });
     });
+    
+    setTimeout(() => {
+        checkConfigHeight();
+    }, 100);
 }
 
 function updateOrderTotal() {
-    const quantity = Number(document.getElementById('order-quantity').value || 1);
-    const total = (currentPlat?.price || 0) * quantity;
-    document.getElementById('modal-total-price').textContent = formatPrice(total);
+    const totalPriceEl = document.getElementById('modal-total-price');
+    
+    if (!totalPriceEl || !currentPlat) return;
+    
+    const total = (currentPlat.price || 0) * currentQuantity;
+    totalPriceEl.textContent = formatPrice(total);
 }
 
 function setupModalEvents(compositions) {
-    const quantityInput = document.getElementById('order-quantity');
+    const quantityMinusBtn = document.getElementById('quantity-minus');
+    const quantityPlusBtn = document.getElementById('quantity-plus');
+    const quantitySpan = document.getElementById('order-quantity');
     const closeBtn = document.getElementById('close-modal');
     const modal = document.getElementById('plat-modal');
     const form = document.getElementById('order-form');
+    const configSection = document.getElementById('unit-configurations-section');
+    const toggleBtn = document.getElementById('toggle-configurations');
     
-    // Nouveau handler pour éviter les doublons
-    const newQuantityHandler = () => {
-        if (compositions.length) {
+    if (!modal || !form) return;
+    
+    // Gestion du bouton "Voir plus / Voir moins"
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleConfigExpand);
+    }
+    
+    // Gestion des boutons de quantité
+    const updateQuantity = (newQuantity) => {
+        if (newQuantity < 1) return;
+        if (newQuantity > 99) return;
+        
+        currentQuantity = newQuantity;
+        if (quantitySpan) {
+            quantitySpan.textContent = currentQuantity;
+        }
+        
+        if (compositions && compositions.length && configSection && !configSection.classList.contains('hidden')) {
             renderUnitConfigurations(compositions);
         }
+        
         updateOrderTotal();
     };
     
-    // Remplacer l'ancien handler
-    quantityInput.removeEventListener('input', updateOrderTotal);
-    quantityInput.addEventListener('input', newQuantityHandler);
+    if (quantityMinusBtn) {
+        quantityMinusBtn.addEventListener('click', () => {
+            updateQuantity(currentQuantity - 1);
+        });
+    }
+    
+    if (quantityPlusBtn) {
+        quantityPlusBtn.addEventListener('click', () => {
+            updateQuantity(currentQuantity + 1);
+        });
+    }
     
     // Fermeture
     const closeModal = () => {
@@ -169,14 +293,19 @@ function setupModalEvents(compositions) {
         modal.classList.remove('flex');
         currentPlat = null;
         unitCustomizations = [];
+        currentQuantity = 1;
+        isConfigExpanded = false;
     };
     
-    closeBtn.onclick = closeModal;
+    if (closeBtn) {
+        closeBtn.onclick = closeModal;
+    }
+    
     modal.onclick = (e) => {
         if (e.target === modal) closeModal();
     };
     
-    // Soumission
+    // Soumission - Ajout au panier SANS demander les infos client
     const submitHandler = async (e) => {
         e.preventDefault();
         
@@ -190,18 +319,17 @@ function setupModalEvents(compositions) {
             return;
         }
         
+        if (!currentPlat) {
+            showToast('Erreur: plat non trouvé', 'error');
+            return;
+        }
+        
         if (selectedDay !== currentDay || !currentPlat.is_orderable_today) {
             showToast('Ce plat n\'est pas commandable aujourd\'hui', 'warning');
             return;
         }
         
-        const quantity = Number(quantityInput.value || 1);
-        const customerName = document.getElementById('customer-name').value.trim();
-        const customerPhone = document.getElementById('customer-phone').value.trim();
-        
-        // Sauvegarder les infos client
-        if (customerName) localStorage.setItem('frontOfficeCustomerName', customerName);
-        if (customerPhone) localStorage.setItem('frontOfficeCustomerPhone', customerPhone);
+        const quantity = currentQuantity;
         
         // Construire les line items
         const lineItems = unitCustomizations.map(unitConfig => ({
@@ -227,6 +355,7 @@ function setupModalEvents(compositions) {
             closeModal();
             
         } catch (error) {
+            console.error('Add to cart error:', error);
             showToast(error.message || 'Erreur ajout au panier', 'error');
         }
     };

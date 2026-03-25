@@ -1,6 +1,4 @@
-/**
- * Gestion du panier client
- */
+// client/js/cart.js
 
 import { api, formatPrice } from '../../../shared/js/api.js';
 import { store } from '../../../shared/js/store.js';
@@ -12,13 +10,9 @@ let cartItemsContainer = null;
 export async function initCart() {
     const cart = store.get('cart');
     
-    // Mettre à jour les badges
     updateCartBadges();
-    
-    // Remplir le contenu
     renderCart();
     
-    // Écouter les changements de panier
     const unsubscribe = store.subscribe('cart', () => {
         renderCart();
         updateCartBadges();
@@ -31,7 +25,6 @@ function updateCartBadges() {
     const cart = store.get('cart');
     const totalItems = cart?.total_items || 0;
     
-    // Mobile badge
     const mobileBadge = document.getElementById('mobile-cart-badge');
     const floatingBadge = document.getElementById('floating-cart-count');
     const desktopSidebarBadge = document.getElementById('desktop-sidebar-cart-count');
@@ -81,15 +74,11 @@ function renderCart() {
     if (cartEmpty) cartEmpty.classList.add('hidden');
     if (cartSummary) cartSummary.classList.remove('hidden');
     
-    // Grouper les items par plat et variante
     const groupedItems = groupCartItems(cart.items);
     
     cartItemsContainer.innerHTML = groupedItems.map(group => renderCartGroup(group)).join('');
     
-    // Mettre à jour les totaux
     updateCartTotals(cart);
-    
-    // Attacher les événements
     attachCartEvents();
 }
 
@@ -182,7 +171,6 @@ function updateCartTotals(cart) {
 }
 
 function attachCartEvents() {
-    // Boutons de suppression
     document.querySelectorAll('.remove-all').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const itemId = btn.dataset.id;
@@ -193,7 +181,6 @@ function attachCartEvents() {
         });
     });
     
-    // Boutons de quantité (si pas de variantes)
     document.querySelectorAll('.decrease-qty').forEach(btn => {
         btn.addEventListener('click', async () => {
             const itemId = btn.dataset.id;
@@ -208,10 +195,9 @@ function attachCartEvents() {
         });
     });
     
-    // Bouton de validation
     const validateBtn = document.getElementById('validate-order');
     if (validateBtn) {
-        validateBtn.addEventListener('click', validateOrder);
+        validateBtn.addEventListener('click', openCustomerInfoModal);
     }
 }
 
@@ -246,7 +232,104 @@ async function updateCartItemQuantity(itemId, delta) {
     }
 }
 
-async function validateOrder() {
+// Nouvelle fonction : Ouvrir la modal de saisie client
+function openCustomerInfoModal() {
+    const cart = store.get('cart');
+    if (!cart || !cart.items?.length) {
+        showToast('Votre panier est vide', 'warning');
+        return;
+    }
+    
+    const modal = document.getElementById('customer-info-modal');
+    if (!modal) return;
+    
+    // Récupérer les infos déjà sauvegardées
+    const savedName = localStorage.getItem('frontOfficeCustomerName') || '';
+    const savedPhone = localStorage.getItem('frontOfficeCustomerPhone') || '';
+    const savedGuests = localStorage.getItem('frontOfficeGuests') || '2';
+    
+    const nameInput = document.getElementById('checkout-customer-name');
+    const phoneInput = document.getElementById('checkout-customer-phone');
+    const guestsCount = document.getElementById('checkout-guests-count');
+    
+    if (nameInput) nameInput.value = savedName;
+    if (phoneInput) phoneInput.value = savedPhone;
+    if (guestsCount) guestsCount.textContent = savedGuests;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Setup des événements de la modal
+    setupCustomerModalEvents();
+}
+
+function setupCustomerModalEvents() {
+    const modal = document.getElementById('customer-info-modal');
+    const confirmBtn = document.getElementById('confirm-checkout');
+    const cancelBtn = document.getElementById('cancel-checkout');
+    const guestsMinus = document.getElementById('checkout-guests-minus');
+    const guestsPlus = document.getElementById('checkout-guests-plus');
+    const guestsCount = document.getElementById('checkout-guests-count');
+    
+    if (!modal) return;
+    
+    // Gestion des couverts
+    if (guestsMinus && guestsPlus && guestsCount) {
+        const updateGuests = (delta) => {
+            let current = parseInt(guestsCount.textContent) || 2;
+            const newValue = Math.max(1, Math.min(20, current + delta));
+            guestsCount.textContent = newValue;
+        };
+        
+        guestsMinus.onclick = () => updateGuests(-1);
+        guestsPlus.onclick = () => updateGuests(1);
+    }
+    
+    // Fermeture de la modal
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    };
+    
+    if (cancelBtn) {
+        cancelBtn.onclick = closeModal;
+    }
+    
+    modal.onclick = (e) => {
+        if (e.target === modal) closeModal();
+    };
+    
+    // Confirmation de la commande
+    if (confirmBtn) {
+        confirmBtn.onclick = async () => {
+            const nameInput = document.getElementById('checkout-customer-name');
+            const phoneInput = document.getElementById('checkout-customer-phone');
+            const guestsCountSpan = document.getElementById('checkout-guests-count');
+            
+            const customerName = nameInput?.value.trim() || '';
+            const customerPhone = phoneInput?.value.trim() || '';
+            const guests = parseInt(guestsCountSpan?.textContent || '2');
+            
+            if (!customerName || !customerPhone) {
+                showToast('Veuillez renseigner votre nom et téléphone', 'warning');
+                return;
+            }
+            
+            // Sauvegarder les infos pour la session
+            localStorage.setItem('frontOfficeCustomerName', customerName);
+            localStorage.setItem('frontOfficeCustomerPhone', customerPhone);
+            localStorage.setItem('frontOfficeGuests', guests.toString());
+            
+            // Sauvegarder aussi dans le store pour l'utiliser dans la commande
+            store.set('customerInfo', { name: customerName, phone: customerPhone, guests });
+            
+            closeModal();
+            await validateOrder(customerName, customerPhone, guests);
+        };
+    }
+}
+
+async function validateOrder(customerName, customerPhone, guests) {
     const session = store.get('session');
     const cart = store.get('cart');
     
@@ -255,24 +338,16 @@ async function validateOrder() {
         return;
     }
     
-    // Récupérer les infos client
-    const customerName = localStorage.getItem('frontOfficeCustomerName') || '';
-    const customerPhone = localStorage.getItem('frontOfficeCustomerPhone') || '';
-    
-    if (!customerName || !customerPhone) {
-        showToast('Veuillez renseigner votre nom et téléphone dans l\'onglet Client', 'warning');
-        store.set('currentView', 'profile');
-        return;
-    }
-    
-    const confirmed = await confirmDialog(`Confirmer la commande pour ${customerName} ?`, 'Validation');
-    if (!confirmed) return;
-    
     try {
-        const response = await api.session.checkout(session.session_token, {
-            name: customerName,
-            phone: customerPhone
-        }, '');
+        const response = await api.session.checkout(
+            session.session_token,
+            {
+                name: customerName,
+                phone: customerPhone,
+                guests: guests
+            },
+            ''
+        );
         
         store.setMultiple({
             session: response.data.session,

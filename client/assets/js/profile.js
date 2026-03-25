@@ -1,6 +1,4 @@
-/**
- * Profil client - Gestion des informations client
- */
+// client/js/profile.js
 
 import { store } from '../../../shared/js/store.js';
 import { showToast } from '../../../shared/js/utils.js';
@@ -56,12 +54,5 @@ export async function initProfile() {
                 if (guestsCount) guestsCount.textContent = current;
             }
         });
-    }
-    
-    // Écouter les changements de session pour afficher les infos de commande
-    const session = store.get('session');
-    if (session?.customer) {
-        if (nameInput && !nameInput.value) nameInput.value = session.customer.name || '';
-        if (phoneInput && !phoneInput.value) phoneInput.value = session.customer.phone || '';
     }
 }

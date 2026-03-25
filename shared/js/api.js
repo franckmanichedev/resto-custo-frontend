@@ -243,7 +243,7 @@ class ApiClient {
 export const api = new ApiClient();
 
 // Export des helpers
-export const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} FCFA`;
+export const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} XAF`;
 
 export const WEEK_DAYS = [
     { value: 'monday', label: 'Lundi' },

@@ -24,23 +24,24 @@
             </div>
             
             <nav class="flex-1 p-4 space-y-1">
-                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
                     <i class="fas fa-chart-line w-5"></i>
                     <span>Tableau de bord</span>
                 </a>
-                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
                     <i class="fas fa-hamburger w-5"></i>
                     <span>Plats</span>
                 </a>
-                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
                     <i class="fas fa-pepper-hot w-5"></i>
                     <span>Compositions</span>
                 </a>
-                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium">
-                    <i class="fas fa-table w-5"></i>
-                    <span>Tables</span>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-100 text-primary font-medium">
+                    <i class="fas fa-table w-5 text-yellow-500"></i>
+                    <span class="text-yellow-500">Tables</span>
+                    <div class="ml-auto bg-yellow-500 w-1 h-8 rounded"></div>
                 </a>
-                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
                     <i class="fas fa-clipboard-list w-5"></i>
                     <span>Commandes</span>
                 </a>
@@ -85,7 +86,7 @@
                                 <span class="text-sm">Table active</span>
                             </label>
                             <div class="flex gap-3">
-                                <button type="submit" class="flex-1 bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-colors">
+                                <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-colors">
                                     Enregistrer
                                 </button>
                                 <button type="button" id="cancel-edit" class="hidden px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
@@ -169,7 +170,7 @@
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="edit-table text-primary hover:bg-primary/10 px-3 py-1.5 rounded-lg text-sm" data-id="${escapeHtml(table.id)}">
+                        <button class="edit-table text-primary hover:bg-yellow-100 px-3 py-1.5 rounded-lg text-sm" data-id="${escapeHtml(table.id)}">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="delete-table text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm" data-id="${escapeHtml(table.id)}">

@@ -2,17 +2,21 @@
  * Menu client - Affichage et gestion du menu
  */
 
-import { api, formatPrice, getWeekDayLabel, WEEK_DAYS, getCurrentDay } from '../../../shared/js/api.js';
+import { api, formatPrice, getWeekDayLabel, getCurrentDay } from '../../../shared/js/api.js';
 import { store, CATEGORY_ORDER, CATEGORY_LABELS } from '../../../shared/js/store.js';
 import { showToast, debounce, escapeHtml } from '../../../shared/js/utils.js';
 import { sessionManager } from './session.js';
 import { openPlatModal } from './plat-detail.js';
 
 let currentPlats = [];
-let menuSearchTimeout = null;
+let activeFilters = {
+    category: 'all',
+    selectedDay: null,
+    sortBy: 'category:asc',
+    search: ''
+};
 
 export async function initMenu() {
-    // Récupérer les données
     const plats = store.get('plats');
     const selectedDay = store.get('selectedDay');
     const currentDay = store.get('currentDay');
@@ -20,17 +24,15 @@ export async function initMenu() {
     
     currentPlats = plats || [];
     
-    // Remplir les jours
+    // Restaurer les filtres depuis localStorage
+    loadFiltersFromStorage();
+    
     renderDayTabs(consultableDays, selectedDay, currentDay);
-    
-    // Remplir le menu
     renderMenu(currentPlats, selectedDay, currentDay);
-    
-    // Setup des filtres
     setupFilters();
-    
-    // Setup des événements
+    setupFilterModal();
     setupMenuEvents();
+    updateActiveFiltersCount();
 }
 
 function renderDayTabs(days, selectedDay, currentDay) {
@@ -43,13 +45,12 @@ function renderDayTabs(days, selectedDay, currentDay) {
     }
     
     container.innerHTML = days.map(day => `
-        <button type="button" data-day="${day}" class="day-tab rounded-2xl px-4 py-2 text-sm font-bold transition-all ${day === selectedDay ? 'bg-primary text-white shadow-md' : 'border border-gray-200 text-gray-700 hover:bg-gray-50'}">
+        <button type="button" data-day="${day}" class="day-tab rounded-2xl px-4 py-2 text-sm font-bold transition-all ${day === selectedDay ? 'bg-yellow-500 text-white shadow-md' : 'border border-gray-200 text-gray-700 hover:bg-gray-50'}">
             ${escapeHtml(getWeekDayLabel(day))}
             ${day === currentDay ? '<span class="ml-1 text-xs">(aujourd\'hui)</span>' : ''}
         </button>
     `).join('');
     
-    // Écouter les changements de jour
     document.querySelectorAll('.day-tab').forEach(btn => {
         btn.addEventListener('click', async () => {
             const day = btn.dataset.day;
@@ -57,7 +58,6 @@ function renderDayTabs(days, selectedDay, currentDay) {
             
             try {
                 await sessionManager.loadMenuForDay(day);
-                // Re-render après chargement
                 initMenu();
             } catch (error) {
                 showToast(error.message, 'error');
@@ -70,15 +70,32 @@ function renderMenu(plats, selectedDay, currentDay) {
     const container = document.getElementById('menu-list');
     if (!container) return;
     
-    if (!plats.length) {
-        container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Aucun plat disponible pour ce jour.</div>';
+    // Appliquer les filtres
+    let filteredPlats = applyFiltersToPlats(plats, selectedDay);
+    
+    if (!filteredPlats.length) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500">Aucun plat ne correspond à vos critères</p>
+                <button id="clear-filters-btn" class="mt-4 text-primary font-medium">Réinitialiser les filtres →</button>
+            </div>
+        `;
+        
+        const clearBtn = document.getElementById('clear-filters-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                resetAllFilters();
+                applyFiltersAndRender();
+            });
+        }
         return;
     }
     
     // Grouper par catégorie
     const grouped = {};
     CATEGORY_ORDER.forEach(cat => { grouped[cat] = []; });
-    plats.forEach(plat => {
+    filteredPlats.forEach(plat => {
         const cat = plat.category || 'plat';
         if (grouped[cat]) grouped[cat].push(plat);
         else grouped[cat] = [plat];
@@ -105,14 +122,59 @@ function renderMenu(plats, selectedDay, currentDay) {
     
     container.innerHTML = html;
     
-    // Attacher les événements aux cartes
     document.querySelectorAll('.open-plat-detail').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const platId = btn.dataset.id;
-            const plat = plats.find(p => p.id === platId);
+            const plat = filteredPlats.find(p => p.id === platId);
             if (plat) openPlatModal(plat);
         });
     });
+}
+
+function applyFiltersToPlats(plats, selectedDay) {
+    let filtered = [...plats];
+    
+    // Filtre par recherche
+    if (activeFilters.search) {
+        const searchLower = activeFilters.search.toLowerCase();
+        filtered = filtered.filter(p => 
+            p.name?.toLowerCase().includes(searchLower) ||
+            p.description?.toLowerCase().includes(searchLower) ||
+            p.compositions?.some(c => c.name?.toLowerCase().includes(searchLower))
+        );
+    }
+    
+    // Filtre par catégorie
+    if (activeFilters.category !== 'all') {
+        filtered = filtered.filter(p => (p.category || 'plat') === activeFilters.category);
+    }
+    
+    // Filtre par jour de disponibilité
+    if (activeFilters.selectedDay) {
+        filtered = filtered.filter(p => {
+            // Si le plat est disponible tous les jours
+            if (p.availability_mode === 'everyday') return true;
+            // Si le plat a des jours spécifiques
+            if (p.available_days && p.available_days.includes(activeFilters.selectedDay)) return true;
+            return false;
+        });
+    }
+    
+    // Tri
+    const [sortBy, sortOrder] = activeFilters.sortBy.split(':');
+    filtered.sort((a, b) => {
+        let comparison = 0;
+        if (sortBy === 'name') {
+            comparison = (a.name || '').localeCompare(b.name || '');
+        } else if (sortBy === 'price') {
+            comparison = (a.price || 0) - (b.price || 0);
+        } else {
+            comparison = ((a.category || 'plat') > (b.category || 'plat') ? 1 : -1);
+        }
+        return sortOrder === 'desc' ? -comparison : comparison;
+    });
+    
+    return filtered;
 }
 
 function renderPlatCard(plat, selectedDay, currentDay) {
@@ -143,7 +205,7 @@ function renderPlatCard(plat, selectedDay, currentDay) {
                         <i class="far fa-clock"></i>
                         <span>${plat.prep_time || 0} min</span>
                     </div>
-                    <button class="open-plat-detail bg-primary/10 hover:bg-primary text-primary hover:text-white px-4 py-2 rounded-full text-sm font-medium transition-all" data-id="${escapeHtml(plat.id)}">
+                    <button class="open-plat-detail bg-yellow-100 hover:bg-yellow-500 text-primary hover:text-white px-4 py-2 rounded-full text-sm font-medium transition-all" data-id="${escapeHtml(plat.id)}">
                         <i class="fas fa-plus mr-1"></i> Voir
                     </button>
                 </div>
@@ -154,66 +216,210 @@ function renderPlatCard(plat, selectedDay, currentDay) {
 
 function setupFilters() {
     const searchInput = document.getElementById('menu-search');
-    const categoryFilter = document.getElementById('menu-category-filter');
-    const sortSelect = document.getElementById('menu-sort');
     
     if (searchInput) {
-        searchInput.addEventListener('input', debounce(() => {
-            applyFilters();
+        searchInput.value = activeFilters.search;
+        searchInput.addEventListener('input', debounce((e) => {
+            activeFilters.search = e.target.value;
+            saveFiltersToStorage();
+            applyFiltersAndRender();
+            updateActiveFiltersCount();
         }, 300));
-    }
-    
-    if (categoryFilter) {
-        categoryFilter.addEventListener('change', () => applyFilters());
-    }
-    
-    if (sortSelect) {
-        sortSelect.addEventListener('change', () => applyFilters());
     }
 }
 
-function applyFilters() {
-    const rawPlats = store.get('rawPlats') || [];
-    const search = document.getElementById('menu-search')?.value.trim().toLowerCase() || '';
-    const category = document.getElementById('menu-category-filter')?.value || 'all';
-    const sortValue = document.getElementById('menu-sort')?.value || 'category:asc';
-    const [sortBy, sortOrder] = sortValue.split(':');
+function setupFilterModal() {
+    const modal = document.getElementById('filter-modal');
+    const openBtn = document.getElementById('open-filter-modal');
+    const closeBtn = document.getElementById('close-filter-modal');
+    const applyBtn = document.getElementById('apply-filters');
+    const resetBtn = document.getElementById('reset-filters');
     
-    let filtered = [...rawPlats];
+    if (!modal) return;
     
-    // Filtre catégorie
-    if (category !== 'all') {
-        filtered = filtered.filter(p => (p.category || 'plat') === category);
+    // Ouvrir la modal
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            // Synchroniser les valeurs actuelles dans la modal
+            syncModalWithFilters();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
     }
     
-    // Filtre recherche
-    if (search) {
-        filtered = filtered.filter(p => 
-            p.name?.toLowerCase().includes(search) ||
-            p.description?.toLowerCase().includes(search) ||
-            p.compositions?.some(c => c.name?.toLowerCase().includes(search))
-        );
-    }
+    // Fermer la modal
+    const closeModal = () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    };
     
-    // Tri
-    filtered.sort((a, b) => {
-        let comparison = 0;
-        if (sortBy === 'name') {
-            comparison = (a.name || '').localeCompare(b.name || '');
-        } else if (sortBy === 'price') {
-            comparison = (a.price || 0) - (b.price || 0);
-        } else {
-            comparison = ((a.category || 'plat') > (b.category || 'plat') ? 1 : -1);
-        }
-        return sortOrder === 'desc' ? -comparison : comparison;
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
     });
     
+    // Appliquer les filtres
+    if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+            // Récupérer les valeurs de la modal
+            const selectedCategory = document.querySelector('.filter-category-btn.active')?.dataset.category || 'all';
+            const selectedDayBtn = document.querySelector('.filter-day-btn.active');
+            const selectedDay = selectedDayBtn ? selectedDayBtn.dataset.day : null;
+            const selectedSort = document.querySelector('.filter-sort-btn.active')?.dataset.sort || 'category:asc';
+            
+            activeFilters.category = selectedCategory;
+            activeFilters.selectedDay = selectedDay;
+            activeFilters.sortBy = selectedSort;
+            
+            saveFiltersToStorage();
+            applyFiltersAndRender();
+            updateActiveFiltersCount();
+            closeModal();
+        });
+    }
+    
+    // Réinitialiser les filtres
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetAllFilters();
+            syncModalWithFilters();
+            applyFiltersAndRender();
+            updateActiveFiltersCount();
+        });
+    }
+    
+    // Événements pour les boutons dans la modal
+    document.querySelectorAll('.filter-category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-category-btn').forEach(b => {
+                b.classList.remove('bg-yellow-500', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        });
+    });
+    
+    document.querySelectorAll('.filter-day-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-day-btn').forEach(b => {
+                b.classList.remove('bg-yellow-500', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        });
+    });
+    
+    document.querySelectorAll('.filter-sort-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-sort-btn').forEach(b => {
+                b.classList.remove('bg-yellow-500', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        });
+    });
+}
+
+function syncModalWithFilters() {
+    // Synchroniser la catégorie
+    document.querySelectorAll('.filter-category-btn').forEach(btn => {
+        if (btn.dataset.category === activeFilters.category) {
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        } else {
+            btn.classList.remove('bg-yellow-500', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-gray-700');
+        }
+    });
+    
+    // Synchroniser le jour
+    document.querySelectorAll('.filter-day-btn').forEach(btn => {
+        if (btn.dataset.day === activeFilters.selectedDay) {
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        } else {
+            btn.classList.remove('bg-yellow-500', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-gray-700');
+        }
+    });
+    
+    // Synchroniser le tri
+    document.querySelectorAll('.filter-sort-btn').forEach(btn => {
+        if (btn.dataset.sort === activeFilters.sortBy) {
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-yellow-500', 'text-white');
+        } else {
+            btn.classList.remove('bg-yellow-500', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-gray-700');
+        }
+    });
+}
+
+function resetAllFilters() {
+    activeFilters = {
+        category: 'all',
+        selectedDay: null,
+        sortBy: 'category:asc',
+        search: ''
+    };
+    
+    const searchInput = document.getElementById('menu-search');
+    if (searchInput) searchInput.value = '';
+    
+    saveFiltersToStorage();
+}
+
+function applyFiltersAndRender() {
+    const plats = store.get('rawPlats') || [];
+    const selectedDay = store.get('selectedDay');
+    const currentDay = store.get('currentDay');
+    
+    const filtered = applyFiltersToPlats(plats, selectedDay);
     store.set('plats', filtered);
-    renderMenu(filtered, store.get('selectedDay'), store.get('currentDay'));
+    renderMenu(filtered, selectedDay, currentDay);
+}
+
+function updateActiveFiltersCount() {
+    let count = 0;
+    if (activeFilters.category !== 'all') count++;
+    if (activeFilters.selectedDay) count++;
+    if (activeFilters.sortBy !== 'category:asc') count++;
+    if (activeFilters.search) count++;
+    
+    const badge = document.getElementById('active-filters-count');
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
+}
+
+function saveFiltersToStorage() {
+    localStorage.setItem('menuFilters', JSON.stringify(activeFilters));
+}
+
+function loadFiltersFromStorage() {
+    const saved = localStorage.getItem('menuFilters');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            activeFilters = { ...activeFilters, ...parsed };
+            
+            const searchInput = document.getElementById('menu-search');
+            if (searchInput) searchInput.value = activeFilters.search;
+        } catch (e) {
+            console.error('Error loading filters:', e);
+        }
+    }
 }
 
 function setupMenuEvents() {
-    // Refresh après changement de store
     const unsubscribe = store.subscribe('plats', (plats) => {
         if (plats !== currentPlats) {
             currentPlats = plats;

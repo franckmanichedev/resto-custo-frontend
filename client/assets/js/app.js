@@ -182,9 +182,9 @@ function setupCategoryFilters() {
             categoryBtns.forEach(b => {
                 if (b.dataset.category === category) {
                     b.classList.remove('bg-white', 'border-gray-200', 'text-gray-600');
-                    b.classList.add('bg-primary', 'text-white');
+                    b.classList.add('bg-yellow-500', 'text-white');
                 } else {
-                    b.classList.remove('bg-primary', 'text-white');
+                    b.classList.remove('bg-yellow-500', 'text-white');
                     b.classList.add('bg-white', 'border-gray-200', 'text-gray-600');
                 }
             });
@@ -523,7 +523,7 @@ function showToast(message, type = 'info') {
         success: 'bg-green-500',
         error: 'bg-red-500',
         warning: 'bg-yellow-500',
-        info: 'bg-primary'
+        info: 'bg-blue-500'
     };
     
     toast.className = `fixed bottom-24 left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:w-80 ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg z-50 animate-fade-in-up`;
