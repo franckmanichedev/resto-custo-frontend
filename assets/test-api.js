@@ -5,14 +5,23 @@
     };
     const normalizeBaseUrl = (value) => String(value || '').trim().replace(/\/$/, '');
     const isLocalHostname = (hostname) => (
-        hostname === 'localhost'
+        hostname === ''
+        || hostname === 'localhost'
         || hostname === '127.0.0.1'
+        || hostname === '0.0.0.0'
         || hostname.startsWith('192.168.')
         || hostname.endsWith('.local')
     );
     const resolveApiBaseUrl = () => {
-        const configuredValue = window.API_BASE_URL
-            || document.querySelector('meta[name="api-base-url"]')?.content;
+        if (window.API_BASE_URL) {
+            return normalizeBaseUrl(window.API_BASE_URL);
+        }
+
+        if (isLocalHostname(window.location.hostname)) {
+            return DEFAULT_API_BASE_URLS.development;
+        }
+
+        const configuredValue = document.querySelector('meta[name="api-base-url"]')?.content;
 
         if (configuredValue) {
             return normalizeBaseUrl(configuredValue);

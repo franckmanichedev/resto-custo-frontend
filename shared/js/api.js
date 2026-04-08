@@ -1,6 +1,6 @@
 /**
  * API Client - Service de communication avec le backend
- * Inspiré et amélioré à partir de test-api.js
+ * Inspire et ameliore a partir de test-api.js
  */
 
 const DEFAULT_API_BASE_URLS = {
@@ -9,11 +9,31 @@ const DEFAULT_API_BASE_URLS = {
 };
 
 const normalizeBaseUrl = (value) => String(value || '').trim().replace(/\/$/, '');
+const isLocalHostname = (hostname) => (
+    hostname === ''
+    || hostname === 'localhost'
+    || hostname === '127.0.0.1'
+    || hostname === '0.0.0.0'
+    || hostname === '192.168.0.106'
+    || hostname.startsWith('192.168.')
+    || hostname.endsWith('.local')
+);
 
 const resolveApiBaseUrl = () => {
-    // 1. Vérifier si une variable d'environnement est définie
-    const configuredValue = window.API_BASE_URL
-        || document.querySelector('meta[name="api-base-url"]')?.content
+    const hostname = window.location.hostname;
+    const isLocal = isLocalHostname(hostname);
+
+    if (window.API_BASE_URL) {
+        console.log('API URL from window.API_BASE_URL:', window.API_BASE_URL);
+        return normalizeBaseUrl(window.API_BASE_URL);
+    }
+
+    if (isLocal) {
+        console.log('API URL forced for local development:', DEFAULT_API_BASE_URLS.development);
+        return DEFAULT_API_BASE_URLS.development;
+    }
+
+    const configuredValue = document.querySelector('meta[name="api-base-url"]')?.content
         || import.meta.env.API_BASE_URL;
 
     if (configuredValue) {
@@ -21,18 +41,10 @@ const resolveApiBaseUrl = () => {
         return normalizeBaseUrl(configuredValue);
     }
 
-    // 2. Détecter l'environnement
-    const hostname = window.location.hostname;
-    const isLocal = hostname === 'localhost' 
-        || hostname === '127.0.0.1' 
-        || hostname === '192.168.0.106'
-        || hostname.startsWith('192.168.')
-        || hostname.endsWith('.local');
-
     const env = isLocal ? 'development' : 'production';
     const url = DEFAULT_API_BASE_URLS[env];
     console.log(`API URL resolved (${env}):`, url);
-    
+
     return url;
 };
 
@@ -45,9 +57,6 @@ class ApiClient {
         this.refreshCallbacks = [];
     }
 
-    /**
-     * Gestion du token
-     */
     setToken(token) {
         this.token = token;
         if (token) {
@@ -74,9 +83,6 @@ class ApiClient {
         this.refreshCallbacks.forEach(cb => cb(this.token));
     }
 
-    /**
-     * Requête HTTP générique
-     */
     async request(endpoint, options = {}) {
         const isFormData = options.body instanceof FormData;
         const headers = {
@@ -138,7 +144,6 @@ class ApiClient {
         return this.request(endpoint, { ...options, method: 'DELETE' });
     }
 
-    // ========== AUTHENTIFICATION ==========
     auth = {
         login: (email, password) => this.post('/auth/login', { email, password }),
         signup: (data) => this.post('/auth/signup', data),
@@ -149,7 +154,6 @@ class ApiClient {
         }
     };
 
-    // ========== PLATS ==========
     plats = {
         getAll: (params = {}) => {
             const query = new URLSearchParams();
@@ -178,7 +182,6 @@ class ApiClient {
         toggleAvailability: (id) => this.patch(`/plats/${id}/toggle`, {})
     };
 
-    // ========== COMPOSITIONS ==========
     compositions = {
         getAll: (params = {}) => {
             const query = new URLSearchParams();
@@ -190,7 +193,37 @@ class ApiClient {
         delete: (id) => this.delete(`/compositions/${id}`)
     };
 
-    // ========== TABLES ==========
+    categories = {
+        getAll: (params = {}) => {
+            const query = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== '') {
+                    query.append(key, value);
+                }
+            });
+            const queryString = query.toString();
+            return this.get(`/categories${queryString ? `?${queryString}` : ''}`);
+        },
+        getById: (id) => this.get(`/categories/${id}`),
+        create: (data) => this.post('/categories', data),
+        update: (id, data) => this.put(`/categories/${id}`, data),
+        delete: (id) => this.delete(`/categories/${id}`),
+        getTypes: (categoryId) => this.get(`/categories/${categoryId}/types`),
+        getAllTypes: (params = {}) => {
+            const query = new URLSearchParams();
+            Object.entries(params).forEach(([key, value]) => {
+                if (value !== undefined && value !== null && value !== '') {
+                    query.append(key, value);
+                }
+            });
+            const queryString = query.toString();
+            return this.get(`/categories/types/all${queryString ? `?${queryString}` : ''}`);
+        },
+        createType: (data) => this.post('/categories/types/all', data),
+        updateType: (id, data) => this.put(`/categories/types/all/${id}`, data),
+        deleteType: (id) => this.delete(`/categories/types/all/${id}`)
+    };
+
     tables = {
         getAll: () => this.get('/tables'),
         getById: (id) => this.get(`/tables/${id}`),
@@ -199,7 +232,6 @@ class ApiClient {
         delete: (id) => this.delete(`/tables/${id}`)
     };
 
-    // ========== COMMANDES ==========
     orders = {
         getAll: (params = {}) => {
             const query = new URLSearchParams();
@@ -211,38 +243,38 @@ class ApiClient {
         updateStatus: (id, status) => this.put(`/orders/${id}/status`, { status })
     };
 
-    // ========== FRONT-OFFICE (Client) ==========
     session = {
         start: (payload) => this.post('/front-office/session/start', payload, { auth: false }),
         getMenu: (token, day) => this.get(`/front-office/menu/${token}?day=${encodeURIComponent(day)}`, { auth: false }),
         getCart: (token) => this.get(`/front-office/cart/${token}`, { auth: false }),
-        addToCart: (token, platId, quantity, lineItems) => 
+        addToCart: (token, platId, quantity, lineItems) =>
             this.post('/front-office/cart/items', {
                 session_token: token,
                 plat_id: platId,
                 quantity,
                 line_items: lineItems
             }, { auth: false }),
-        removeFromCart: (token, itemId) => 
+        removeFromCart: (token, itemId) =>
             this.delete(`/front-office/cart/items/${itemId}?session_token=${encodeURIComponent(token)}`, { auth: false }),
-        updateCartItem: (token, itemId, quantity) => 
+        updateCartItem: (token, itemId, quantity) =>
             this.put(`/front-office/cart/items/${itemId}`, {
                 session_token: token,
                 quantity
             }, { auth: false }),
-        checkout: (token, customer, note) => 
+        checkout: (token, customer, note) =>
             this.post('/front-office/cart/checkout', {
                 session_token: token,
                 customer,
                 note
-            }, { auth: false })
+            }, { auth: false }),
+        createOrder: (payload) => this.post('/front-office/orders', payload, { auth: false }),
+        listOrders: (token) => this.get(`/front-office/orders?session_token=${encodeURIComponent(token)}`, { auth: false }),
+        getOrderStatus: (token, orderId) => this.get(`/front-office/orders/${orderId}?session_token=${encodeURIComponent(token)}`, { auth: false })
     };
 }
 
-// Export d'une instance unique
 export const api = new ApiClient();
 
-// Export des helpers
 export const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} XAF`;
 
 export const WEEK_DAYS = [

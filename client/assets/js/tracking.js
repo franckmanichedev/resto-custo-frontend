@@ -16,7 +16,7 @@ export async function initTracking() {
     
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = setInterval(async () => {
-        await sessionManager.refreshCart();
+        await sessionManager.refreshSessionData();
         const updatedOrders = store.get('orders') || [];
         renderTracking(updatedOrders);
     }, 5000);
@@ -151,6 +151,7 @@ function renderOrderCard(order) {
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="font-medium text-gray-800">${escapeHtml(group.plat_name)}</p>
+                                ${renderItemTaxonomy(group)}
                                 <p class="text-sm text-gray-500">Quantité: ${group.total_quantity}</p>
                             </div>
                             <span class="text-sm font-medium">${formatPrice(group.total_price)}</span>
@@ -193,6 +194,43 @@ function renderOrderCard(order) {
     `;
 }
 
+function renderItemTaxonomy(item) {
+    const labels = [];
+
+    if (item.kind) {
+        labels.push({
+            text: item.kind === 'boisson' ? 'Boisson' : 'Plat',
+            classes: 'bg-gray-100 text-gray-700'
+        });
+    }
+
+    if (item.categorie_name) {
+        labels.push({
+            text: item.categorie_name,
+            classes: 'bg-yellow-50 text-yellow-700'
+        });
+    }
+
+    if (item.type_categorie_name) {
+        labels.push({
+            text: item.type_categorie_name,
+            classes: 'bg-blue-50 text-blue-700'
+        });
+    }
+
+    if (!labels.length) return '';
+
+    return `
+        <div class="mt-1 flex flex-wrap gap-2">
+            ${labels.map((label) => `
+                <span class="rounded-full px-2 py-0.5 text-xs font-medium ${label.classes}">
+                    ${escapeHtml(label.text)}
+                </span>
+            `).join('')}
+        </div>
+    `;
+}
+
 function groupOrderItems(items) {
     const groups = {};
     
@@ -202,6 +240,9 @@ function groupOrderItems(items) {
             groups[key] = {
                 plat_name: item.plat_name,
                 plat_id: item.plat_id,
+                kind: item.kind || null,
+                categorie_name: item.categorie_name || null,
+                type_categorie_name: item.type_categorie_name || null,
                 total_quantity: 0,
                 total_price: 0,
                 variants: []

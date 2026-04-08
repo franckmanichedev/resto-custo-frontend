@@ -5,229 +5,190 @@
 import { api, getCurrentDay, formatDuration } from '../../../shared/js/api.js';
 import { store } from '../../../shared/js/store.js';
 import { showToast, showLoading, hideLoading } from '../../../shared/js/utils.js';
+import { hydrateLocalCart } from './local-cart.js';
 
 class SessionManager {
     constructor() {
         this.sessionTimer = null;
         this.refreshInterval = null;
     }
-    
-    /**
-     * Démarrer une session
-     */
+
     async startSession(tableId, qrCode = null) {
-        showLoading('Création de la session...');
-        
+        showLoading('Creation de la session...');
+
         try {
-            const payload = qrCode 
-                ? { qr_code: qrCode }
-                : { table_id: tableId };
-            
+            const payload = qrCode ? { qr_code: qrCode } : { table_id: tableId };
             const response = await api.session.start(payload);
-            
             this.setSession(response.data);
-            
-            showToast('Session créée avec succès', 'success');
+            showToast('Session creee avec succes', 'success');
             return response.data;
-            
         } catch (error) {
-            showToast(error.message || 'Erreur création session', 'error');
+            showToast(error.message || 'Erreur creation session', 'error');
             throw error;
         } finally {
             hideLoading();
         }
     }
-    
-    /**
-     * Restaurer une session existante
-     */
+
     async restoreSession(sessionToken) {
         try {
             const response = await api.session.getMenu(sessionToken, getCurrentDay());
             this.setSession(response.data);
             return response.data;
         } catch (error) {
+            if (error?.status === 410) {
+                const tableId = store.get('table')?.id;
+                if (tableId) {
+                    localStorage.removeItem(`session:${tableId}`);
+                }
+            }
             console.error('Erreur restauration session:', error);
             return null;
         }
     }
-    
-    /**
-     * Définir la session dans le store
-     */
+
     setSession(sessionData) {
         store.setMultiple({
             session: sessionData.session,
             table: sessionData.table,
             currentDay: sessionData.current_day,
             selectedDay: sessionData.requested_day || sessionData.current_day,
+            consultableDays: sessionData.consultable_days || [],
             plats: sessionData.plats || [],
             rawPlats: sessionData.plats || [],
-            cart: sessionData.cart,
+            cart: null,
             orders: sessionData.orders || []
         });
-        
-        // Démarrer le timer de session
+
+        hydrateLocalCart(sessionData.session?.session_token);
         this.startSessionTimer();
-        
-        // Démarrer le rafraîchissement périodique
         this.startPeriodicRefresh();
-        
-        // Sauvegarder le token de session
+
         if (sessionData.session?.session_token) {
             localStorage.setItem(`session:${sessionData.table?.id}`, sessionData.session.session_token);
         }
     }
-    
-    /**
-     * Démarrer le timer de session
-     */
+
     startSessionTimer() {
         if (this.sessionTimer) clearInterval(this.sessionTimer);
-        
+
         const timerElement = document.getElementById('session-timer');
         if (!timerElement) return;
-        
+
         this.sessionTimer = setInterval(() => {
             const session = store.get('session');
             if (!session?.expires_at) {
                 timerElement.textContent = '--:--';
                 return;
             }
-            
+
             const remaining = Math.max(0, Math.floor((new Date(session.expires_at) - Date.now()) / 1000));
             timerElement.textContent = formatDuration(remaining);
-            
+
             if (remaining <= 0) {
                 this.handleSessionExpired();
             }
         }, 1000);
     }
-    
-    /**
-     * Démarrer le rafraîchissement périodique
-     */
+
     startPeriodicRefresh() {
         if (this.refreshInterval) clearInterval(this.refreshInterval);
-        
+
         this.refreshInterval = setInterval(async () => {
-            const session = store.get('session');
-            if (!session?.session_token) return;
-            
             try {
-                const response = await api.session.getCart(session.session_token);
-                store.setMultiple({
-                    session: response.data.session,
-                    cart: response.data.cart,
-                    orders: response.data.orders || []
-                });
+                await this.refreshSessionData();
             } catch (error) {
-                console.error('Erreur rafraîchissement session:', error);
+                console.error('Erreur rafraichissement session:', error);
             }
-        }, 30000); // Rafraîchir toutes les 30 secondes
+        }, 30000);
     }
-    
-    /**
-     * Gérer l'expiration de session
-     */
+
     handleSessionExpired() {
         if (this.sessionTimer) clearInterval(this.sessionTimer);
         if (this.refreshInterval) clearInterval(this.refreshInterval);
-        
-        showToast('La session a expiré, veuillez scanner à nouveau le QR code', 'warning');
-        
-        // Rediriger vers la page d'accueil
+
+        showToast('La session a expire, veuillez scanner a nouveau le QR code', 'warning');
+
         setTimeout(() => {
             window.location.href = '/client/index.html';
         }, 3000);
     }
-    
-    /**
-     * Nettoyer la session
-     */
+
     clearSession() {
         if (this.sessionTimer) clearInterval(this.sessionTimer);
         if (this.refreshInterval) clearInterval(this.refreshInterval);
-        
+
         store.setMultiple({
             session: null,
             table: null,
             cart: null,
             orders: [],
+            consultableDays: [],
             plats: [],
             rawPlats: []
         });
     }
-    
-    /**
-     * Rafraîchir le menu pour un jour donné
-     */
+
     async loadMenuForDay(day) {
         const session = store.get('session');
-        if (!session?.session_token) return;
-        
+        if (!session?.session_token) return null;
+
         try {
             const response = await api.session.getMenu(session.session_token, day);
-            
             store.setMultiple({
                 session: response.data.session,
                 table: response.data.table,
                 currentDay: response.data.current_day,
                 selectedDay: response.data.requested_day,
+                consultableDays: response.data.consultable_days || [],
                 plats: response.data.plats || [],
                 rawPlats: response.data.plats || [],
-                cart: response.data.cart,
                 orders: response.data.orders || []
             });
-            
+            hydrateLocalCart(response.data.session?.session_token);
             return response.data;
         } catch (error) {
             showToast(error.message || 'Erreur chargement menu', 'error');
             throw error;
         }
     }
-    
-    /**
-     * Rafraîchir le panier
-     */
+
     async refreshCart() {
-        const session = store.get('session');
-        if (!session?.session_token) return;
-        
-        try {
-            const response = await api.session.getCart(session.session_token);
-            store.setMultiple({
-                session: response.data.session,
-                cart: response.data.cart,
-                orders: response.data.orders || []
-            });
-            return response.data;
-        } catch (error) {
-            console.error('Erreur rafraîchissement panier:', error);
-            throw error;
-        }
+        return hydrateLocalCart();
     }
-    
-    /**
-     * Initialiser la session depuis l'URL
-     */
+
+    async refreshSessionData() {
+        const session = store.get('session');
+        if (!session?.session_token) return null;
+
+        const response = await api.session.listOrders(session.session_token);
+        store.setMultiple({
+            session: response.data.session,
+            orders: response.data.orders || []
+        });
+        hydrateLocalCart(session.session_token);
+        return response.data;
+    }
+
     async initFromUrl() {
         const params = new URLSearchParams(window.location.search);
         const tableId = params.get('table');
         const code = params.get('code');
-        
+
         if (tableId) {
-            // Vérifier si une session existe
             const storedToken = localStorage.getItem(`session:${tableId}`);
             if (storedToken) {
                 const restored = await this.restoreSession(storedToken);
                 if (restored) return restored;
+                localStorage.removeItem(`session:${tableId}`);
             }
             return this.startSession(tableId);
-        } else if (code) {
+        }
+
+        if (code) {
             return this.startSession(null, code);
         }
-        
+
         return null;
     }
 }

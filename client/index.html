@@ -245,7 +245,7 @@
                 <img id="modal-plat-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4">
                 <p id="modal-plat-description" class="text-gray-600 mb-4"></p>
                 
-                <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="flex justify-start items-center gap-1 bg-gray-50 p-3 rounded-xl">
                         <i class="far fa-dollar-sign text-yellow-500 mr-2"></i>
                         <div class="">
@@ -260,6 +260,15 @@
                             <p id="modal-plat-prep" class="text-md font-bold text-yellow-500"></p>
                         </div>
                     </div>
+                </div>
+
+                <div class="mb-6 rounded-2xl border border-gray-100 bg-gradient-to-r from-yellow-50 via-white to-blue-50 p-4">
+                    <p class="text-sm font-medium text-gray-700 mb-3">Classification</p>
+                    <div id="modal-plat-taxonomy" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="mb-6">
+                    <p id="modal-plat-orderable" class="text-sm font-medium text-gray-600"></p>
                 </div>
                 
                 <div class="mb-6">
@@ -351,19 +360,28 @@
             <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
                 <!-- Filtre par catégorie -->
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-3">Catégorie</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Type d'article</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button data-category="all" class="filter-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-yellow-400 text-white">
+                        <button data-kind="all" class="filter-kind-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-yellow-400 text-white">
                             Tous
                         </button>
-                        <button data-category="entree" class="filter-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">
-                            Entrées
-                        </button>
-                        <button data-category="plat" class="filter-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">
+                        <button data-kind="plat" class="filter-kind-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">
                             Plats
                         </button>
-                        <button data-category="boisson" class="filter-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">
+                        <button data-kind="boisson" class="filter-kind-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200">
                             Boissons
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <label class="block text-sm font-semibold text-gray-700">Categorie</label>
+                        <span class="text-xs text-gray-400">Basee sur les categories du menu</span>
+                    </div>
+                    <div id="filter-category-buttons" class="flex flex-wrap gap-2">
+                        <button data-category-id="all" class="filter-menu-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all bg-yellow-400 text-white">
+                            Toutes
                         </button>
                     </div>
                 </div>
