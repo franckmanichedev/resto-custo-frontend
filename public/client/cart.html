@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <title>Resto QR - Panier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="./client-shell.css">
+</head>
+<body class="client-app" data-page="cart">
+    <div class="app-desktop">
+        <aside class="desktop-rail">
+            <div class="soft-card rounded-[2rem] p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Panier</p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Votre commande</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Verifiez les lignes de commande, ajustez les quantites et envoyez votre commande a la cuisine.</p>
+                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
+                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
+                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
+                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+                </div>
+            </div>
+            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+                <button class="desktop-link" data-page="index">Accueil</button>
+                <button class="desktop-link" data-page="categories">Categories</button>
+                <button class="desktop-link is-active" data-page="cart">Panier</button>
+                <button class="desktop-link" data-page="tracking">Commandes</button>
+            </div>
+        </aside>
+        <main class="phone-shell">
+            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Commande</p>
+                        <h1 class="text-lg font-black text-slate-950">Mon panier</h1>
+                        <p class="mt-1 text-xs text-slate-500">Table <span data-table-label>-</span> • Session <span data-session-timer>--:--</span></p>
+                    </div>
+                    <button class="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-home>
+                        <i class="fas fa-house text-lg"></i>
+                    </button>
+                </div>
+            </header>
+
+            <section class="page-main px-4 pt-4">
+                <div class="space-y-4" id="cartItemsList"></div>
+                <div id="emptyCartMessage" class="hidden rounded-[1.7rem] bg-white px-5 py-10 text-center shadow-sm ring-1 ring-slate-200/70">
+                    <i class="fas fa-shopping-cart text-5xl text-slate-300"></i>
+                    <p class="mt-4 text-sm font-semibold text-slate-600">Votre panier est vide.</p>
+                    <button id="goToMenuBtn" class="mt-5 rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-lg">Voir les menus</button>
+                </div>
+            </section>
+
+            <div id="totalContainer" class="desktop-total border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur">
+                <div class="mx-auto flex max-w-md items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Total</p>
+                        <p id="totalPrice" class="mt-1 text-xl font-black text-amber-700">0 FCFA</p>
+                    </div>
+                    <button id="checkoutBtn" class="rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-amber-600">
+                        Passer la commande
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <div id="clientModalRoot"></div>
+    <script type="module" src="./client-cart.js"></script>
+</body>
+</html>

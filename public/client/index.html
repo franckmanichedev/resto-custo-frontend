@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <title>Resto QR - Accueil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="./client-shell.css">
+</head>
+<body class="client-app" data-page="index">
+    <div class="app-desktop">
+        <aside class="desktop-rail">
+            <div class="soft-card rounded-[2rem] p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Resto QR</p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Interface client</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Retrouvez vos plats, votre panier et le suivi de commande dans une interface mobile preservee mais mieux cadree sur grand ecran.</p>
+                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
+                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
+                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
+                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+                </div>
+            </div>
+            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+                <button class="desktop-link is-active" data-page="index">Accueil</button>
+                <button class="desktop-link" data-page="categories">Categories</button>
+                <button class="desktop-link" data-page="cart">Panier</button>
+                <button class="desktop-link" data-page="tracking">Commandes</button>
+            </div>
+            <div class="soft-card mt-5 rounded-[2rem] p-4">
+                <button class="flex w-full items-center justify-between rounded-[1.2rem] bg-amber-500 px-4 py-3 text-left text-sm font-semibold text-white" data-go-cart>
+                    <span>Voir le panier</span>
+                    <span data-cart-count class="cartBadge hidden h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 text-xs font-black text-amber-700">0</span>
+                </button>
+            </div>
+        </aside>
+        <main class="phone-shell">
+            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Resto QR</p>
+                        <h1 class="text-lg font-black text-slate-950">Bienvenue a table</h1>
+                        <p class="mt-1 text-xs text-slate-500">Table <span data-table-label>-</span> • Session <span data-session-timer>--:--</span></p>
+                    </div>
+                    <button class="relative rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-cart>
+                        <i class="fas fa-shopping-basket text-lg"></i>
+                        <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-6 min-w-6 items-center justify-center rounded-full bg-amber-500 px-2 text-xs font-black text-white">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <section class="page-main px-4 pt-4">
+                <div class="soft-card rounded-[1.8rem] p-4">
+                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Decouvrez</p>
+                    <h2 class="mt-2 text-2xl font-black text-slate-950">Les menus du moment</h2>
+                    <button id="homeSearchTrigger" class="mt-4 flex w-full items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4 text-left text-sm text-slate-500 transition hover:border-amber-300 hover:bg-white">
+                        <i class="fas fa-search text-slate-400"></i>
+                        <span>Rechercher un plat, une boisson ou une categorie</span>
+                    </button>
+                </div>
+
+                <div class="mt-5 hidden" id="menuInfoBanner"></div>
+
+                <section class="mt-6">
+                    <div class="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Navigation</p>
+                            <h2 class="text-xl font-black text-slate-950">Categories</h2>
+                        </div>
+                        <button class="text-sm font-semibold text-amber-600" data-go-categories>Voir tout</button>
+                    </div>
+                    <div class="no-scrollbar flex gap-3 overflow-x-auto pb-2" id="categoriesList"></div>
+                </section>
+
+                <section class="mt-8 space-y-8" id="platsContainer"></section>
+            </section>
+
+            <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/80 bg-white/95 px-6 py-3 backdrop-blur">
+                <div class="mx-auto flex max-w-md items-center justify-between">
+                    <button class="nav-btn is-active flex flex-col items-center gap-1 text-sm font-semibold text-amber-600" data-page="index"><i class="fas fa-house text-lg"></i><span>Accueil</span></button>
+                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="categories"><i class="fas fa-list text-lg"></i><span>Categories</span></button>
+                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="tracking"><i class="fas fa-truck text-lg"></i><span>Commandes</span></button>
+                    <button class="nav-btn relative flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="cart"><i class="fas fa-cart-shopping text-lg"></i><span>Panier</span><span data-cart-count class="cartBadge absolute -right-3 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-white">0</span></button>
+                </div>
+            </nav>
+        </main>
+    </div>
+    <div id="clientModalRoot"></div>
+    <script type="module" src="./client-home.js"></script>
+</body>
+</html>

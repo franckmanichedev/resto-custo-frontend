@@ -1,0 +1,114 @@
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: #1f2937;
+    background:
+        radial-gradient(circle at top, rgba(193, 123, 74, 0.22), transparent 30%),
+        linear-gradient(180deg, #fffaf3 0%, #ffffff 100%);
+}
+
+.website-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+
+.hero {
+    display: grid;
+    gap: 24px;
+    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    min-height: 72vh;
+}
+
+.eyebrow {
+    display: inline-flex;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.86);
+    color: #c17b4a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 30px rgba(193, 123, 74, 0.08);
+}
+
+.hero h1 {
+    margin: 16px 0 0;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5rem);
+    line-height: 1.02;
+}
+
+.hero p {
+    max-width: 640px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #475569;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.hero-actions a {
+    text-decoration: none;
+    border-radius: 999px;
+    padding: 14px 20px;
+    font-weight: 700;
+}
+
+.button-primary {
+    background: #c17b4a;
+    color: white;
+}
+
+.button-secondary {
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.hero-panel {
+    padding: 28px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 20px 80px rgba(148, 163, 184, 0.16);
+}
+
+.site-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-top: 18px;
+}
+
+.site-card {
+    padding: 22px;
+    border-radius: 24px;
+    background: white;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+}
+
+.site-card-title {
+    margin: 0 0 10px;
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+.site-card-copy {
+    margin: 0;
+    color: #475569;
+    line-height: 1.65;
+}
+
+@media (max-width: 720px) {
+    .website-shell {
+        padding: 24px 18px 56px;
+    }
+}

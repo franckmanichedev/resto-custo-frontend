@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/website.css">
+</head>
+<body>
+    <main class="website-shell">
+        <section class="hero">
+            <div>
+                <span class="eyebrow">Restaurant Experience</span>
+                <h1>Un menu QR qui fait gagner du temps au service et clarifie l'expérience client.</h1>
+                <p>Ce website vit séparément de l'application. Il sert la présentation du restaurant et de la solution, tandis que l'app client et l'admin restent dans `public/`.</p>
+                <div class="hero-actions">
+                    <a class="button-primary" href="../../public/client/index.html">Découvrir l'app client</a>
+                    <a class="button-secondary" href="../../public/admin/index.html">Accès administration</a>
+                </div>
+            </div>
+
+            <aside class="hero-panel">
+                <h2>Ce que la nouvelle architecture prépare</h2>
+                <div id="website-highlights" class="site-grid"></div>
+            </aside>
+        </section>
+    </main>
+
+    <script type="module">
+        import { renderHighlights } from '../components/siteShell.js';
+
+        document.getElementById('website-highlights').innerHTML = renderHighlights();
+    </script>
+</body>
+</html>

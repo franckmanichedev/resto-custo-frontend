@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirection</title>
+</head>
+<body>
+    <p>Redirection vers l'application client...</p>
+    <script>
+        window.location.replace(`./client/index.html${window.location.search || ''}`);
+    </script>
+</body>
+</html>
