@@ -12,64 +12,84 @@
 <body class="client-app" data-page="categories">
     <div class="app-desktop">
         <aside class="desktop-rail">
-            <div class="soft-card rounded-[2rem] p-6">
-                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Resto QR</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Categories</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Parcourez rapidement les familles de plats disponibles pour votre table.</p>
-                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
-                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
-                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+            <section class="soft-card desktop-hero rounded-[2rem] p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Categories</p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Explorer la carte par univers</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Ici, le client retrouve toutes les familles du restaurant avec un rendu image + nom, puis peut descendre directement vers les plats lies.</p>
+                <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
+                    <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
+                    <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
                 </div>
-            </div>
-            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+            </section>
+
+            <section class="soft-card rounded-[2rem] p-4 space-y-2">
                 <button class="desktop-link" data-page="index">Accueil</button>
                 <button class="desktop-link is-active" data-page="categories">Categories</button>
                 <button class="desktop-link" data-page="cart">Panier</button>
                 <button class="desktop-link" data-page="tracking">Commandes</button>
-            </div>
+            </section>
         </aside>
+
         <main class="phone-shell">
-            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
+            <header class="sticky top-0 z-20 border-b border-gray-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-md">
                 <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Explorer</p>
-                        <h1 class="text-lg font-black text-slate-950">Toutes les categories</h1>
-                        <p class="mt-1 text-xs text-slate-500">Table <span data-table-label>-</span> • Session <span data-session-timer>--:--</span></p>
+                    <div class="flex flex-col">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white shadow-md">RQ</div>
+                        <span class="mt-1 text-xs font-medium text-gray-500">Table <span data-table-label>-</span></span>
                     </div>
-                    <button class="relative rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-cart>
-                        <i class="fas fa-shopping-basket text-lg"></i>
-                        <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-6 min-w-6 items-center justify-center rounded-full bg-amber-500 px-2 text-xs font-black text-white">0</span>
+                    <button class="relative" data-go-cart>
+                        <i class="fas fa-shopping-basket text-2xl text-gray-700"></i>
+                        <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">0</span>
                     </button>
                 </div>
             </header>
 
-            <section class="page-main px-4 pt-4">
-                <div class="soft-card rounded-[1.8rem] p-4">
-                    <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Filtrer</p>
-                    <h2 class="mt-2 text-2xl font-black text-slate-950" id="categoryCurrentTitle">Toutes les categories</h2>
-                    <div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-2" id="categoryFilters"></div>
-                </div>
-
-                <section class="mt-6">
-                    <div class="grid gap-4 sm:grid-cols-2" id="categoriesGrid"></div>
+            <main class="page-main mx-auto max-w-7xl px-4 py-4">
+                <section class="mb-6">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Categories</p>
+                            <h1 id="categoryCurrentTitle" class="text-2xl font-bold text-gray-800">Toutes les categories</h1>
+                        </div>
+                        <button class="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm" data-go-search>
+                            Rechercher
+                        </button>
+                    </div>
+                    <div id="categoryFilters" class="scrollbar-hide flex gap-2 overflow-x-auto pb-2"></div>
                 </section>
 
-                <section class="mt-8">
-                    <div class="mb-4">
-                        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Selection</p>
-                        <h2 class="text-2xl font-black text-slate-950">Plats associes</h2>
+                <section class="mb-8">
+                    <div id="categoriesGrid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+                </section>
+
+                <section>
+                    <div class="mb-3">
+                        <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Selection</p>
+                        <h2 class="text-xl font-bold text-gray-800">Plats associes</h2>
                     </div>
                     <div id="categoryPlatsContainer"></div>
                 </section>
-            </section>
+            </main>
 
-            <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/80 bg-white/95 px-6 py-3 backdrop-blur">
-                <div class="mx-auto flex max-w-md items-center justify-between">
-                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="index"><i class="fas fa-house text-lg"></i><span>Accueil</span></button>
-                    <button class="nav-btn is-active flex flex-col items-center gap-1 text-sm font-semibold text-amber-600" data-page="categories"><i class="fas fa-list text-lg"></i><span>Categories</span></button>
-                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="tracking"><i class="fas fa-truck text-lg"></i><span>Commandes</span></button>
-                    <button class="nav-btn relative flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="cart"><i class="fas fa-cart-shopping text-lg"></i><span>Panier</span><span data-cart-count class="cartBadge absolute -right-3 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-white">0</span></button>
+            <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white px-6 py-2 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="index">
+                        <i class="fas fa-home text-xl"></i>
+                        <span class="mt-1 text-xs">Accueil</span>
+                    </button>
+                    <button class="nav-btn is-active flex flex-col items-center text-amber-600" data-page="categories">
+                        <i class="fas fa-list-ul text-xl"></i>
+                        <span class="mt-1 text-xs">Categories</span>
+                    </button>
+                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="tracking">
+                        <i class="fas fa-truck text-xl"></i>
+                        <span class="mt-1 text-xs">Commandes</span>
+                    </button>
+                    <button class="nav-btn relative flex flex-col items-center text-gray-500" data-page="cart">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="mt-1 text-xs">Panier</span>
+                        <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">0</span>
+                    </button>
                 </div>
             </nav>
         </main>

@@ -12,55 +12,54 @@
 <body class="client-app" data-page="search">
     <div class="app-desktop">
         <aside class="desktop-rail">
-            <div class="soft-card rounded-[2rem] p-6">
+            <section class="soft-card desktop-hero rounded-[2rem] p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Recherche</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Trouvez votre plat</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Cherchez un plat par nom, par categorie ou par envie du moment.</p>
-                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
-                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
-                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Trouver vite un plat</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Le moteur de recherche reprend la maquette mobile, avec une lecture plus confortable sur desktop et une selection plus rapide des categories.</p>
+                <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
+                    <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
+                    <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
                 </div>
-            </div>
-            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+            </section>
+            <section class="soft-card rounded-[2rem] p-4 space-y-2">
                 <button class="desktop-link" data-page="index">Accueil</button>
                 <button class="desktop-link" data-page="categories">Categories</button>
                 <button class="desktop-link" data-page="cart">Panier</button>
                 <button class="desktop-link" data-page="tracking">Commandes</button>
-            </div>
+            </section>
         </aside>
+
         <main class="phone-shell">
-            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
-                <div class="flex items-center gap-4">
-                    <button class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700" data-back><i class="fas fa-arrow-left"></i></button>
-                    <div class="min-w-0 flex-1">
-                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Explorer</p>
-                        <h1 class="truncate text-lg font-black text-slate-950">Rechercher</h1>
-                    </div>
-                </div>
+            <header class="sticky top-0 z-20 flex items-center gap-4 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
+                <button class="text-gray-600 transition hover:text-gray-800" data-back>
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="flex-1 text-center text-lg font-semibold text-gray-800">Que cherchez-vous ?</h1>
+                <div class="w-8"></div>
             </header>
 
-            <section class="page-main px-4 pt-4">
-                <div class="soft-card rounded-[1.8rem] p-4">
-                    <label class="flex items-center gap-3 rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4">
-                        <i class="fas fa-search text-slate-400"></i>
-                        <input id="searchInput" type="text" placeholder="Pizza, burger, salade..." class="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400">
+            <main class="page-main mx-auto max-w-3xl px-4 py-4">
+                <div class="mb-6">
+                    <label class="relative block">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input id="searchInput" type="text" placeholder="Pizza, burger, salade..." class="w-full rounded-xl border border-gray-200 bg-white py-4 pl-12 pr-4 text-base shadow-sm outline-none focus:ring-2 focus:ring-amber-400">
                     </label>
-                    <div class="no-scrollbar mt-4 flex gap-3 overflow-x-auto pb-2" id="searchCategoriesList"></div>
                 </div>
 
-                <section class="mt-6">
-                    <div class="mb-4">
-                        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Resultats</p>
-                        <h2 class="text-2xl font-black text-slate-950">Plats trouves</h2>
-                    </div>
-                    <div class="space-y-3" id="resultsContainer"></div>
-                    <div id="noResults" class="hidden rounded-[1.7rem] bg-white px-5 py-8 text-center shadow-sm ring-1 ring-slate-200/70">
-                        <i class="fas fa-utensils text-4xl text-slate-300"></i>
-                        <p class="mt-4 text-sm font-semibold text-slate-600">Aucun plat ne correspond a votre recherche.</p>
+                <section class="mb-8">
+                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Categories</h2>
+                    <div id="searchCategoriesList" class="flex flex-wrap gap-2"></div>
+                </section>
+
+                <section>
+                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Resultats</h2>
+                    <div id="resultsContainer" class="space-y-0"></div>
+                    <div id="noResults" class="hidden py-8 text-center">
+                        <i class="fas fa-utensils mb-2 text-4xl text-gray-300"></i>
+                        <p class="text-gray-500">Aucun plat trouve</p>
                     </div>
                 </section>
-            </section>
+            </main>
         </main>
     </div>
     <div id="clientModalRoot"></div>

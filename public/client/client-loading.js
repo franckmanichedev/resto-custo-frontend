@@ -10,8 +10,11 @@ const resolveReturnTarget = () => {
 
 const statusNode = document.getElementById('loadingStatus');
 const hintNode = document.getElementById('loadingHint');
+const loaderContainer = document.getElementById('loaderContainer');
 const menuButton = document.getElementById('seeMenuBtn');
+const buttonContainer = document.getElementById('buttonContainer');
 const retryButton = document.getElementById('retryBtn');
+const retryContainer = document.getElementById('retryContainer');
 const target = resolveReturnTarget();
 
 bindChrome();
@@ -30,14 +33,16 @@ try {
     await startSession();
     statusNode.textContent = 'Votre table est prete.';
     hintNode.textContent = 'Redirection vers les menus dans un instant.';
-    menuButton?.classList.remove('hidden');
-    retryButton?.classList.add('hidden');
+    loaderContainer?.classList.add('opacity-70');
+    buttonContainer?.classList.remove('hidden');
+    retryContainer?.classList.add('hidden');
     setTimeout(() => {
         window.location.href = target;
     }, 700);
 } catch (error) {
     statusNode.textContent = 'Impossible de demarrer cette table.';
     hintNode.textContent = error.message || 'Verifiez le QR code ou la connexion avec le serveur.';
-    retryButton?.classList.remove('hidden');
+    buttonContainer?.classList.add('hidden');
+    retryContainer?.classList.remove('hidden');
     showToast(error.message || 'Erreur de creation de session', 'error');
 }

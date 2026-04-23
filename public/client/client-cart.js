@@ -94,48 +94,50 @@ bindChrome();
 if (!redirectToLoadingIfNeeded()) {
     try {
         const payload = await loadCart();
-        renderCart(payload);
+        if (payload) {
+            renderCart(payload);
 
-        document.getElementById('goToMenuBtn')?.addEventListener('click', () => redirectTo('index'));
-        document.getElementById('checkoutBtn')?.addEventListener('click', () => {
-            const profile = getProfile();
-            openModal(`
-                <div class="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 px-4 py-8">
-                    <div class="w-full max-w-md overflow-hidden rounded-[1.8rem] bg-white shadow-2xl">
-                        <div class="bg-slate-950 px-5 py-4 text-white">
-                            <p class="text-xs uppercase tracking-[0.3em] text-white/60">Validation</p>
-                            <h3 class="mt-2 text-xl font-black">Finaliser la commande</h3>
-                        </div>
-                        <div class="space-y-4 p-5">
-                            <input id="checkoutName" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" value="${escapeHtml(profile.name || '')}" placeholder="Votre nom">
-                            <input id="checkoutPhone" type="tel" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" value="${escapeHtml(profile.phone || '')}" placeholder="Votre telephone">
-                            <textarea id="checkoutNote" rows="3" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" placeholder="Note pour la cuisine (optionnel)"></textarea>
-                            <div class="flex gap-3">
-                                <button class="flex-1 rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600" data-close-modal>Annuler</button>
-                                <button class="flex-1 rounded-full bg-amber-500 px-4 py-3 text-sm font-semibold text-white" id="confirmCheckoutBtn">Commander</button>
+            document.getElementById('goToMenuBtn')?.addEventListener('click', () => redirectTo('index'));
+            document.getElementById('checkoutBtn')?.addEventListener('click', () => {
+                const profile = getProfile();
+                openModal(`
+                    <div class="fixed inset-0 z-[120] flex items-center justify-center bg-slate-950/60 px-4 py-8">
+                        <div class="w-full max-w-md overflow-hidden rounded-[1.8rem] bg-white shadow-2xl">
+                            <div class="bg-slate-950 px-5 py-4 text-white">
+                                <p class="text-xs uppercase tracking-[0.3em] text-white/60">Validation</p>
+                                <h3 class="mt-2 text-xl font-black">Finaliser la commande</h3>
+                            </div>
+                            <div class="space-y-4 p-5">
+                                <input id="checkoutName" type="text" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" value="${escapeHtml(profile.name || '')}" placeholder="Votre nom">
+                                <input id="checkoutPhone" type="tel" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" value="${escapeHtml(profile.phone || '')}" placeholder="Votre telephone">
+                                <textarea id="checkoutNote" rows="3" class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:border-amber-500" placeholder="Note pour la cuisine (optionnel)"></textarea>
+                                <div class="flex gap-3">
+                                    <button class="flex-1 rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600" data-close-modal>Annuler</button>
+                                    <button class="flex-1 rounded-full bg-amber-500 px-4 py-3 text-sm font-semibold text-white" id="confirmCheckoutBtn">Commander</button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `);
+                `);
 
-            document.querySelector('[data-close-modal]')?.addEventListener('click', closeModal);
-            document.getElementById('confirmCheckoutBtn')?.addEventListener('click', async () => {
-                const name = document.getElementById('checkoutName')?.value.trim() || '';
-                const phone = document.getElementById('checkoutPhone')?.value.trim() || '';
-                const note = document.getElementById('checkoutNote')?.value.trim() || '';
-                if (!name || !phone) {
-                    showToast('Veuillez renseigner votre nom et votre telephone.', 'error');
-                    return;
-                }
-                saveProfile({ name, phone });
-                const response = await apiRequest('/front-office/cart/checkout', { method: 'POST', body: { session_token: getSessionToken(), customer: { name, phone }, note } });
-                localStorage.setItem('resto.client.cart', JSON.stringify({ savedAt: Date.now(), data: response.data }));
-                closeModal();
-                showToast('Commande envoyee avec succes.', 'success');
-                redirectTo('tracking', response.data?.order?.id ? { order: response.data.order.id } : {});
+                document.querySelector('[data-close-modal]')?.addEventListener('click', closeModal);
+                document.getElementById('confirmCheckoutBtn')?.addEventListener('click', async () => {
+                    const name = document.getElementById('checkoutName')?.value.trim() || '';
+                    const phone = document.getElementById('checkoutPhone')?.value.trim() || '';
+                    const note = document.getElementById('checkoutNote')?.value.trim() || '';
+                    if (!name || !phone) {
+                        showToast('Veuillez renseigner votre nom et votre telephone.', 'error');
+                        return;
+                    }
+                    saveProfile({ name, phone });
+                    const response = await apiRequest('/front-office/cart/checkout', { method: 'POST', body: { session_token: getSessionToken(), customer: { name, phone }, note } });
+                    localStorage.setItem('resto.client.cart', JSON.stringify({ savedAt: Date.now(), data: response.data }));
+                    closeModal();
+                    showToast('Commande envoyee avec succes.', 'success');
+                    redirectTo('tracking', response.data?.order?.id ? { order: response.data.order.id } : {});
+                });
             });
-        });
+        }
     } catch (error) {
         showToast(error.message || 'Erreur de chargement du panier', 'error');
     }

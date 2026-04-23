@@ -2,35 +2,259 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resto QRCode - Website</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/website.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Éclat Gourmet - Restaurant haut de gamme</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <main class="website-shell">
-        <section class="hero">
-            <div>
-                <span class="eyebrow">Restaurant Experience</span>
-                <h1>Un menu QR qui fait gagner du temps au service et clarifie l'expérience client.</h1>
-                <p>Ce website vit séparément de l'application. Il sert la présentation du restaurant et de la solution, tandis que l'app client et l'admin restent dans `public/`.</p>
-                <div class="hero-actions">
-                    <a class="button-primary" href="../../public/client/index.html">Découvrir l'app client</a>
-                    <a class="button-secondary" href="../../public/admin/index.html">Accès administration</a>
+
+    <!-- ================= STICKY NAVIGATION ================= -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <h2>Éclat Gourmet</h2>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#accueil" class="nav-link active">Accueil</a></li>
+                <li><a href="#menu" class="nav-link">Menu</a></li>
+                <li><a href="#about" class="nav-link">À propos</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="burger" id="burger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= CARROUSEL HERO (2 slides) ================= -->
+    <section id="accueil" class="hero">
+        <div class="hero-slides" id="heroSlides">
+            <div class="hero-slide active">
+                <div class="hero-bg" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&h=1080&fit=crop');"></div>
+                <div class="hero-content">
+                    <h1>L'Art de la Table</h1>
+                    <p>Une expérience culinaire inoubliable, entre tradition et créativité.</p>
+                    <a href="#reservation" class="btn btn-primary">Réserver une table</a>
                 </div>
             </div>
+            <div class="hero-slide">
+                <div class="hero-bg" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1551218808-94e220e084d2?w=1920&h=1080&fit=crop');"></div>
+                <div class="hero-content">
+                    <h1>Saveurs d'Exception</h1>
+                    <p>Des plats raffinés élaborés par nos chefs étoilés.</p>
+                    <a href="#menu" class="btn btn-primary">Découvrir le menu</a>
+                </div>
+            </div>
+        </div>
+        <button class="hero-prev" id="heroPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="hero-next" id="heroNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="hero-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+        </div>
+    </section>
 
-            <aside class="hero-panel">
-                <h2>Ce que la nouvelle architecture prépare</h2>
-                <div id="website-highlights" class="site-grid"></div>
-            </aside>
-        </section>
-    </main>
+    <!-- ================= SECTION CATÉGORIES (MENU) ================= -->
+    <section class="categories section">
+        <div class="container">
+            <div class="section-header">
+                <span class="subtitle">Notre carte</span>
+                <h2>Catégories</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="cat-card" style="background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop');">
+                    <div class="cat-overlay">
+                        <h3>Entrées</h3>
+                    </div>
+                </div>
+                <div class="cat-card" style="background-image: url('https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop');">
+                    <div class="cat-overlay">
+                        <h3>Plats</h3>
+                    </div>
+                </div>
+                <div class="cat-card" style="background-image: url('https://images.unsplash.com/photo-1551024506-ec3a72e4d6c1?w=600&h=400&fit=crop');">
+                    <div class="cat-overlay">
+                        <h3>Desserts</h3>
+                    </div>
+                </div>
+                <div class="cat-card" style="background-image: url('https://images.unsplash.com/photo-1575444758702-4a6b9222336e?w=600&h=400&fit=crop');">
+                    <div class="cat-overlay">
+                        <h3>Boissons</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <script type="module">
-        import { renderHighlights } from '../components/siteShell.js';
+    <!-- ================= SECTION PUBLICITÉ (PARALLAX) ================= -->
+    <section class="parallax section">
+        <div class="parallax-bg" style="background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1920&h=600&fit=crop');"></div>
+        <div class="parallax-content">
+            <h2>Événements privés & Dîners d'affaires</h2>
+            <p>Réservez notre salle privatisable pour vos moments précieux. Une prestation sur mesure, un service d'exception.</p>
+            <a href="#reservation" class="btn btn-light">Réserver maintenant</a>
+        </div>
+    </section>
 
-        document.getElementById('website-highlights').innerHTML = renderHighlights();
-    </script>
+    <!-- ================= MENU EN PROMO (plats avec prix barrés) ================= -->
+    <section class="promo-menu section">
+        <div class="container">
+            <div class="section-header">
+                <span class="subtitle">Offres limitées</span>
+                <h2>Nos suggestions</h2>
+            </div>
+            <div class="promo-grid">
+                <div class="promo-card">
+                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop" alt="Plat">
+                    <h3>Filet de bœuf</h3>
+                    <p>Sauce au poivre, frites maison</p>
+                    <div class="price"><span class="old-price">25 000 FCFA</span> <span class="new-price">18 900 FCFA</span></div>
+                    <button class="btn-small">Commander</button>
+                </div>
+                <div class="promo-card">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop" alt="Plat">
+                    <h3>Pizza truffée</h3>
+                    <p>Crème de truffe, mozzarella di bufala</p>
+                    <div class="price"><span class="old-price">15 000 FCFA</span> <span class="new-price">11 900 FCFA</span></div>
+                    <button class="btn-small">Commander</button>
+                </div>
+                <div class="promo-card">
+                    <img src="https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=400&h=300&fit=crop" alt="Plat">
+                    <h3>Tiramisu</h3>
+                    <p>Recette authentique, café torréfié</p>
+                    <div class="price"><span class="old-price">6 000 FCFA</span> <span class="new-price">4 500 FCFA</span></div>
+                    <button class="btn-small">Commander</button>
+                </div>
+                <div class="promo-card">
+                    <img src="https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=400&h=300&fit=crop" alt="Boisson">
+                    <h3>Cocktail Signature</h3>
+                    <p>Gin, fleur de sureau, concombre</p>
+                    <div class="price"><span class="old-price">8 000 FCFA</span> <span class="new-price">6 500 FCFA</span></div>
+                    <button class="btn-small">Commander</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= GALERIE (lightbox simplifiée) ================= -->
+    <section class="gallery section">
+        <div class="container">
+            <div class="section-header">
+                <span class="subtitle">Ambiance & Gourmandises</span>
+                <h2>Galerie</h2>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop" alt="Salle">
+                    <div class="gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop" alt="Plat raffiné">
+                    <div class="gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=600&h=400&fit=crop" alt="Chef">
+                    <div class="gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop" alt="Dressage">
+                    <div class="gallery-overlay"><i class="fas fa-search-plus"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECTION AVANTAGES (DYNAMIQUE via siteShell.js) ================= -->
+    <section class="advantages section" id="advantages">
+        <div class="container">
+            <div class="section-header">
+                <span class="subtitle">Pourquoi nous choisir</span>
+                <h2>Nos avantages</h2>
+            </div>
+            <div class="advantages-grid" id="advantagesGrid">
+                <!-- Rempli par siteShell.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FORMULAIRE DE RÉSERVATION ================= -->
+    <section id="reservation" class="reservation section">
+        <div class="container">
+            <div class="section-header">
+                <span class="subtitle">Réservez votre table</span>
+                <h2>Nous contacter</h2>
+            </div>
+            <form id="reservationForm" class="reservation-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nom complet" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="time" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="number" placeholder="Nombre de personnes" min="1" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <textarea rows="4" placeholder="Message ou demande spéciale"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Envoyer la réservation</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER (3 colonnes) ================= -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Navigation</h3>
+                <ul>
+                    <li><a href="#accueil">Accueil</a></li>
+                    <li><a href="#menu">Menu</a></li>
+                    <li><a href="#about">À propos</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <h3>Catégories</h3>
+                <ul>
+                    <li>Entrées</li>
+                    <li>Plats</li>
+                    <li>Desserts</li>
+                    <li>Boissons</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Infos Restaurant</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Avenue des Saveurs, Douala, Cameroun</p>
+                <p><i class="fas fa-phone"></i> +237 6 00 00 00 00</p>
+                <p><i class="fas fa-envelope"></i> contact@eclatgourmet.cm</p>
+                <p><i class="far fa-clock"></i> Mar-Dim: 12h-14h30 / 19h-23h<br>Lundi fermé</p>
+            </div>
+            <div class="footer-col">
+                <h3>Suivez-nous</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-tripadvisor"></i></a>
+                </div>
+                <p class="copyright">&copy; 2025 Éclat Gourmet. Tous droits réservés.<br>Design & Développement par votre agence</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../components/siteShell.js"></script>
+    <script src="../assets/js/main.js"></script>
 </body>
 </html>

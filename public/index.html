@@ -9,33 +9,33 @@
     <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(193,123,74,0.18),_transparent_35%),linear-gradient(180deg,_#fffaf2_0%,_#fff_100%)]">
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('table') || params.get('code')) {
+            window.location.replace(`./client/loading.html${window.location.search || ''}`);
+        }
+    </script>
+
     <main class="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-12">
         <div class="mb-10 max-w-2xl">
-            <p class="mb-3 inline-flex rounded-full bg-white/80 px-4 py-1 text-sm font-semibold text-primary shadow-sm">Architecture frontend modulaire</p>
-            <h1 class="font-serif text-4xl font-semibold text-slate-900 sm:text-5xl">Un point d'entrée clair pour l'application, l'admin et le website.</h1>
-            <p class="mt-4 text-lg text-slate-600">Le frontend est maintenant structuré autour de `public/`, `src/modules/` et `website/` pour préparer une montée en charge SaaS sans casser les parcours actuels.</p>
+            <p class="mb-3 inline-flex rounded-full bg-white/80 px-4 py-1 text-sm font-semibold text-primary shadow-sm">FrontOffice et BackOffice</p>
+            <h1 class="font-serif text-4xl font-semibold text-slate-900 sm:text-5xl">Un point d'entree clair pour l'application client et l'administration.</h1>
+            <p class="mt-4 text-lg text-slate-600">Si vous arrivez depuis un QR code de table, la redirection vers le parcours client se fait automatiquement. Sinon, choisissez simplement l'espace a ouvrir.</p>
         </div>
 
-        <section class="grid gap-6 md:grid-cols-3">
+        <section class="grid gap-6 md:grid-cols-2">
+            <a href="./client/index.html" class="rounded-3xl border border-slate-100 bg-white/90 p-6 shadow-lg shadow-slate-100/60 transition-transform hover:-translate-y-1">
+                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Client</p>
+                <h2 class="mt-3 text-2xl font-semibold text-slate-900">Application de commande</h2>
+                <p class="mt-3 text-sm text-slate-600">Session QR code, navigation entre les menus, panier, detail produit, recherche et suivi de commande.</p>
+                <span class="mt-6 inline-flex text-sm font-semibold text-primary">Lancer l'application client</span>
+            </a>
+
             <a href="./admin/index.html" class="rounded-3xl border border-amber-100 bg-white/90 p-6 shadow-lg shadow-amber-100/40 transition-transform hover:-translate-y-1">
                 <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-600">Admin</p>
                 <h2 class="mt-3 text-2xl font-semibold text-slate-900">Back-office restaurant</h2>
                 <p class="mt-3 text-sm text-slate-600">Connexion administrateur, dashboard, gestion des articles, tables, compositions et commandes.</p>
                 <span class="mt-6 inline-flex text-sm font-semibold text-primary">Ouvrir l'espace admin</span>
-            </a>
-
-            <a href="./client/index.html" class="rounded-3xl border border-slate-100 bg-white/90 p-6 shadow-lg shadow-slate-100/60 transition-transform hover:-translate-y-1">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Client</p>
-                <h2 class="mt-3 text-2xl font-semibold text-slate-900">Application de commande</h2>
-                <p class="mt-3 text-sm text-slate-600">Session QR code, menu, panier local, suivi de commande et profil client.</p>
-                <span class="mt-6 inline-flex text-sm font-semibold text-primary">Lancer l'application client</span>
-            </a>
-
-            <a href="../website/pages/index.html" class="rounded-3xl border border-sky-100 bg-white/90 p-6 shadow-lg shadow-sky-100/40 transition-transform hover:-translate-y-1">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Website</p>
-                <h2 class="mt-3 text-2xl font-semibold text-slate-900">Landing marketing</h2>
-                <p class="mt-3 text-sm text-slate-600">Espace indépendant de présentation du restaurant et de la solution, sans dépendance à l'authentification.</p>
-                <span class="mt-6 inline-flex text-sm font-semibold text-primary">Voir le website</span>
             </a>
         </section>
     </main>

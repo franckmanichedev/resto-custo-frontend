@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
-    <title>Resto QR - Suivi</title>
+    <title>Resto QR - Suivi commande</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./client-shell.css">
@@ -12,54 +12,81 @@
 <body class="client-app" data-page="tracking">
     <div class="app-desktop">
         <aside class="desktop-rail">
-            <div class="soft-card rounded-[2rem] p-6">
+            <section class="soft-card desktop-hero rounded-[2rem] p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Suivi</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Etat des commandes</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Suivez la progression de la cuisine jusqu au service a table.</p>
-                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
-                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
-                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Etat de vos commandes</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">La timeline garde le vocabulaire de ta maquette mobile, tout en affichant mieux le statut principal et l historique sur grand ecran.</p>
+                <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
+                    <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
+                    <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
                 </div>
-            </div>
-            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+            </section>
+            <section class="soft-card rounded-[2rem] p-4 space-y-2">
                 <button class="desktop-link" data-page="index">Accueil</button>
                 <button class="desktop-link" data-page="categories">Categories</button>
                 <button class="desktop-link" data-page="cart">Panier</button>
                 <button class="desktop-link is-active" data-page="tracking">Commandes</button>
-            </div>
+            </section>
         </aside>
+
         <main class="phone-shell">
-            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Suivi</p>
-                        <h1 class="text-lg font-black text-slate-950">Vos commandes</h1>
-                        <p class="mt-1 text-xs text-slate-500">Table <span data-table-label>-</span> • Session <span data-session-timer>--:--</span></p>
-                    </div>
-                    <button class="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-home>
-                        <i class="fas fa-house text-lg"></i>
-                    </button>
-                </div>
+            <header class="sticky top-0 z-20 flex items-center gap-4 border-b border-gray-100 bg-white px-4 py-4 shadow-sm">
+                <button class="text-gray-600 transition hover:text-gray-800" data-back>
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="flex-1 text-center text-lg font-semibold text-gray-800">Etat de votre commande</h1>
+                <button class="text-gray-600 transition hover:text-gray-800" data-go-home>
+                    <i class="fas fa-house text-lg"></i>
+                </button>
             </header>
 
-            <section class="page-main space-y-5 px-4 pt-4">
-                <div id="trackingEmpty" class="hidden rounded-[1.7rem] bg-white px-5 py-10 text-center shadow-sm ring-1 ring-slate-200/70">
-                    <i class="fas fa-receipt text-5xl text-slate-300"></i>
-                    <p class="mt-4 text-sm font-semibold text-slate-600">Aucune commande en cours pour le moment.</p>
+            <main class="page-main mx-auto max-w-3xl px-4 py-6">
+                <div id="trackingEmpty" class="hidden rounded-2xl bg-white px-5 py-10 text-center shadow-sm">
+                    <i class="fas fa-receipt text-5xl text-gray-300"></i>
+                    <p class="mt-4 text-sm font-semibold text-gray-600">Aucune commande en cours pour le moment.</p>
                 </div>
-                <div id="trackingFeatured"></div>
-                <div class="space-y-4" id="trackingHistory"></div>
-            </section>
 
-            <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200/80 bg-white/95 px-6 py-3 backdrop-blur">
-                <div class="mx-auto flex max-w-md items-center justify-between">
-                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="index"><i class="fas fa-house text-lg"></i><span>Accueil</span></button>
-                    <button class="nav-btn flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="categories"><i class="fas fa-list text-lg"></i><span>Categories</span></button>
-                    <button class="nav-btn is-active flex flex-col items-center gap-1 text-sm font-semibold text-amber-600" data-page="tracking"><i class="fas fa-truck text-lg"></i><span>Commandes</span></button>
-                    <button class="nav-btn relative flex flex-col items-center gap-1 text-sm font-semibold text-slate-500" data-page="cart"><i class="fas fa-cart-shopping text-lg"></i><span>Panier</span><span data-cart-count class="cartBadge absolute -right-3 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-white">0</span></button>
-                </div>
-            </nav>
+                <section id="trackingMain" class="space-y-6">
+                    <div class="rounded-2xl bg-white p-8 shadow-sm">
+                        <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">Commande active</p>
+                                <h2 id="trackingOrderCode" class="mt-2 text-xl font-bold text-gray-800">-</h2>
+                                <p id="trackingOrderMeta" class="mt-1 text-sm text-gray-500">En attente...</p>
+                            </div>
+                            <span id="trackingStatusBadge" class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">En attente</span>
+                        </div>
+
+                        <div class="relative">
+                            <div class="tracking-bar absolute left-0 right-0 top-6 h-[3px]"></div>
+                            <div id="trackingProgress" class="tracking-bar-indicator absolute left-0 top-6 h-[3px]"></div>
+                            <div class="relative flex items-center justify-between gap-2">
+                                <span id="trackingStep1" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">1</span>
+                                <span id="trackingStep2" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">2</span>
+                                <span id="trackingStep3" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">3</span>
+                                <span id="trackingStep4" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">4</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-4 gap-2 text-center text-[12px] font-medium text-gray-600">
+                            <span>Commandee</span>
+                            <span>Preparation</span>
+                            <span>Prete</span>
+                            <span>Servie</span>
+                        </div>
+                    </div>
+
+                    <div id="orderDetails" class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm"></div>
+
+                    <section id="trackingHistorySection" class="hidden">
+                        <div class="mb-3">
+                            <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Historique</p>
+                            <h3 class="text-xl font-bold text-gray-800">Autres commandes</h3>
+                        </div>
+                        <div id="trackingHistory" class="space-y-3"></div>
+                    </section>
+                </section>
+            </main>
         </main>
     </div>
     <div id="clientModalRoot"></div>

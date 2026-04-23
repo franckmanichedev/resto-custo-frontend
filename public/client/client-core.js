@@ -210,6 +210,7 @@ export const apiRequest = async (endpoint, options = {}) => {
         if (response.status === 410) clearSessionContext();
         const error = new Error(payload?.message || `Erreur ${response.status}`);
         error.status = response.status;
+        error.payload = payload;
         throw error;
     }
 
@@ -240,7 +241,13 @@ const withRecovery = async (loader) => {
     try {
         return await loader();
     } catch (error) {
-        if (error.status === 410 && (getHints().tableId || getHints().qrCode)) {
+        const isMissingOrExpiredSession = (
+            error.status === 410
+            || (error.status === 404 && String(error.payload?.message || error.message || '').toLowerCase().includes('session de table'))
+        );
+
+        if (isMissingOrExpiredSession && (getHints().tableId || getHints().qrCode)) {
+            clearSessionContext();
             redirectTo('loading', { return_to: `${getCurrentFile()}${window.location.search || ''}` });
             return null;
         }
@@ -299,7 +306,18 @@ export const createCategoryGroups = (plats = []) => {
     plats.forEach((plat) => {
         const key = plat.categorie_id || plat.categorie_name || plat.category || plat.kind || 'Menu';
         const label = plat.categorie_name || plat.category || plat.kind || 'Menu';
-        if (!groups.has(key)) groups.set(key, { id: key, name: label, image: getImageUrl(plat), plats: [] });
+        const categoryImage = getImageUrl({
+            image_url: plat?.category_details?.image_url || plat?.category_image_url || '',
+            image: plat?.category_details?.image || '',
+            name: label
+        });
+        if (!groups.has(key)) groups.set(key, {
+            id: key,
+            name: label,
+            image: categoryImage,
+            details: plat?.category_details || null,
+            plats: []
+        });
         groups.get(key).plats.push(plat);
     });
     return [...groups.values()].map((group) => ({ ...group, count: group.plats.length }));

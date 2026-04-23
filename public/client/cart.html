@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
-    <title>Resto QR - Panier</title>
+    <title>Resto QR - Mon panier</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./client-shell.css">
@@ -12,57 +12,81 @@
 <body class="client-app" data-page="cart">
     <div class="app-desktop">
         <aside class="desktop-rail">
-            <div class="soft-card rounded-[2rem] p-6">
+            <section class="soft-card desktop-hero rounded-[2rem] p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Panier</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Votre commande</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Verifiez les lignes de commande, ajustez les quantites et envoyez votre commande a la cuisine.</p>
-                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
-                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
-                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Verifier avant envoi</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Le panier garde son confort mobile, tandis que le desktop fixe mieux les totaux et la validation de commande.</p>
+                <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
+                    <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
+                    <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
                 </div>
-            </div>
-            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+            </section>
+            <section class="soft-card rounded-[2rem] p-4 space-y-2">
                 <button class="desktop-link" data-page="index">Accueil</button>
                 <button class="desktop-link" data-page="categories">Categories</button>
                 <button class="desktop-link is-active" data-page="cart">Panier</button>
                 <button class="desktop-link" data-page="tracking">Commandes</button>
-            </div>
+            </section>
         </aside>
+
         <main class="phone-shell">
-            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
+            <header class="sticky top-0 z-20 border-b border-gray-200 bg-white/90 px-4 py-3 shadow-sm backdrop-blur-md">
                 <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Commande</p>
-                        <h1 class="text-lg font-black text-slate-950">Mon panier</h1>
-                        <p class="mt-1 text-xs text-slate-500">Table <span data-table-label>-</span> • Session <span data-session-timer>--:--</span></p>
+                    <div class="flex flex-col">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white shadow-md">RQ</div>
+                        <span class="mt-1 text-xs font-medium text-gray-500">Table <span data-table-label>-</span></span>
                     </div>
-                    <button class="rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-home>
-                        <i class="fas fa-house text-lg"></i>
-                    </button>
+                    <div class="w-10"></div>
                 </div>
             </header>
 
-            <section class="page-main px-4 pt-4">
-                <div class="space-y-4" id="cartItemsList"></div>
-                <div id="emptyCartMessage" class="hidden rounded-[1.7rem] bg-white px-5 py-10 text-center shadow-sm ring-1 ring-slate-200/70">
-                    <i class="fas fa-shopping-cart text-5xl text-slate-300"></i>
-                    <p class="mt-4 text-sm font-semibold text-slate-600">Votre panier est vide.</p>
-                    <button id="goToMenuBtn" class="mt-5 rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-lg">Voir les menus</button>
-                </div>
-            </section>
+            <main class="page-main mx-auto max-w-4xl px-4 py-4 pb-28">
+                <h1 class="mb-6 flex items-center gap-2 text-2xl font-bold text-gray-800">
+                    <i class="fas fa-shopping-basket text-amber-500"></i>
+                    Mon panier
+                </h1>
 
-            <div id="totalContainer" class="desktop-total border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur">
-                <div class="mx-auto flex max-w-md items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Total</p>
-                        <p id="totalPrice" class="mt-1 text-xl font-black text-amber-700">0 FCFA</p>
+                <div id="cartItemsList" class="space-y-4"></div>
+
+                <div id="emptyCartMessage" class="hidden py-12 text-center">
+                    <i class="fas fa-shopping-cart mb-4 text-6xl text-gray-300"></i>
+                    <p class="text-gray-500">Votre panier est vide</p>
+                    <button id="goToMenuBtn" class="mt-4 rounded-full bg-amber-500 px-6 py-2 text-sm text-white">Voir les menus</button>
+                </div>
+            </main>
+
+            <div id="totalContainer" class="desktop-total bottom-16 border-t border-gray-200 bg-white px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex flex-col">
+                        <span class="font-medium text-gray-600">Total</span>
+                        <span id="totalPrice" class="text-xl font-bold text-amber-700">0 FCFA</span>
                     </div>
-                    <button id="checkoutBtn" class="rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-amber-600">
+                    <button id="checkoutBtn" class="rounded-xl bg-amber-600 p-3 font-semibold text-white transition hover:bg-amber-700">
                         Passer la commande
                     </button>
                 </div>
             </div>
+
+            <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white px-6 py-2 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="index">
+                        <i class="fas fa-home text-xl"></i>
+                        <span class="mt-1 text-xs">Accueil</span>
+                    </button>
+                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="categories">
+                        <i class="fas fa-list-ul text-xl"></i>
+                        <span class="mt-1 text-xs">Categories</span>
+                    </button>
+                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="tracking">
+                        <i class="fas fa-truck text-xl"></i>
+                        <span class="mt-1 text-xs">Commandes</span>
+                    </button>
+                    <button class="nav-btn is-active flex flex-col items-center text-amber-600" data-page="cart">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="mt-1 text-xs">Panier</span>
+                    </button>
+                </div>
+            </nav>
         </main>
     </div>
     <div id="clientModalRoot"></div>

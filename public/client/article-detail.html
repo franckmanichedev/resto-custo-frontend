@@ -4,95 +4,110 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
-    <title>Resto QR - Detail</title>
+    <title>Resto QR - Detail du plat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="./client-shell.css">
 </head>
-<body class="client-app" data-page="detail">
+<body class="client-app overflow-x-hidden bg-gray-100" data-page="detail">
     <div class="app-desktop">
         <aside class="desktop-rail">
-            <div class="soft-card rounded-[2rem] p-6">
-                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Detail du plat</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Personnalisez votre commande</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Choisissez la quantite puis adaptez chaque exemplaire selon vos preferences.</p>
-                <div class="mt-5 rounded-[1.5rem] bg-slate-950 px-4 py-4 text-white">
-                    <p class="text-xs uppercase tracking-[0.25em] text-white/60">Table active</p>
-                    <p class="mt-2 text-xl font-bold" data-table-label>-</p>
-                    <p class="mt-1 text-xs text-white/70">Session <span data-session-timer>--:--</span></p>
+            <section class="soft-card desktop-hero rounded-[2rem] p-6">
+                <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Personnalisation</p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Chaque exemplaire reste configurable</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">On garde l experience mobile a base d image + bottom sheet, mais le desktop respire davantage et laisse la personnalisation s etendre naturellement.</p>
+                <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
+                    <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
+                    <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
+                    <button class="mt-5 flex w-full items-center justify-between rounded-[1.2rem] bg-amber-500 px-4 py-3 text-left text-sm font-semibold text-white" data-go-cart>
+                        <span>Aller au panier</span>
+                        <span data-cart-count class="cartBadge hidden h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 text-xs font-black text-amber-700">0</span>
+                    </button>
                 </div>
-            </div>
-            <div class="soft-card mt-5 rounded-[2rem] p-4 space-y-2">
+            </section>
+            <section class="soft-card rounded-[2rem] p-4 space-y-2">
                 <button class="desktop-link" data-page="index">Accueil</button>
                 <button class="desktop-link" data-page="categories">Categories</button>
                 <button class="desktop-link" data-page="cart">Panier</button>
                 <button class="desktop-link" data-page="tracking">Commandes</button>
-            </div>
-        </aside>
-        <main class="phone-shell">
-            <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/90 px-4 py-4 backdrop-blur">
-                <div class="flex items-center justify-between gap-4">
-                    <button id="backToMenuBtn" class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700"><i class="fas fa-arrow-left"></i></button>
-                    <div class="min-w-0 flex-1 text-center">
-                        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-amber-600">Selection</p>
-                        <h1 class="truncate text-lg font-black text-slate-950">Detail du plat</h1>
-                    </div>
-                    <button class="relative rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-lg" data-go-cart>
-                        <i class="fas fa-shopping-basket text-lg"></i>
-                        <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-6 min-w-6 items-center justify-center rounded-full bg-amber-500 px-2 text-xs font-black text-white">0</span>
-                    </button>
-                </div>
-            </header>
-
-            <section class="page-main px-4 pb-28 pt-4" id="detailPageHost">
-                <div class="overflow-hidden rounded-[2rem] bg-white shadow-sm ring-1 ring-slate-200/70">
-                    <img id="platImage" src="" alt="" class="h-64 w-full object-cover">
-                    <div class="space-y-5 p-5">
-                        <div class="flex items-start gap-4">
-                            <img id="categorieImage" src="" alt="" class="h-14 w-14 rounded-2xl object-cover ring-2 ring-amber-200">
-                            <div class="min-w-0 flex-1">
-                                <div class="flex flex-wrap gap-2" id="badgesContainer"></div>
-                                <h2 id="platNom" class="mt-3 text-2xl font-black text-slate-950"></h2>
-                            </div>
-                        </div>
-                        <div>
-                            <p id="platDescription" class="text-sm leading-6 text-slate-600"></p>
-                            <button id="seeMoreBtn" class="mt-2 hidden text-sm font-semibold text-amber-600">Voir plus</button>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 text-center">
-                                <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Prix</p>
-                                <p id="prixUnitaire" class="mt-2 text-lg font-black text-amber-700">0 FCFA</p>
-                            </div>
-                            <div class="rounded-[1.5rem] bg-slate-50 px-4 py-4 text-center">
-                                <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Preparation</p>
-                                <p id="tempsPrep" class="mt-2 text-lg font-black text-slate-900">0 min</p>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="mb-3 flex items-center justify-between gap-3">
-                                <h3 class="text-lg font-black text-slate-950">Personnalisation</h3>
-                                <div class="flex items-center overflow-hidden rounded-full bg-slate-100">
-                                    <button id="qtyMinus" class="flex h-10 w-10 items-center justify-center text-lg font-bold text-slate-700">-</button>
-                                    <span id="qtyValue" class="flex h-10 min-w-14 items-center justify-center text-sm font-black text-slate-900">1</span>
-                                    <button id="qtyPlus" class="flex h-10 w-10 items-center justify-center text-lg font-bold text-slate-700">+</button>
-                                </div>
-                            </div>
-                            <div class="space-y-3" id="unitsContainer"></div>
-                        </div>
-                    </div>
-                </div>
             </section>
+        </aside>
 
-            <div class="desktop-total border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur">
-                <div class="mx-auto flex max-w-md items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Total</p>
-                        <p id="totalPrice" class="mt-1 text-xl font-black text-amber-700">0 FCFA</p>
-                    </div>
-                    <button id="addToCartBtn" class="rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-amber-600">
-                        Ajouter au panier
+        <main class="phone-shell bg-gray-100">
+            <div class="relative min-h-screen">
+                <section id="detailImageZone" class="relative min-h-[260px] overflow-hidden md:min-h-[340px]" style="height: 40vh;">
+                    <img id="platImage" src="" alt="Plat" class="h-full w-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
+
+                    <button id="backBtn" class="absolute left-4 top-10 z-20 rounded-full bg-white/30 p-2 text-white backdrop-blur-md">
+                        <i class="fas fa-arrow-left text-xl"></i>
                     </button>
+                    <h1 class="absolute left-1/2 top-10 z-20 -translate-x-1/2 text-lg font-semibold tracking-wide text-white drop-shadow-md">Details</h1>
+                    <button class="absolute right-4 top-10 z-20 rounded-full bg-white/20 p-2 text-white backdrop-blur-md" data-go-cart>
+                        <i class="fas fa-shopping-basket text-lg"></i>
+                    </button>
+                </section>
+
+                <section id="bottomSheet" class="detail-bottom-sheet">
+                    <div class="drag-handle" id="dragHandle"></div>
+
+                    <div class="detail-sheet-content px-5 pt-2 pb-4">
+                        <div class="mb-4 flex items-start gap-3">
+                            <img id="categorieImage" src="" alt="Categorie" class="h-14 w-14 rounded-xl border-2 border-amber-200 object-cover">
+                            <div class="flex-1">
+                                <div id="badgesContainer" class="mb-1 flex flex-wrap gap-2"></div>
+                                <h2 id="platNom" class="text-xl font-bold text-gray-800">Nom du plat</h2>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <p id="platDescription" class="text-sm leading-relaxed text-gray-600"></p>
+                            <button id="seeMoreBtn" class="mt-1 hidden text-sm font-semibold text-amber-600">Voir plus</button>
+                        </div>
+
+                        <div class="mb-6 flex items-center justify-around border-y border-gray-100 py-3">
+                            <div class="text-center">
+                                <i class="fas fa-tag mb-1 block text-xl text-amber-500"></i>
+                                <span class="block text-xs text-gray-500">Prix unitaire</span>
+                                <span id="prixUnitaire" class="text-lg font-bold text-gray-800">0 FCFA</span>
+                            </div>
+                            <div class="h-10 w-px bg-gray-200"></div>
+                            <div class="text-center">
+                                <i class="fas fa-clock mb-1 block text-xl text-amber-500"></i>
+                                <span class="block text-xs text-gray-500">Preparation</span>
+                                <span id="tempsPrep" class="text-lg font-bold text-gray-800">0 min</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-12">
+                            <h3 class="mb-3 flex items-center gap-2 text-base font-bold text-gray-800">
+                                <i class="fas fa-layer-group text-amber-500"></i>
+                                Personnalisation
+                            </h3>
+                            <div id="unitsContainer" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="detail-footer px-4 py-3">
+                    <div class="mb-3 flex justify-center">
+                        <div class="flex items-center overflow-hidden rounded-xl">
+                            <button id="qtyMinus" class="flex h-10 w-10 items-center justify-center bg-amber-600 text-2xl font-bold text-white">-</button>
+                            <span id="qtyValue" class="flex h-10 w-20 items-center justify-center bg-gray-100 text-xl font-semibold text-gray-800">1</span>
+                            <button id="qtyPlus" class="flex h-10 w-10 items-center justify-center bg-amber-600 text-2xl font-bold text-white">+</button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-4">
+                        <div>
+                            <span class="block text-xs text-gray-500">Total</span>
+                            <span id="totalPrice" class="text-xl font-bold text-amber-700">0 FCFA</span>
+                        </div>
+                        <button id="addToCartBtn" class="flex items-center gap-2 rounded-xl bg-amber-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-amber-700">
+                            <i class="fas fa-cart-plus"></i>
+                            Ajouter au panier
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
