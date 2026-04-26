@@ -380,7 +380,7 @@ async function validateOrder(customerName, customerPhone, guests) {
             orders: response.data.orders || [response.data.order].filter(Boolean)
         });
         showToast('Commande envoyee avec succes !', 'success');
-        store.set('currentView', 'track');
+        store.set('currentView', 'tracking');
         await sessionManager.refreshSessionData();
     } catch (error) {
         showToast(error.message || 'Erreur lors de la commande', 'error');

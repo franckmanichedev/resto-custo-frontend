@@ -1,5 +1,21 @@
 export const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} XAF`;
 
+export const buildRestaurantTenantId = (restaurantName, prefix = 'tenant') => {
+    const normalizedName = String(restaurantName || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 36);
+
+    const entropy = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.slice(-8);
+
+    return normalizedName
+        ? `${prefix}-${normalizedName}-${entropy}`
+        : `${prefix}-${entropy}`;
+};
+
 export const escapeHtml = (value) => {
     if (!value && value !== 0) return '';
 

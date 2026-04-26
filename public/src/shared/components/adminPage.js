@@ -1,6 +1,16 @@
+const resolveDefaultRedirectUrl = () => {
+    const pathname = String(window.location.pathname || '').toLowerCase();
+
+    if (pathname.startsWith('/restaurant/')) {
+        return './login.html';
+    }
+
+    return './index.html';
+};
+
 export function initializeAdminPage({
     authService,
-    redirectUrl = './index.html',
+    redirectUrl = resolveDefaultRedirectUrl(),
     userNameSelector = '#user-name',
     logoutSelector = '#logout-btn'
 }) {

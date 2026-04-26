@@ -21,14 +21,13 @@ const readImportMetaApiBaseUrl = () => {
 };
 
 const buildLocalApiBaseUrl = (location = window.location) => {
-    const protocol = location.protocol === 'https:' ? 'https:' : 'http:';
     const hostname = location.hostname;
 
     if (LOCALHOST_HOSTNAMES.has(hostname)) {
         return DEFAULT_API_BASE_URLS.development;
     }
 
-    return `${protocol}//${hostname}:5000/api`;
+    return `http://${hostname}:5000/api`;
 };
 
 const resolveApiBaseUrl = () => {
@@ -52,6 +51,35 @@ const resolveApiBaseUrl = () => {
 };
 
 const API_BASE_URL = resolveApiBaseUrl();
+
+const AUTH_REDIRECT_PATHS = {
+    platform: '/platform/login.html',
+    restaurant: '/restaurant/login.html',
+    client: '/client/index.html',
+    legacyAdmin: '/restaurant/login.html'
+};
+
+const resolveAuthRedirectPath = () => {
+    const pathname = String(window.location.pathname || '').toLowerCase();
+
+    if (pathname.startsWith('/platform/')) {
+        return AUTH_REDIRECT_PATHS.platform;
+    }
+
+    if (pathname.startsWith('/restaurant/')) {
+        return AUTH_REDIRECT_PATHS.restaurant;
+    }
+
+    if (pathname.startsWith('/client/')) {
+        return AUTH_REDIRECT_PATHS.client;
+    }
+
+    if (pathname.startsWith('/admin/')) {
+        return AUTH_REDIRECT_PATHS.legacyAdmin;
+    }
+
+    return null;
+};
 
 class ApiClient {
     constructor() {
@@ -129,8 +157,9 @@ class ApiClient {
                 }
                 localStorage.removeItem('user');
 
-                if (window.location.pathname.includes('/admin/') && !window.location.pathname.endsWith('/admin/index.html')) {
-                    window.location.href = '/admin/index.html';
+                const redirectPath = resolveAuthRedirectPath();
+                if (redirectPath && window.location.pathname !== redirectPath) {
+                    window.location.href = redirectPath;
                 }
             }
 

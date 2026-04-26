@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <title>Resto QRCode - Gestion des compositions</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-utensils text-2xl text-primary"></i>
+                    <span class="font-bold text-lg text-gray-800">Resto QRCode</span>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Espace restaurant</p>
+            </div>
+            
+            <nav class="flex-1 p-4 space-y-1">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span>Tableau de bord</span>
+                </a>
+                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
+                    <i class="fas fa-hamburger w-5"></i>
+                    <span>Articles</span>
+                </a>
+                <a href="./categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
+                    <i class="fas fa-layer-group w-5"></i>
+                    <span>Categories</span>
+                </a>
+                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-100 text-primary font-medium">
+                    <i class="fas fa-pepper-hot w-5 text-yellow-500"></i>
+                    <span class="text-yellow-500">Compositions</span>
+                    <div class="ml-auto bg-yellow-500 w-1 h-8 rounded"></div>
+                </a>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
+                    <i class="fas fa-table w-5"></i>
+                    <span>Tables</span>
+                </a>
+                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
+                    <i class="fas fa-clipboard-list w-5"></i>
+                    <span>Commandes</span>
+                </a>
+            </nav>
+            
+            <div class="p-4 border-t border-gray-200">
+                <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5"></i>
+                    <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <h1 class="text-2xl font-bold text-gray-800">Gestion des compositions</h1>
+                <p class="text-sm text-gray-500 mt-1">Ingrédients, options et allergÃ¨nes</p>
+            </header>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Formulaire d'ajout -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h2 class="text-lg font-semibold mb-4">Nouvelle composition</h2>
+                        <form id="composition-form" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nom *</label>
+                                <input type="text" id="comp-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Description</label>
+                                <textarea id="comp-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                            </div>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" id="comp-allergen" class="rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="text-sm">Cet ingrédient est un allergÃ¨ne</span>
+                            </label>
+                            <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-colors">
+                                Ajouter la composition
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Liste des compositions -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold">Liste des compositions</h2>
+                            <div class="flex gap-2">
+                                <input type="text" id="search-comps" placeholder="Rechercher..." class="px-3 py-1.5 border border-gray-200 rounded-xl text-sm">
+                                <button id="refresh-comps" class="px-3 py-1.5 border border-gray-200 rounded-xl hover:bg-gray-50">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="compositions-list" class="space-y-2 max-h-[500px] overflow-auto">
+                            <div class="text-center py-8 text-gray-500">Chargement...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script type="module" src="/src/modules/admin/pages/compositions-page.js"></script>
+</body>
+</html>
+

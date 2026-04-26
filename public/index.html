@@ -2,42 +2,745 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resto QRCode - Portail</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#FF6B00">
+    <title>RestoQR — Digital Menu & Smart Ordering System</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/src/styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(193,123,74,0.18),_transparent_35%),linear-gradient(180deg,_#fffaf2_0%,_#fff_100%)]">
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('table') || params.get('code')) {
-            window.location.replace(`./client/loading.html${window.location.search || ''}`);
-        }
-    </script>
+<body class="page-shell">
+    <header class="navbar">
+        <div class="container-xl">
+            <div class="navbar-inner">
+                <a href="./" class="brand" aria-label="RestoQR - Accueil">
+                    <span class="brand-mark">R</span>
+                    <span>
+                        <span style="display:block;font-size:1.02rem;">RestoQR</span>
+                        <span class="muted" style="font-size:0.8rem;font-weight:600;">Smart Ordering SaaS</span>
+                    </span>
+                </a>
 
-    <main class="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-12">
-        <div class="mb-10 max-w-2xl">
-            <p class="mb-3 inline-flex rounded-full bg-white/80 px-4 py-1 text-sm font-semibold text-primary shadow-sm">FrontOffice et BackOffice</p>
-            <h1 class="font-serif text-4xl font-semibold text-slate-900 sm:text-5xl">Un point d'entree clair pour l'application client et l'administration.</h1>
-            <p class="mt-4 text-lg text-slate-600">Si vous arrivez depuis un QR code de table, la redirection vers le parcours client se fait automatiquement. Sinon, choisissez simplement l'espace a ouvrir.</p>
+                <nav class="nav-links" aria-label="Navigation principale">
+                    <a href="#features" data-nav-link>Fonctionnalités</a>
+                    <a href="#demo" data-nav-link>Démo</a>
+                    <a href="#pricing" data-nav-link>Tarifs</a>
+                    <a href="#faq" data-nav-link>FAQ</a>
+                    <a href="./dashboard.html" data-nav-link>Dashboard</a>
+                </nav>
+
+                <div class="nav-actions">
+                    <button class="btn btn-secondary btn-icon ripple" type="button" data-dark-mode-toggle aria-label="Activer ou désactiver le mode sombre">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+                    <a href="#pricing" class="btn btn-outline ripple hidden sm:inline-flex" data-open-onboarding>
+                        Essai gratuit
+                    </a>
+                    <button class="btn btn-secondary btn-icon ripple md:hidden" type="button" data-mobile-menu-toggle aria-expanded="false" aria-label="Ouvrir le menu">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hidden md:hidden border-t border-slate-200/60 py-3 hidden" data-mobile-menu data-open="false">
+                <div class="grid gap-2">
+                    <a href="#features" class="btn btn-secondary justify-start">Fonctionnalités</a>
+                    <a href="#demo" class="btn btn-secondary justify-start">Démo</a>
+                    <a href="#pricing" class="btn btn-secondary justify-start">Tarifs</a>
+                    <a href="#faq" class="btn btn-secondary justify-start">FAQ</a>
+                    <a href="./dashboard.html" class="btn btn-dark justify-start">Dashboard</a>
+                    <a href="#pricing" class="btn btn-primary justify-start" data-open-onboarding>Essai gratuit</a>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <section class="grid gap-6 md:grid-cols-2">
-            <a href="./client/index.html" class="rounded-3xl border border-slate-100 bg-white/90 p-6 shadow-lg shadow-slate-100/60 transition-transform hover:-translate-y-1">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Client</p>
-                <h2 class="mt-3 text-2xl font-semibold text-slate-900">Application de commande</h2>
-                <p class="mt-3 text-sm text-slate-600">Session QR code, navigation entre les menus, panier, detail produit, recherche et suivi de commande.</p>
-                <span class="mt-6 inline-flex text-sm font-semibold text-primary">Lancer l'application client</span>
-            </a>
+    <main>
+        <section class="hero">
+            <div class="container-xl">
+                <div class="hero-grid">
+                    <div class="hero-copy" data-animate>
+                        <span class="section-kicker"><i class="fa-solid fa-sparkles"></i> SaaS premium pour restaurants modernes</span>
+                        <h1 class="hero-title">
+                            Transformez votre restaurant avec un menu QR intelligent
+                        </h1>
+                        <p class="hero-subtitle">
+                            RestoQR remplace vos menus papier par une expérience digitale fluide,
+                            accélère la prise de commande et donne à votre restaurant une image haut de gamme
+                            crédible pour vos clients comme pour vos investisseurs.
+                        </p>
 
-            <a href="./admin/index.html" class="rounded-3xl border border-amber-100 bg-white/90 p-6 shadow-lg shadow-amber-100/40 transition-transform hover:-translate-y-1">
-                <p class="text-sm font-semibold uppercase tracking-[0.2em] text-amber-600">Admin</p>
-                <h2 class="mt-3 text-2xl font-semibold text-slate-900">Back-office restaurant</h2>
-                <p class="mt-3 text-sm text-slate-600">Connexion administrateur, dashboard, gestion des articles, tables, compositions et commandes.</p>
-                <span class="mt-6 inline-flex text-sm font-semibold text-primary">Ouvrir l'espace admin</span>
-            </a>
+                        <div style="margin-top:1rem;" class="surface-card-2 inline-flex items-center gap-2 px-4 py-3">
+                            <span class="plan-badge">Plan recommandé</span>
+                            <span class="muted">Sélection actuelle :</span>
+                            <strong data-plan-name style="letter-spacing:-0.03em;">Pro</strong>
+                        </div>
+
+                        <div class="hero-actions">
+                            <a href="#pricing" class="btn btn-primary ripple" data-open-onboarding>
+                                Essai gratuit
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a href="/client/index.html" class="btn btn-secondary ripple" data-open-client-demo>
+                                Voir démo
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                            </a>
+                            <a href="./dashboard.html" class="btn btn-dark ripple" data-quick-link="./dashboard.html">
+                                Ouvrir le dashboard
+                            </a>
+                        </div>
+
+                        <div class="hero-benefits">
+                            <span><i class="fa-solid fa-circle-check" style="color:#0fb9b1;"></i> QR par table</span>
+                            <span><i class="fa-solid fa-circle-check" style="color:#0fb9b1;"></i> Commandes en temps réel</span>
+                            <span><i class="fa-solid fa-circle-check" style="color:#0fb9b1;"></i> Zéro friction au service</span>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual" data-animate>
+                        <div class="mockup-stack">
+                            <div class="mockup-card mockup-desktop">
+                                <div class="mockup-tag"><i class="fa-solid fa-chart-line"></i> Live dashboard</div>
+                                <div class="mockup-frame">
+                                    <div class="mockup-dashboard">
+                                        <div class="mockup-toolbar">
+                                            <div>
+                                                <p class="muted" style="margin:0;font-size:0.82rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;">RestoQR dashboard</p>
+                                                <h3 style="margin:0.35rem 0 0;font-size:1.6rem;">Commandes du jour</h3>
+                                            </div>
+                                            <div class="mockup-dots" aria-hidden="true">
+                                                <span></span><span></span><span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mockup-hero-panel">
+                                            <div class="mockup-stats">
+                                                <div class="mockup-stat">
+                                                    <span class="muted" style="font-size:0.78rem;font-weight:700;">Commandes</span>
+                                                    <strong>42</strong>
+                                                    <span style="font-size:0.82rem;color:#0a7d76;">+18%</span>
+                                                </div>
+                                                <div class="mockup-stat">
+                                                    <span class="muted" style="font-size:0.78rem;font-weight:700;">Revenus</span>
+                                                    <strong>184k</strong>
+                                                    <span style="font-size:0.82rem;color:#0a7d76;">FCFA</span>
+                                                </div>
+                                                <div class="mockup-stat">
+                                                    <span class="muted" style="font-size:0.78rem;font-weight:700;">Temps moyen</span>
+                                                    <strong>8 min</strong>
+                                                    <span style="font-size:0.82rem;color:#0a7d76;">service</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mockup-list">
+                                            <div class="mockup-list-item">
+                                                <div>
+                                                    <strong>Table 05</strong>
+                                                    <small>3 plats, 2 boissons</small>
+                                                </div>
+                                                <span class="status-pill warning">En cuisine</span>
+                                            </div>
+                                            <div class="mockup-list-item">
+                                                <div>
+                                                    <strong>Table 12</strong>
+                                                    <small>Burger premium + dessert</small>
+                                                </div>
+                                                <span class="status-pill success">Prête</span>
+                                            </div>
+                                            <div class="mockup-list-item">
+                                                <div>
+                                                    <strong>Table 02</strong>
+                                                    <small>Menu dégustation</small>
+                                                </div>
+                                                <span class="status-pill info">Payée</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mockup-card mockup-mobile">
+                                <div class="mockup-mobile-screen">
+                                    <div class="mobile-badge">Mobile</div>
+                                    <h3 style="margin:0.85rem 0 0;font-size:1.35rem;line-height:1.1;">Scanner, choisir, commander.</h3>
+                                    <p class="muted" style="margin:0.8rem 0 1rem;line-height:1.7;font-size:0.92rem;">
+                                        L’expérience client reste rapide, élégante et sans serveur.
+                                    </p>
+                                    <div class="surface-card-2 p-3" style="margin-bottom:0.8rem;">
+                                        <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;">
+                                            <strong>Menu QR</strong>
+                                            <i class="fa-solid fa-qrcode" style="color:var(--color-primary);font-size:1.3rem;"></i>
+                                        </div>
+                                        <div class="phone-content" style="padding:0.8rem 0 0;">
+                                            <div class="menu-item">
+                                                <div>
+                                                    <strong>Barbecue Signature</strong>
+                                                    <small>Spécialité maison</small>
+                                                </div>
+                                                <span>7 500</span>
+                                            </div>
+                                            <div class="menu-item">
+                                                <div>
+                                                    <strong>Pizza Margherita</strong>
+                                                    <small>Tomate, basilic, mozzarella</small>
+                                                </div>
+                                                <span>5 000</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <a href="/client/index.html" class="btn btn-primary w-full ripple" data-open-client-demo>
+                                        Scanner QR
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section pt-0">
+            <div class="container-xl">
+                <div class="surface-card" style="padding:1.35rem 1.25rem;">
+                    <p class="muted" style="margin:0 0 1rem;text-align:center;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;">Adopté par des restaurants modernes</p>
+                    <div class="logo-strip">
+                        <div class="logo-chip">Le Bistrot</div>
+                        <div class="logo-chip">Casa Nova</div>
+                        <div class="logo-chip">Ocean Grill</div>
+                        <div class="logo-chip">Café des Arts</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-wand-magic-sparkles"></i> Fonctionnalités</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Tout ce qu’il faut pour moderniser l’expérience restaurant.</h2>
+                    </div>
+                    <p>
+                        RestoQR combine une image de marque premium, un parcours client instantané
+                        et un pilotage opérationnel simple pour votre équipe.
+                    </p>
+                </div>
+
+                <div class="grid-features">
+                    <article class="feature-card fade-up" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;font-size:1.2rem;">Menu QR interactif</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Chaque table possède son QR unique. Le menu se charge instantanément sur le téléphone du client.
+                        </p>
+                    </article>
+
+                    <article class="feature-card fade-up delay-100" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-bell-concierge"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;font-size:1.2rem;">Commande sans serveur</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Les clients commandent en autonomie avec une expérience claire, élégante et rassurante.
+                        </p>
+                    </article>
+
+                    <article class="feature-card fade-up delay-200" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;font-size:1.2rem;">Suivi en temps réel</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Visualisez les commandes, les revenus et l’avancement du service sans perdre le contrôle.
+                        </p>
+                    </article>
+
+                    <article class="feature-card fade-up delay-300" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-sliders"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;font-size:1.2rem;">Gestion simplifiée</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Un back-office clair pour modifier le menu, les prix et les disponibilités en quelques secondes.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-bolt"></i> Démo produit</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Une expérience client fluide, du scan QR jusqu’à la commande.</h2>
+                    </div>
+                    <p>
+                        Démo interactive pensée pour convaincre rapidement un restaurateur ou un investisseur.
+                    </p>
+                </div>
+
+                <div class="demo-layout">
+                    <div class="surface-card" style="padding:1.5rem;" data-animate>
+                        <div class="phone-shell">
+                            <div class="phone-topbar">
+                                <span><i class="fa-solid fa-wifi"></i> RestoQR</span>
+                                <span>Table 05</span>
+                            </div>
+                            <div class="phone-content">
+                                <div>
+                                    <span class="mobile-badge">Menu digital</span>
+                                    <h3 style="margin:0.75rem 0 0;font-size:1.45rem;">Découvrez le menu, ajoutez au panier et suivez votre commande.</h3>
+                                </div>
+                                <div class="menu-item">
+                                    <div>
+                                        <strong>Poulet braisé</strong>
+                                        <small>Servi avec bananes plantain</small>
+                                    </div>
+                                    <span>6 500 FCFA</span>
+                                </div>
+                                <div class="menu-item">
+                                    <div>
+                                        <strong>Jus d’ananas frais</strong>
+                                        <small>Pressé du jour</small>
+                                    </div>
+                                    <span>1 500 FCFA</span>
+                                </div>
+                                <div class="surface-card-2" style="padding:0.9rem;">
+                                    <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+                                        <div>
+                                            <strong>Statut</strong>
+                                            <p class="muted" style="margin:0.25rem 0 0;">Commande en préparation</p>
+                                        </div>
+                                        <span class="status-pill warning">Live</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary ripple" data-open-client-demo>
+                                    Scanner QR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="surface-card" style="padding:1.5rem;" data-animate>
+                        <span class="section-kicker"><i class="fa-solid fa-display"></i> Côté équipe</span>
+                        <h3 style="margin:1rem 0 0.7rem;font-size:1.75rem;">Le dashboard reste lisible, rapide et rassurant.</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Le staff suit les commandes sans friction, visualise les flux et garde le contrôle sur le service.
+                        </p>
+
+                        <div class="mockup-list" style="margin-top:1.25rem;">
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>Temps de service réduit</strong>
+                                    <small>Moins d’attente, plus de rotation</small>
+                                </div>
+                                <span class="status-pill success">-30%</span>
+                            </div>
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>Expérience premium</strong>
+                                    <small>Interface claire pour les clients</small>
+                                </div>
+                                <span class="status-pill info">UX</span>
+                            </div>
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>Activation instantanée</strong>
+                                    <small>Création d’espace en quelques étapes</small>
+                                </div>
+                                <span class="status-pill warning">SaaS</span>
+                            </div>
+                        </div>
+
+                        <div class="demo-actions">
+                            <a href="./dashboard.html" class="btn btn-dark ripple" data-quick-link="./dashboard.html">
+                                Voir le dashboard
+                            </a>
+                            <a href="/client/cart.html" class="btn btn-secondary ripple">
+                                Voir le panier
+                            </a>
+                            <a href="/client/tracking.html" class="btn btn-secondary ripple">
+                                Suivi commande
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-layer-group"></i> Cas d’usage</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Conçu pour plusieurs styles de restauration.</h2>
+                    </div>
+                    <p>
+                        Le produit s’adapte au rythme d’un snack, à l’image d’un restaurant chic et aux exigences d’un fast-casual.
+                    </p>
+                </div>
+
+                <div class="usecase-grid">
+                    <article class="usecase-card fade-up" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">Restaurant rapide</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Réduisez les files d’attente, accélérez les commandes et optimisez la rotation de table.
+                        </p>
+                    </article>
+
+                    <article class="usecase-card fade-up delay-100" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-utensils"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">Restaurant chic</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Valorisez votre image avec une expérience digitale élégante et premium dès l’arrivée du client.
+                        </p>
+                    </article>
+
+                    <article class="usecase-card fade-up delay-200" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-mug-hot"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">Snack / café</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Simplifiez les prises de commande et gardez un service rapide, clair et agréable.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-tag"></i> Pricing</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Une tarification simple, claire et accessible.</h2>
+                    </div>
+                    <p>
+                        Choisissez un plan, sauvegardez-le dans la simulation SaaS et lancez immédiatement l’onboarding du restaurant.
+                    </p>
+                </div>
+
+                <div class="pricing-grid">
+                    <article class="pricing-card fade-up" data-plan-card="starter" data-animate>
+                        <div class="plan-badge">Starter</div>
+                        <h3 style="margin:1rem 0 0;font-size:1.6rem;">Starter</h3>
+                        <div class="price-tag">
+                            <strong>5 000</strong>
+                            <span class="muted">FCFA/mois</span>
+                        </div>
+                        <p class="muted" style="margin:0.85rem 0 0;line-height:1.8;">
+                            Idéal pour digitaliser rapidement un restaurant avec une base simple mais crédible.
+                        </p>
+                        <ul class="plan-list">
+                            <li>1 restaurant</li>
+                            <li>Menu QR interactif</li>
+                            <li>Jusqu’à 10 tables</li>
+                            <li>Support email</li>
+                        </ul>
+                        <button type="button" class="btn btn-secondary plan-button ripple" data-select-plan="starter">
+                            Choisir ce plan
+                        </button>
+                    </article>
+
+                    <article class="pricing-card featured fade-up delay-100" data-plan-card="pro" data-animate>
+                        <div class="plan-badge">Le plus choisi</div>
+                        <h3 style="margin:1rem 0 0;font-size:1.6rem;">Pro</h3>
+                        <div class="price-tag">
+                            <strong>10 000</strong>
+                            <span class="muted">FCFA/mois</span>
+                        </div>
+                        <p class="muted" style="margin:0.85rem 0 0;line-height:1.8;">
+                            Le meilleur compromis entre image, performance et adoption commerciale.
+                        </p>
+                        <ul class="plan-list">
+                            <li>QR illimités</li>
+                            <li>Suivi en temps réel</li>
+                            <li>Analytics avancées</li>
+                            <li>Support prioritaire</li>
+                        </ul>
+                        <button type="button" class="btn btn-primary plan-button ripple" data-select-plan="pro">
+                            Choisir ce plan
+                        </button>
+                    </article>
+
+                    <article class="pricing-card fade-up delay-200" data-plan-card="premium" data-animate>
+                        <div class="plan-badge">Premium</div>
+                        <h3 style="margin:1rem 0 0;font-size:1.6rem;">Premium</h3>
+                        <div class="price-tag">
+                            <strong>15 000</strong>
+                            <span class="muted">FCFA/mois</span>
+                        </div>
+                        <p class="muted" style="margin:0.85rem 0 0;line-height:1.8;">
+                            Une offre complète pour les établissements qui veulent une expérience digitale irréprochable.
+                        </p>
+                        <ul class="plan-list">
+                            <li>Multi-espaces</li>
+                            <li>Accompagnement dédié</li>
+                            <li>Tableau de bord avancé</li>
+                            <li>SLA renforcé</li>
+                        </ul>
+                        <button type="button" class="btn btn-secondary plan-button ripple" data-select-plan="premium">
+                            Choisir ce plan
+                        </button>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container-xl">
+                <div class="onboarding-grid">
+                    <!-- <div class="surface-card onboarding-panel" data-animate>
+                        <span class="section-kicker"><i class="fa-solid fa-rocket"></i> Démarrage guidé</span>
+                        <h2 class="section-title" style="margin-top:1rem;font-size:clamp(1.8rem,3vw,3rem);">
+                            Résumé dynamique du plan choisi
+                        </h2>
+                        <p class="muted" style="margin-top:0.8rem;line-height:1.8;">
+                            Le plan sélectionné ci-dessus alimente cette zone, puis ouvre le modal d’onboarding pour
+                            créer votre espace restaurant.
+                        </p>
+
+                        <div style="margin-top:1.25rem;" data-selected-plan-summary class="surface-card-2" style="padding:1.3rem;">
+                            <div class="plan-badge">Pro</div>
+                            <h3 style="margin:0.9rem 0 0.5rem;">Pro</h3>
+                            <p class="muted" style="margin:0;line-height:1.8;">
+                                Sélectionnez un plan pour afficher ici le résumé complet, les bénéfices et la prochaine étape.
+                            </p>
+                        </div>
+                    </div> -->
+
+                    <div class="surface-card onboarding-panel" data-animate>
+                        <span class="section-kicker"><i class="fa-solid fa-circle-play"></i> Onboarding</span>
+                        <h3 style="margin:1rem 0 0.7rem;font-size:1.75rem;">Créez votre espace restaurant en quelques secondes.</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Choisissez un plan, activez la simulation et renseignez le nom du restaurant ainsi que le nombre de tables.
+                        </p>
+
+                        <div class="mockup-list" style="margin-top:1.25rem;">
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>1. Choisir un plan</strong>
+                                    <small>Starter, Pro ou Premium</small>
+                                </div>
+                                <span class="status-pill info">01</span>
+                            </div>
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>2. Renseigner le restaurant</strong>
+                                    <small>Nom et nombre de tables</small>
+                                </div>
+                                <span class="status-pill warning">02</span>
+                            </div>
+                            <div class="mockup-list-item">
+                                <div>
+                                    <strong>3. Accéder au dashboard</strong>
+                                    <small>Votre espace est créé localement</small>
+                                </div>
+                                <span class="status-pill success">03</span>
+                            </div>
+                        </div>
+
+                        <div class="hero-actions" style="margin-top:1.4rem;">
+                            <a href="#pricing" class="btn btn-primary ripple" data-open-onboarding>
+                                Créer mon espace
+                            </a>
+                            <a href="./dashboard.html" class="btn btn-secondary ripple">
+                                Voir un dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-shield-halved"></i> Sécurité</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Une base solide et rassurante.</h2>
+                    </div>
+                    <p>
+                        Des fondations pensées pour la crédibilité SaaS, la confiance produit et la mise à l’échelle.
+                    </p>
+                </div>
+
+                <div class="security-grid">
+                    <article class="security-card fade-up" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-cloud"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">Hébergement cloud sécurisé</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Une infrastructure prête pour l’accès distant, la disponibilité et les futurs environnements multi-tenant.
+                        </p>
+                    </article>
+
+                    <article class="security-card fade-up delay-100" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-lock"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">Données protégées</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Les parcours de commande et d’administration restent structurés pour éviter les frictions et les ambiguïtés.
+                        </p>
+                    </article>
+
+                    <article class="security-card fade-up delay-200" data-animate>
+                        <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <h3 style="margin:1rem 0 0.6rem;">QR unique par table</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Une logique simple pour connecter le client à la bonne table et garder un pilotage clair.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="section">
+            <div class="container-xl">
+                <div class="section-head" data-animate>
+                    <div>
+                        <span class="section-kicker"><i class="fa-solid fa-circle-question"></i> FAQ</span>
+                        <h2 class="section-title" style="margin-top:1rem;">Les réponses aux questions essentielles.</h2>
+                    </div>
+                    <p>
+                        Une FAQ claire réduit les freins et rassure les prospects qui découvrent la solution.
+                    </p>
+                </div>
+
+                <div class="faq-grid">
+                    <details class="faq-card fade-up" data-animate>
+                        <summary>Comment installer RestoQR ?</summary>
+                        <p>
+                            Vous choisissez un plan, vous créez votre espace restaurant et vous obtenez ensuite une base prête pour exploiter le menu QR et le suivi de commande.
+                        </p>
+                    </details>
+
+                    <details class="faq-card fade-up delay-100" data-animate>
+                        <summary>Puis-je modifier le menu à tout moment ?</summary>
+                        <p>
+                            Oui. Le concept repose sur un back-office agile qui vous laisse mettre à jour vos plats, prix et disponibilités en continu.
+                        </p>
+                    </details>
+
+                    <details class="faq-card fade-up delay-200" data-animate>
+                        <summary>Le client doit-il télécharger une application ?</summary>
+                        <p>
+                            Non. Le parcours est conçu autour du QR code et s’ouvre directement dans le navigateur du client.
+                        </p>
+                    </details>
+                </div>
+            </div>
         </section>
     </main>
+
+    <footer class="footer">
+        <div class="container-xl">
+            <div class="footer-grid">
+                <div class="footer-card">
+                    <div class="brand" style="margin-bottom:1rem;">
+                        <span class="brand-mark">R</span>
+                        <span>
+                            <span style="display:block;">RestoQR</span>
+                            <span style="font-size:0.8rem;color:#94a3b8;font-weight:600;">Digital Menu & Smart Ordering System</span>
+                        </span>
+                    </div>
+                    <p style="margin:0;max-width:25rem;line-height:1.8;color:#cbd5e1;">
+                        Une plateforme SaaS premium pensée pour accélérer le service, réduire les coûts et moderniser l’image du restaurant.
+                    </p>
+                </div>
+
+                <div class="footer-card">
+                    <h4>Navigation</h4>
+                    <ul>
+                        <li><a href="#features">Fonctionnalités</a></li>
+                        <li><a href="#demo">Démo</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-card">
+                    <h4>Liens utiles</h4>
+                    <ul>
+                        <li><a href="/client/index.html">Menu client</a></li>
+                        <li><a href="/client/cart.html">Panier</a></li>
+                        <li><a href="/client/tracking.html">Suivi commande</a></li>
+                        <li><a href="./dashboard.html">Dashboard SaaS</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-card">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>
+                            <button class="btn btn-secondary btn-icon ripple" type="button" data-copy="hello@restoqr.com">
+                                <i class="fa-solid fa-envelope"></i> hello@restoqr.com
+                            </button>
+                        </li>
+                        <li>
+                            <button class="btn btn-secondary btn-icon ripple" type="button" data-copy="+237 6XX XX XX XX">
+                                <i class="fa-solid fa-phone"></i> +237 6XX XX XX XX
+                            </button>
+                        </li>
+                        <li>
+                            <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                                <a href="#" class="btn btn-secondary btn-icon ripple" aria-label="Twitter / X"><i class="fa-brands fa-x-twitter"></i></a>
+                                <a href="#" class="btn btn-secondary btn-icon ripple" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="#" class="btn btn-secondary btn-icon ripple" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-copy">
+                © 2026 RestoQR. Tous droits réservés.
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal" data-onboarding-modal aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-head" style="display:flex;align-items:start;justify-content:space-between;gap:1rem;">
+                <div>
+                    <span class="section-kicker"><i class="fa-solid fa-store"></i> Onboarding restaurant</span>
+                    <h2 style="margin:1rem 0 0;font-size:clamp(1.6rem,2.5vw,2.3rem);letter-spacing:-0.04em;">Créer mon espace digital</h2>
+                    <p class="muted" style="margin:0.7rem 0 0;line-height:1.8;">
+                        Complétez les informations minimales pour simuler la création de votre restaurant dans le SaaS.
+                    </p>
+                </div>
+                <button type="button" class="modal-close" aria-label="Fermer" data-close-onboarding>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form class="grid gap-4" data-onboarding-form>
+                    <input type="hidden" name="planId" value="pro">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="restaurantName">Nom du restaurant</label>
+                            <input id="restaurantName" name="restaurantName" class="form-control" type="text" placeholder="Ex. Le Bistrot Moderne" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tableCount">Nombre de tables</label>
+                            <input id="tableCount" name="tableCount" class="form-control" type="number" min="1" step="1" placeholder="12" required>
+                        </div>
+                    </div>
+
+                    <div class="surface-card-2" style="padding:1rem;">
+                        <div class="plan-badge">Simulation SaaS</div>
+                        <p class="muted" style="margin:0.75rem 0 0;line-height:1.8;">
+                            Les données sont enregistrées dans <code>localStorage</code> pour simuler la création d’un espace restaurant avant redirection vers le dashboard.
+                        </p>
+                    </div>
+
+                    <div class="modal-footer" style="padding:0;">
+                        <button type="button" class="btn btn-secondary ripple" data-close-onboarding>Annuler</button>
+                        <button type="submit" class="btn btn-primary ripple">Créer mon espace</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

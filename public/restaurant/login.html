@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <title>Resto QRCode - Connexion restaurant</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-amber-50 to-white font-sans">
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="max-w-md w-full">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-yellow-100 rounded-2xl mb-4">
+                    <i class="fas fa-utensils text-3xl text-primary"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Resto QRCode</h1>
+                <p class="text-gray-500 mt-1">Connexion back-office restaurant</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl p-6">
+                <div class="mb-6">
+                    <div class="flex gap-2">
+                        <button id="show-login" class="flex-1 py-2 text-center font-medium rounded-xl bg-yellow-500 text-white">Connexion</button>
+                        <button id="show-register" class="flex-1 py-2 text-center font-medium rounded-xl text-gray-500 hover:bg-gray-50">Inscription</button>
+                    </div>
+                </div>
+
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="login-email" placeholder="admin@resto.com" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="login-password" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-all">
+                        Se connecter
+                    </button>
+                </form>
+
+                <form id="register-form" class="space-y-4 hidden">
+                    <div id="register-plan-banner" class="hidden rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                        Plan preselectionne: <span id="register-selected-plan" class="font-semibold">Growth</span>
+                    </div>
+                    <input type="hidden" id="register-plan" value="">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom du restaurant</label>
+                        <input type="text" id="register-restaurant-name" placeholder="Maison des Saveurs" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                        <input type="text" id="register-name" placeholder="Jean Dupont" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="register-email" placeholder="admin@resto.com" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Telephone</label>
+                        <input type="tel" id="register-phone" placeholder="+237 6XX XX XX XX" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="register-password" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmer</label>
+                        <input type="password" id="register-password-confirm" placeholder="••••••••" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    </div>
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-all">
+                        Creer un compte
+                    </button>
+                </form>
+
+                <div id="auth-message" class="mt-4 hidden"></div>
+            </div>
+
+            <div class="mt-4 rounded-2xl border border-amber-100 bg-amber-50/80 px-4 py-3 text-sm text-amber-800">
+                Pour demarrer avec un plan et un onboarding guide, utilisez la page
+                <a href="/platform/pricing.html" class="font-semibold underline decoration-amber-300 underline-offset-4">pricing plateforme</a>.
+            </div>
+
+            <div class="text-center mt-6">
+                <a href="./index.html" class="text-sm text-gray-500 hover:text-primary">
+                    <i class="fas fa-arrow-left mr-1"></i> Retour au site restaurant
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/modules/admin/pages/auth-page.js"></script>
+</body>
+</html>

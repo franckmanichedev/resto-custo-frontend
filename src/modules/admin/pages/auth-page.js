@@ -1,14 +1,46 @@
 import { authService } from '../services/authService.js';
 
+const DASHBOARD_PATH = './dashboard.html';
+const PLAN_LABELS = {
+    starter: 'Starter',
+    growth: 'Growth',
+    signature: 'Signature'
+};
+
 const loginForm = document.getElementById('login-form');
 const registerForm = document.getElementById('register-form');
 const showLoginBtn = document.getElementById('show-login');
 const showRegisterBtn = document.getElementById('show-register');
 const authMessage = document.getElementById('auth-message');
+const registerPlanInput = document.getElementById('register-plan');
+const registerPlanBanner = document.getElementById('register-plan-banner');
+const registerPlanName = document.getElementById('register-selected-plan');
+
+const hydrateSignupPlan = () => {
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = String(
+        params.get('plan')
+        || window.localStorage.getItem('selectedRestaurantPlan')
+        || ''
+    ).trim().toLowerCase();
+
+    if (!selectedPlan || !registerPlanInput) {
+        return;
+    }
+
+    registerPlanInput.value = selectedPlan;
+
+    if (registerPlanBanner && registerPlanName) {
+        registerPlanName.textContent = PLAN_LABELS[selectedPlan] || selectedPlan;
+        registerPlanBanner.classList.remove('hidden');
+    }
+};
 
 if (await authService.validateSession()) {
-    window.location.href = './dashboard.html';
+    window.location.href = DASHBOARD_PATH;
 }
+
+hydrateSignupPlan();
 
 showLoginBtn?.addEventListener('click', () => {
     loginForm.classList.remove('hidden');
@@ -37,7 +69,7 @@ loginForm?.addEventListener('submit', async (event) => {
 
     try {
         await authService.login(email, password);
-        window.location.href = './dashboard.html';
+        window.location.href = DASHBOARD_PATH;
     } catch (error) {
         showMessage(error.message || 'Erreur de connexion', 'error');
     }
@@ -47,12 +79,14 @@ registerForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     const name = document.getElementById('register-name').value.trim();
-    const email = document.getElementById('register-email').value.trim();
-    const phone = document.getElementById('register-phone').value.trim();
-    const password = document.getElementById('register-password').value;
-    const confirm = document.getElementById('register-password-confirm').value;
+    const restaurantName = document.getElementById('register-restaurant-name')?.value.trim() || '';
+    const email = document.getElementById('register-email')?.value.trim() || '';
+    const phone = document.getElementById('register-phone')?.value.trim() || '';
+    const password = document.getElementById('register-password')?.value || '';
+    const confirm = document.getElementById('register-password-confirm')?.value || '';
+    const plan = document.getElementById('register-plan')?.value || '';
 
-    if (!name || !email || !password) {
+    if (!restaurantName || !name || !email || !password) {
         showMessage('Veuillez remplir tous les champs obligatoires', 'error');
         return;
     }
@@ -63,8 +97,16 @@ registerForm?.addEventListener('submit', async (event) => {
     }
 
     try {
-        await authService.signup(email, password, name, phone);
-        window.location.href = './dashboard.html';
+        await authService.signup({
+            email,
+            password,
+            name,
+            phoneNumber: phone,
+            restaurantName,
+            role: 'admin',
+            plan
+        });
+        window.location.href = DASHBOARD_PATH;
     } catch (error) {
         showMessage(error.message || 'Erreur lors de l\'inscription', 'error');
     }

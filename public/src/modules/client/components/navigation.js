@@ -9,7 +9,7 @@ import { showToast } from '../../../shared/utils/index.js';
 class ClientNavigation {
     constructor() {
         this.currentView = 'menu';
-        this.views = ['menu', 'cart', 'track', 'profile'];
+        this.views = ['menu', 'cart', 'tracking', 'profile'];
         this.initialized = false;
     }
     
@@ -145,19 +145,19 @@ class ClientNavigation {
         try {
             switch(view) {
                 case 'menu':
-                    const { initMenu } = await import('./menu.js');
+                    const { initMenu } = await import('./menu-page.js');
                     await initMenu();
                     break;
                 case 'cart':
-                    const { initCart } = await import('./cart.js');
+                    const { initCart } = await import('./cart-page.js');
                     await initCart();
                     break;
-                case 'track':
-                    const { initTracking } = await import('./tracking.js');
+                case 'tracking':
+                    const { initTracking } = await import('./tracking-page.js');
                     await initTracking();
                     break;
                 case 'profile':
-                    const { initProfile } = await import('./profile.js');
+                    const { initProfile } = await import('./profile-page.js');
                     await initProfile();
                     break;
             }

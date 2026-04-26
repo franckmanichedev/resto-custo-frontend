@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resto QRCode - Portail plateforme</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(180deg, #eef4f3 0%, #f7f7f2 44%, #ffffff 100%);
+        }
+
+        .font-display {
+            font-family: 'Fraunces', serif;
+        }
+    </style>
+</head>
+<body class="text-slate-950">
+    <main class="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+        <section class="overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-2xl shadow-slate-200/60">
+            <div class="grid gap-10 px-8 py-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-12 lg:py-14">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.34em] text-teal-700">Operateur plateforme</p>
+                    <h1 class="font-display mt-4 text-5xl text-slate-950">Le scope `/platform` regroupe l'equipe qui pilote la solution.</h1>
+                    <p class="mt-6 max-w-2xl text-base leading-8 text-slate-600">
+                        Cette entree sert de portail interne pour les utilisateurs plateforme. La vitrine produit reste a la racine du domaine sous `/index.html`.
+                    </p>
+
+                    <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+                        <a href="/platform/login.html" class="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-slate-800">
+                            Se connecter
+                        </a>
+                        <a href="/index.html" class="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-4 text-sm font-bold text-slate-950 transition hover:border-slate-950">
+                            Retour au site plateforme
+                        </a>
+                    </div>
+                </div>
+
+                <div class="grid gap-4">
+                    <article class="rounded-[2rem] border border-slate-200 bg-slate-950 p-6 text-white">
+                        <p class="text-xs font-bold uppercase tracking-[0.3em] text-orange-300">Chemins</p>
+                        <ul class="mt-4 space-y-4 text-sm text-white/80">
+                            <li>`/platform/login.html` pour l'authentification operateur.</li>
+                            <li>`/platform/dashboard.html` pour le cockpit interne.</li>
+                            <li>`/restaurant/index.html` pour la vitrine du tenant restaurant.</li>
+                        </ul>
+                    </article>
+
+                    <article class="rounded-[2rem] border border-slate-200 bg-white p-6">
+                        <p class="text-xs font-bold uppercase tracking-[0.3em] text-teal-700">Rappel d'architecture</p>
+                        <p class="mt-4 text-sm leading-7 text-slate-600">
+                            `platform` pour l'equipe SaaS, `restaurant` pour les tenants et `client` pour la commande.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

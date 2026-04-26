@@ -7,8 +7,18 @@
   status = 200
 
 [[redirects]]
+  from = "/platform"
+  to = "/platform/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/restaurant"
+  to = "/restaurant/index.html"
+  status = 200
+
+[[redirects]]
   from = "/admin"
-  to = "/admin/index.html"
+  to = "/restaurant/login.html"
   status = 200
 
 [[redirects]]

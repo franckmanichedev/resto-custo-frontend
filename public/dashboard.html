@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0F172A">
+    <title>RestoQR — Dashboard SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-shell">
+    <div class="dashboard-shell">
+        <aside class="dashboard-sidebar">
+            <a href="./" class="dashboard-brand">
+                <span class="brand-mark">R</span>
+                <span>
+                    <span style="display:block;font-size:1rem;font-weight:800;letter-spacing:-0.03em;">RestoQR</span>
+                    <span style="display:block;font-size:0.8rem;color:#94a3b8;font-weight:600;">Restaurant workspace</span>
+                </span>
+            </a>
+
+            <div class="surface-card-2" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);padding:1rem;margin-top:0.5rem;">
+                <p style="margin:0;font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;font-weight:800;">Espace actif</p>
+                <h3 style="margin:0.5rem 0 0;font-size:1.2rem;" data-dashboard-restaurant-name>Mon restaurant</h3>
+                <p style="margin:0.35rem 0 0;color:#cbd5e1;line-height:1.7;">Plan <strong data-dashboard-plan>Pro</strong> · <span data-dashboard-tables>12 tables</span></p>
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Navigation dashboard">
+                <a href="#" class="sidebar-link active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                <a href="/client/index.html" class="sidebar-link" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-qrcode"></i> Menu client</a>
+                <a href="/client/cart.html" class="sidebar-link" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-basket-shopping"></i> Panier client</a>
+                <a href="/client/tracking.html" class="sidebar-link" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-truck-fast"></i> Suivi commande</a>
+                <a href="./#pricing" class="sidebar-link"><i class="fa-solid fa-tag"></i> Tarifs</a>
+                <a href="./" class="sidebar-link"><i class="fa-solid fa-arrow-left"></i> Retour site</a>
+            </nav>
+
+            <div class="dashboard-side-card" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08);margin-top:1rem;">
+                <p style="margin:0;font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;font-weight:800;">Raccourci</p>
+                <p style="margin:0.55rem 0 0;line-height:1.8;color:#e2e8f0;">
+                    Gardez ce dashboard comme point de pilotage de votre restaurant digital.
+                </p>
+                <div class="dashboard-cta">
+                    <a href="/client/index.html" class="btn btn-primary ripple" target="_blank" rel="noopener noreferrer">
+                        Voir menu client
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <div class="dashboard-topbar">
+                <div>
+                    <span class="section-kicker"><i class="fa-solid fa-suitcase"></i> SaaS dashboard</span>
+                    <h1 style="margin:0.9rem 0 0;font-size:clamp(2rem,3vw,3rem);letter-spacing:-0.05em;">Vue d’ensemble du restaurant</h1>
+                    <p class="muted" style="margin:0.5rem 0 0;line-height:1.8;max-width:48rem;">
+                        Suivez les commandes, les revenus et l’activité de votre restaurant dans une interface premium simulée.
+                    </p>
+                </div>
+
+                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="btn btn-secondary ripple" type="button" id="dashboardRefresh">
+                        <i class="fa-solid fa-rotate"></i> Actualiser
+                    </button>
+                    <a href="/client/index.html" class="btn btn-primary ripple" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Voir menu client
+                    </a>
+                </div>
+            </div>
+
+            <section class="dashboard-grid">
+                <div class="grid gap-4">
+                    <div class="stats-grid">
+                        <article class="stat-card">
+                            <span class="muted">Commandes du jour</span>
+                            <strong data-stat-orders>42</strong>
+                            <p style="margin:0.4rem 0 0;color:#0a7d76;font-weight:700;">+18% vs hier</p>
+                        </article>
+                        <article class="stat-card">
+                            <span class="muted">Revenus</span>
+                            <strong data-stat-revenue>184 000</strong>
+                            <p style="margin:0.4rem 0 0;color:#0a7d76;font-weight:700;">FCFA générés aujourd’hui</p>
+                        </article>
+                        <article class="stat-card">
+                            <span class="muted">Temps moyen</span>
+                            <strong data-stat-time>8 min</strong>
+                            <p style="margin:0.4rem 0 0;color:#0a7d76;font-weight:700;">par commande</p>
+                        </article>
+                    </div>
+
+                    <div class="dashboard-panel" style="padding:1.25rem;">
+                        <div class="section-head" style="margin-bottom:1rem;">
+                            <div>
+                                <span class="section-kicker"><i class="fa-solid fa-list-check"></i> Commandes récentes</span>
+                                <h3 style="margin:0.9rem 0 0;font-size:1.5rem;">Flux live de préparation</h3>
+                            </div>
+                            <p style="max-width:32rem;">
+                                L’interface simule un suivi des commandes clair et crédible pour votre staff.
+                            </p>
+                        </div>
+
+                        <div class="orders-list" data-orders-list>
+                            <article class="order-row">
+                                <div>
+                                    <strong>Table 05</strong>
+                                    <p style="margin:0.3rem 0 0;color:#64748b;">Poulet braisé, jus d’ananas</p>
+                                </div>
+                                <span class="status-pill warning">En cuisine</span>
+                            </article>
+                            <article class="order-row">
+                                <div>
+                                    <strong>Table 12</strong>
+                                    <p style="margin:0.3rem 0 0;color:#64748b;">Burger signature, frites</p>
+                                </div>
+                                <span class="status-pill success">Prête</span>
+                            </article>
+                            <article class="order-row">
+                                <div>
+                                    <strong>Table 02</strong>
+                                    <p style="margin:0.3rem 0 0;color:#64748b;">Menu dégustation</p>
+                                </div>
+                                <span class="status-pill info">Payée</span>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid gap-4">
+                    <div class="dashboard-panel" style="padding:1.25rem;">
+                        <span class="section-kicker"><i class="fa-solid fa-circle-play"></i> Activation</span>
+                        <h3 style="margin:0.9rem 0 0.5rem;font-size:1.5rem;">Restaurant digital prêt à présenter</h3>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            Les données de simulation sont lues depuis <code>localStorage</code> pour refléter le nom du restaurant, le plan choisi et les tables.
+                        </p>
+
+                        <div class="surface-card-2" style="padding:1rem;margin-top:1rem;">
+                            <div style="display:flex;justify-content:space-between;gap:1rem;align-items:center;">
+                                <div>
+                                    <p style="margin:0;font-size:0.75rem;letter-spacing:0.16em;text-transform:uppercase;color:#94a3b8;font-weight:800;">Statut</p>
+                                    <strong style="font-size:1.2rem;">Espace opérationnel</strong>
+                                </div>
+                                <span class="status-pill success">Live</span>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-cta">
+                            <a href="/client/index.html" class="btn btn-secondary ripple" target="_blank" rel="noopener noreferrer">Menu client</a>
+                            <a href="/client/cart.html" class="btn btn-secondary ripple" target="_blank" rel="noopener noreferrer">Panier</a>
+                            <a href="/client/tracking.html" class="btn btn-secondary ripple" target="_blank" rel="noopener noreferrer">Tracking</a>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-side-card">
+                        <span class="section-kicker"><i class="fa-solid fa-shield-halved"></i> Sécurité</span>
+                        <h4 style="margin:0.9rem 0 0.45rem;font-size:1.35rem;">Fondation SaaS crédible</h4>
+                        <p class="muted" style="margin:0;line-height:1.8;">
+                            La structure du dashboard est pensée pour rassurer les investisseurs et rester simple pour les restaurateurs.
+                        </p>
+                    </div>
+
+                    <div class="dashboard-side-card">
+                        <span class="section-kicker"><i class="fa-solid fa-gear"></i> Actions rapides</span>
+                        <h4 style="margin:0.9rem 0 0.45rem;font-size:1.35rem;">Gérer l’expérience client</h4>
+                        <div class="dashboard-cta">
+                            <button type="button" class="btn btn-primary ripple" id="dashboardToast">Notifier l’équipe</button>
+                            <button type="button" class="btn btn-secondary ripple" id="dashboardRandomize">Simuler activité</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

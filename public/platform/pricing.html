@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <meta name="description" content="Choisissez un plan puis creez votre restaurant digital avec une experience d'onboarding premium.">
+    <title>Resto QRCode - Pricing plateforme</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(13, 148, 136, 0.14), transparent 26%),
+                radial-gradient(circle at right 15%, rgba(249, 115, 22, 0.16), transparent 26%),
+                linear-gradient(180deg, #f3f7f7 0%, #fbfaf6 44%, #ffffff 100%);
+        }
+
+        .font-display {
+            font-family: 'Fraunces', serif;
+        }
+    </style>
+</head>
+<body class="text-slate-950">
+    <main class="mx-auto max-w-7xl px-6 py-10 lg:px-8 lg:py-14">
+        <header class="flex flex-col gap-6 rounded-[2.5rem] border border-slate-200 bg-white px-8 py-8 shadow-xl shadow-slate-200/60 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+                <p class="text-xs font-bold uppercase tracking-[0.34em] text-teal-700">Offres & onboarding</p>
+                <h1 class="font-display mt-4 text-5xl text-slate-950">Choisissez un plan, puis creez votre restaurant digital en quelques minutes.</h1>
+                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-600">
+                    Une experience claire pour l'equipe commerciale et elegante pour le restaurateur. Le choix du plan debloque immediatement le formulaire de creation avec un rendu premium et rassurant.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <a href="/index.html" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:border-slate-950 hover:text-slate-950">
+                    Retour au site
+                </a>
+                <a id="restaurant-login-link" href="/restaurant/login.html" class="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800">
+                    J'ai deja un compte
+                </a>
+            </div>
+        </header>
+
+        <section class="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <div class="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm">
+                <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-[0.32em] text-orange-700">Plans disponibles</p>
+                        <h2 class="font-display mt-3 text-4xl text-slate-950">Une offre pensee pour convertir sans friction.</h2>
+                    </div>
+                    <p class="max-w-xl text-sm leading-7 text-slate-500">
+                        Selectionnez le plan adapte au restaurant puis validez le formulaire d'onboarding pour provisionner le compte proprietaire.
+                    </p>
+                </div>
+
+                <div id="pricing-plan-grid" class="mt-8 grid gap-6 lg:grid-cols-3"></div>
+
+                <div class="mt-8 grid gap-4 md:grid-cols-3">
+                    <article class="rounded-[1.8rem] border border-slate-200 bg-slate-50 p-5">
+                        <p class="text-xs font-bold uppercase tracking-[0.28em] text-teal-700">Rapide</p>
+                        <p class="mt-3 text-lg font-extrabold text-slate-950">Choix du plan en 1 clic</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-600">Le formulaire se revele automatiquement apres la selection.</p>
+                    </article>
+                    <article class="rounded-[1.8rem] border border-slate-200 bg-slate-50 p-5">
+                        <p class="text-xs font-bold uppercase tracking-[0.28em] text-teal-700">Premium</p>
+                        <p class="mt-3 text-lg font-extrabold text-slate-950">Onboarding guide</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-600">Une experience rassurante pour signer plus vite.</p>
+                    </article>
+                    <article class="rounded-[1.8rem] border border-slate-200 bg-slate-50 p-5">
+                        <p class="text-xs font-bold uppercase tracking-[0.28em] text-teal-700">Securise</p>
+                        <p class="mt-3 text-lg font-extrabold text-slate-950">Compte restaurant pret</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-600">Le backend cree le compte restaurant avec un role admin exploitable.</p>
+                    </article>
+                </div>
+            </div>
+
+            <aside class="space-y-6">
+                <section id="plan-summary" class="hidden overflow-hidden rounded-[2.5rem] border border-slate-200 bg-slate-950 text-white shadow-2xl shadow-slate-300/40">
+                    <div class="p-8">
+                        <p id="selected-plan-badge" class="text-xs font-bold uppercase tracking-[0.34em] text-orange-300">Plan choisi</p>
+                        <div class="mt-4 flex items-end gap-3">
+                            <h3 id="selected-plan-name" class="font-display text-4xl">Growth</h3>
+                            <p id="selected-plan-price" class="pb-2 text-sm font-semibold text-white/70">89 000 XAF / mois</p>
+                        </div>
+                        <p id="selected-plan-description" class="mt-4 text-sm leading-7 text-white/75">
+                            Selectionnez un plan pour afficher son resume.
+                        </p>
+
+                        <ul id="selected-plan-features" class="mt-6 space-y-3 text-sm leading-6 text-white/80"></ul>
+                    </div>
+                </section>
+
+                <section id="onboarding-form-panel" class="hidden rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/60">
+                    <p class="text-xs font-bold uppercase tracking-[0.32em] text-orange-700">Creation du restaurant</p>
+                    <h2 class="font-display mt-3 text-3xl text-slate-950">Renseignez le proprietaire et le restaurant.</h2>
+                    <p class="mt-4 text-sm leading-7 text-slate-600">
+                        A la validation, le compte admin restaurant est cree et la session preparee pour la redirection vers le dashboard.
+                    </p>
+
+                    <div id="pricing-message" class="mt-5 hidden"></div>
+
+                    <form id="restaurant-onboarding-form" class="mt-6 space-y-5">
+                        <input type="hidden" id="selected-plan" name="selected-plan" value="growth">
+
+                        <div>
+                            <label for="restaurant-name" class="mb-2 block text-sm font-semibold text-slate-700">Nom du restaurant *</label>
+                            <input id="restaurant-name" type="text" autocomplete="organization" placeholder="Maison des Saveurs" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            <p class="mt-2 text-xs text-slate-500">Identifiant technique genere: <span id="restaurant-tenant-preview" class="font-semibold text-slate-700">tenant-votre-restaurant-xxxx</span></p>
+                        </div>
+
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label for="restaurant-type" class="mb-2 block text-sm font-semibold text-slate-700">Type de cuisine</label>
+                                <input id="restaurant-type" type="text" placeholder="Bistronomie, grill, fast casual..." class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                            <div>
+                                <label for="restaurant-city" class="mb-2 block text-sm font-semibold text-slate-700">Ville</label>
+                                <input id="restaurant-city" type="text" placeholder="Douala" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label for="restaurant-capacity" class="mb-2 block text-sm font-semibold text-slate-700">Capacite de salle</label>
+                                <input id="restaurant-capacity" type="number" min="1" placeholder="48" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                            <div>
+                                <label for="owner-name" class="mb-2 block text-sm font-semibold text-slate-700">Nom du proprietaire *</label>
+                                <input id="owner-name" type="text" autocomplete="name" placeholder="Jean Dupont" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label for="owner-email" class="mb-2 block text-sm font-semibold text-slate-700">Email *</label>
+                                <input id="owner-email" type="email" autocomplete="email" placeholder="owner@restaurant.com" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+
+                            <div>
+                                <label for="owner-phone" class="mb-2 block text-sm font-semibold text-slate-700">Telephone</label>
+                                <input id="owner-phone" type="tel" autocomplete="tel" placeholder="+237 6XX XX XX XX" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                        </div>
+
+                        <div class="grid gap-5 md:grid-cols-2">
+                            <div>
+                                <label for="owner-password" class="mb-2 block text-sm font-semibold text-slate-700">Mot de passe *</label>
+                                <input id="owner-password" type="password" autocomplete="new-password" placeholder="••••••••" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                            <div>
+                                <label for="owner-password-confirm" class="mb-2 block text-sm font-semibold text-slate-700">Confirmer le mot de passe *</label>
+                                <input id="owner-password-confirm" type="password" autocomplete="new-password" placeholder="••••••••" class="w-full rounded-2xl border border-slate-200 px-4 py-4 outline-none transition focus:border-slate-950">
+                            </div>
+                        </div>
+
+                        <button id="restaurant-onboarding-submit" type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-6 py-4 text-sm font-bold text-white transition hover:bg-slate-800">
+                            Creer mon restaurant digital
+                        </button>
+                    </form>
+
+                    <div class="mt-5 flex flex-col gap-3 text-sm font-semibold text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-slate-500">Vous serez redirige vers le dashboard apres la creation.</p>
+                        <a href="/restaurant/login.html" class="transition hover:text-slate-950">Connexion restaurant</a>
+                    </div>
+                </section>
+
+                <section class="rounded-[2.5rem] border border-slate-200 bg-white p-8 shadow-sm">
+                    <p class="text-xs font-bold uppercase tracking-[0.32em] text-teal-700">Ce qui se passe ensuite</p>
+                    <div class="mt-5 space-y-4 text-sm leading-7 text-slate-600">
+                        <p>1. Le plan est enregistre localement pour le suivi commercial.</p>
+                        <p>2. Le backend cree l'utilisateur proprietaire avec le role <span class="font-semibold text-slate-950">admin</span>.</p>
+                        <p>3. La session authentifiee est preparee pour ouvrir l'espace restaurant sans friction.</p>
+                    </div>
+                </section>
+            </aside>
+        </section>
+    </main>
+
+    <script type="module" src="/src/modules/platform/pages/pricing-page.js"></script>
+</body>
+</html>
