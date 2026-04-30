@@ -1,144 +1,168 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
-    <title>Resto QRCode - Dashboard</title>
-    
-    <!-- TailwindCSS -->
+    <title>Resto QRCode - Tableau de bord</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/src/styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../src/styles/main.css">
 </head>
 <body class="bg-gray-50 font-sans">
     <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-            <div class="p-6 border-b border-gray-200">
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-lg">
+            <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
-                    <i class="fas fa-utensils text-2xl text-primary"></i>
-                    <span class="font-bold text-lg text-gray-800">Resto QRCode</span>
+                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">R</div>
+                    <div>
+                        <div class="font-semibold text-lg">RestoQR</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Espace restaurateur</div>
+                    </div>
                 </div>
-                <p class="text-xs text-gray-500 mt-2">Espace restaurant</p>
             </div>
-            
-            <nav class="flex-1 p-4 space-y-1">
-                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-100 text-primary font-medium">
-                    <i class="fas fa-chart-line w-5 text-yellow-500"></i>
-                    <span class="text-black text-yellow-500">Tableau de bord</span>
-                    <div class="ml-auto bg-yellow-500 w-1 h-8 rounded"></div>
+
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
+                    <span class="font-medium">Tableau de bord</span>
                 </a>
-                <a href="./plats.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
-                    <i class="fas fa-hamburger w-5"></i>
-                    <span class="text-black">Articles</span>
+                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-clipboard-list w-5 text-gray-300"></i>
+                    <span>Commandes</span>
+                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-red-600 text-white">0</span>
                 </a>
-                <a href="./categories.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
-                    <i class="fas fa-layer-group w-5"></i>
-                    <span class="text-black">Categories</span>
+                <div class="border-t border-white/5 my-2"></div>
+                <details class="group">
+                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 cursor-pointer"> <i class="fas fa-utensils w-5 text-gray-300"></i> <span>Menu</span></summary>
+                    <div class="mt-2 space-y-1 pl-6">
+                        <a href="./plats.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Plats</a>
+                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Compositions</a>
+                        <a href="./categories.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Categories</a>
+                    </div>
+                </details>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-table w-5 text-gray-300"></i>
+                    <span>Tables</span>
                 </a>
-                <a href="./compositions.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
-                    <i class="fas fa-pepper-hot w-5"></i>
-                    <span class="text-black">Compositions</span>
-                </a>
-                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
-                    <i class="fas fa-table w-5"></i>
-                    <span class="text-black">Tables</span>
-                </a>
-                <a href="./commandes.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-yellow-50 transition-colors">
-                    <i class="fas fa-clipboard-list w-5"></i>
-                    <span class="text-black">Commandes</span>
+                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-users w-5 text-gray-300"></i>
+                    <span>Clients</span>
                 </a>
             </nav>
-            
-            <div class="p-4 border-t border-gray-200">
-                <button id="logout-btn" class="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors">
+
+            <div class="p-4 border-t border-white/5">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
                     <i class="fas fa-sign-out-alt w-5"></i>
                     <span>Déconnexion</span>
                 </button>
             </div>
         </aside>
-        
-        <!-- Main Content -->
-        <main class="flex-1 overflow-auto">
-            <!-- Header -->
-            <header class="bg-white border-b border-gray-200 px-8 py-4">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-bold text-gray-800">Tableau de bord</h1>
-                    <div class="flex items-center gap-4">
-                        <span id="user-name" class="text-sm text-gray-600"></span>
-                        <div class="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-primary text-sm"></i>
+
+        <main class="flex-1 overflow-auto bg-[#f9fafb]">
+            <header class="bg-transparent px-8 py-5 border-b border-gray-100">
+                <div class="max-w-7xl mx-auto flex items-center gap-6">
+                    <div class="flex-1">
+                        <h1 class="text-2xl font-semibold text-gray-900">Tableau de bord</h1>
+                        <p class="text-sm text-gray-500 mt-1">Vue rapide sur l'activité du restaurant</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <input id="globalSearch" type="text" placeholder="Rechercher..." class="w-72 px-4 py-2 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-orange-200" />
+                            <i class="fas fa-search absolute right-3 top-2.5 text-gray-400"></i>
+                        </div>
+                        <button class="relative p-2 rounded-lg bg-white border border-gray-200">
+                            <i class="fas fa-bell text-gray-600"></i>
+                            <span id="notifBadge" class="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs bg-red-600 text-white rounded-full">3</span>
+                        </button>
+                        <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-gray-200">
+                            <img src="/public/assets/img/avatar.png" alt="avatar" class="w-8 h-8 rounded-full" onerror="this.style.display='none'" />
+                            <div class="text-sm">
+                                <div id="user-name" class="font-medium text-gray-800">Admin</div>
+                                <div class="text-xs text-gray-500">resto@example.com</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </header>
-            
-            <!-- Stats Cards -->
-            <div class="p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+
+            <div class="p-8 space-y-6 max-w-7xl mx-auto">
+                <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" aria-live="polite" aria-busy="true">
+                    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Commandes aujourd'hui</p>
-                                <p id="stats-today" class="text-3xl font-bold text-gray-800">-</p>
+                                <p class="text-sm text-gray-500">Commandes aujourd'hui</p>
+                                <p id="stats-today" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-20" id="s-today"></span></p>
                             </div>
-                            <i class="fas fa-shopping-bag text-3xl text-primary/50"></i>
+                            <div class="w-12 h-12 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center" aria-hidden="true">
+                                <i class="fas fa-receipt"></i>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    </article>
+                    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Commandes en attente</p>
-                                <p id="stats-pending" class="text-3xl font-bold text-yellow-600">-</p>
+                                <p class="text-sm text-gray-500">En attente</p>
+                                <p id="stats-pending" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-16" id="s-pending"></span></p>
                             </div>
-                            <i class="fas fa-clock text-3xl text-yellow-500/50"></i>
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center" aria-hidden="true">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    </article>
+                    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Articles disponibles</p>
-                                <p id="stats-plats" class="text-3xl font-bold text-green-600">-</p>
+                                <p class="text-sm text-gray-500">Articles disponibles</p>
+                                <p id="stats-plats" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-20" id="s-plats"></span></p>
                             </div>
-                            <i class="fas fa-utensils text-3xl text-green-500/50"></i>
+                            <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center" aria-hidden="true">
+                                <i class="fas fa-utensils"></i>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                    </article>
+                    <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-gray-500 text-sm">Tables actives</p>
-                                <p id="stats-tables" class="text-3xl font-bold text-primary">-</p>
+                                <p class="text-sm text-gray-500">Tables actives</p>
+                                <p id="stats-tables" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-16" id="s-tables"></span></p>
                             </div>
-                            <i class="fas fa-table text-3xl text-primary/50"></i>
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center" aria-hidden="true">
+                                <i class="fas fa-table"></i>
+                            </div>
                         </div>
+                    </article>
+                </section>
+
+                <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Évolution des ventes</h3>
+                    <div class="w-full h-44">
+                        <canvas id="salesChart" width="800" height="220"></canvas>
                     </div>
-                </div>
-                
-                <!-- Commandes récentes -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100">
-                        <h2 class="font-semibold text-gray-800">Commandes récentes</h2>
+                </section>
+
+                <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-800">Commandes recentes</h2>
+                            <p class="text-sm text-gray-500">Dernieres commandes recues par le restaurant.</p>
+                        </div>
+                        <a href="./orders.html" class="text-sm font-semibold text-primary hover:underline">Voir tout</a>
                     </div>
-                    <div id="recent-orders" class="divide-y divide-gray-100">
+                    <div id="recent-orders" role="list" aria-live="polite">
                         <div class="p-6 text-center text-gray-500">Chargement...</div>
                     </div>
-                </div>
+                </section>
             </div>
         </main>
     </div>
-    
-    <script type="module" src="/src/modules/admin/pages/dashboard-page.js"></script>
+
+    <script type="module">
+        import { initAdminShell } from '../src/shared/components/adminShell.js';
+        initAdminShell();
+    </script>
+    <script type="module" src="../src/modules/restaurant/pages/dashboard-page.js"></script>
 </body>
 </html>
-

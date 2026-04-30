@@ -44,10 +44,10 @@
 
     function escapeHtml(value) {
         return String(value)
-            .replaceAll('&', '&')
-            .replaceAll('<', '<')
-            .replaceAll('>', '>')
-            .replaceAll('"', '"')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
             .replaceAll("'", '&#039;');
     }
 
@@ -100,11 +100,21 @@
         }
     }
 
+    window.addEventListener('load', () => {
+        hideLoader();
+    })
+
     function hideLoader() {
         const loader = $('.loader-overlay');
         if (!loader) return;
-        window.setTimeout(() => loader.classList.add('is-hidden'), 600);
-        window.setTimeout(() => loader.remove(), 950);
+        // window.setTimeout(() => loader.classList.add('is-hidden'), 600);
+        // window.setTimeout(() => loader.remove(), 950);
+
+        window.setTimeout(() => {
+            loader.classList.add('is-hidden');
+            window.setTimeout(() => { loader.remove()}, 400);
+        }, 600);
+
     }
 
     function createToast({ title, message, type = 'success' }) {
@@ -196,26 +206,28 @@
         const priceSummary = $('[data-selected-plan-summary]');
         const planDrawer = $('[data-onboarding-modal]');
 
-        const renderSummary = (planId) => {
-            const plan = PLAN_DATA[planId];
-            if (!plan) return;
+        // Fonction pour afficher les détails du plan sélectionné dans le résumé
+        // const renderSummary = (planId) => {
+        //     const plan = PLAN_DATA[planId];
+        //     if (!plan) return;
 
-            if (priceSummary) {
-                priceSummary.innerHTML = `
-                    <div class="plan-badge">${escapeHtml(plan.badge)}</div>
-                    <h3 style="font-size:1.6rem;margin:0.9rem 0 0.35rem;">${escapeHtml(plan.name)}</h3>
-                    <div class="price-tag">
-                        <strong>${escapeHtml(plan.price)}</strong>
-                        <span class="muted">${escapeHtml(plan.billing)}</span>
-                    </div>
-                    <p class="muted" style="margin:0.95rem 0 0;line-height:1.8;">${escapeHtml(plan.description)}</p>
-                    <ul class="summary-list">
-                        ${plan.highlights.map((feature) => `<li>${escapeHtml(feature)}</li>`).join('')}
-                    </ul>
-                `;
-            }
-        };
+        //     if (priceSummary) {
+        //         priceSummary.innerHTML = `
+        //             <div class="plan-badge">${escapeHtml(plan.badge)}</div>
+        //             <h3 style="font-size:1.6rem;margin:0.9rem 0 0.35rem;">${escapeHtml(plan.name)}</h3>
+        //             <div class="price-tag">
+        //                 <strong>${escapeHtml(plan.price)}</strong>
+        //                 <span class="muted">${escapeHtml(plan.billing)}</span>
+        //             </div>
+        //             <p class="muted" style="margin:0.95rem 0 0;line-height:1.8;">${escapeHtml(plan.description)}</p>
+        //             <ul class="summary-list">
+        //                 ${plan.highlights.map((feature) => `<li>${escapeHtml(feature)}</li>`).join('')}
+        //             </ul>
+        //         `;
+        //     }
+        // };
 
+        // Centralise la logique de sélection pour les cartes et les boutons
         const setActivePlan = (planId) => {
             if (!PLAN_DATA[planId]) return;
 
@@ -224,7 +236,7 @@
             $all('[data-plan-name]').forEach((node) => {
                 node.textContent = PLAN_DATA[planId].name;
             });
-            renderSummary(planId);
+            // renderSummary(planId);
         };
 
         cards.forEach((card) => {

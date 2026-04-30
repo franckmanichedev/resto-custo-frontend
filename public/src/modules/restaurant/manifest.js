@@ -11,7 +11,7 @@ export const RESTAURANT_BACKOFFICE_ROUTES = {
     login: '/restaurant/login.html',
     plats: '/restaurant/plats.html',
     categories: '/restaurant/categories.html',
-    tables: '/restaurant/tables.html',
+    tables: '/restaurant/table.html',
     orders: '/restaurant/commandes.html',
     compositions: '/restaurant/compositions.html',
     users: '/restaurant/users.html'

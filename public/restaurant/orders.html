@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
+    <title>Resto QRCode - Commandes</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../src/styles/main.css">
+</head>
+<body class="bg-gray-50 font-sans">
+    <div class="flex h-screen">
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-lg">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">R</div>
+                    <div>
+                        <div class="font-semibold text-lg">RestoQR</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Espace restaurateur</div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
+                    <span class="font-medium">Tableau de bord</span>
+                </a>
+                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 text-orange-400 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-clipboard-list w-5 text-gray-300"></i>
+                    <span>Commandes</span>
+                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-red-600 text-white">0</span>
+                </a>
+                <div class="border-t border-white/5 my-2"></div>
+                <details class="group">
+                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 cursor-pointer"> <i class="fas fa-utensils w-5 text-gray-300"></i> <span>Menu</span></summary>
+                    <div class="mt-2 space-y-1 pl-6">
+                        <a href="./plats.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Plats</a>
+                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Compositions</a>
+                        <a href="./categories.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Categories</a>
+                    </div>
+                </details>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-table w-5 text-gray-300"></i>
+                    <span>Tables</span>
+                </a>
+                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
+                    <i class="fas fa-users w-5 text-gray-300"></i>
+                    <span>Clients</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5"></i>
+                    <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 overflow-auto">
+            <header class="bg-white border-b border-gray-200 px-8 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Commandes en cuisine</h1>
+                        <p class="text-sm text-gray-500 mt-1">Vue drag & drop pour faire evoluer les statuts.</p>
+                    </div>
+                    <p id="orders-last-updated" class="text-sm text-gray-500">Chargement...</p>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)_190px_150px] gap-4 items-center">
+                        <select id="status-filter" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Tous les statuts</option>
+                            <option value="pending">En attente</option>
+                            <option value="preparing">En preparation</option>
+                            <option value="ready">Pret</option>
+                            <option value="served">Servi</option>
+                            <option value="cancelled">Annule</option>
+                        </select>
+                        <input type="text" id="table-filter" placeholder="Filtrer par table..." class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                        <label class="flex items-center gap-2 text-sm text-gray-600">
+                            <input type="checkbox" id="auto-refresh" checked class="rounded border-gray-300 text-primary focus:ring-primary">
+                            <span>Auto-refresh 10s</span>
+                        </label>
+                        <button id="refresh-orders" class="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-sync-alt mr-2"></i>Actualiser
+                        </button>
+                    </div>
+                </div>
+
+                <div id="orders-list" class="grid grid-cols-1 gap-4 xl:grid-cols-3" role="list" aria-live="polite">
+                    <div class="text-center py-12 text-gray-500">Chargement...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initAdminShell } from '../src/shared/components/adminShell.js';
+        initAdminShell();
+    </script>
+    <script type="module" src="../src/modules/restaurant/pages/orders-page.js"></script>
+</body>
+</html>

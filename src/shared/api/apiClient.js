@@ -85,6 +85,7 @@ class ApiClient {
     constructor() {
         this.token = localStorage.getItem('authToken') || '';
         this.tokenListeners = [];
+        this.restaurant = this.createRestrictedApi('/restaurant');
     }
 
     setToken(token) {
@@ -205,6 +206,63 @@ class ApiClient {
         return this.get(`${endpoint}${queryString ? `?${queryString}` : ''}`, options);
     }
 
+    createRestrictedApi(prefix) {
+        const self = this;
+        const methods = ['get', 'post', 'put', 'patch', 'delete', 'getWithQuery'];
+        const apiObj = {};
+
+        methods.forEach(method => {
+            apiObj[method] = (endpoint, ...args) => {
+                const fullEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+                return self[method](`${prefix}${fullEndpoint}`, ...args);
+            };
+        });
+
+        // Lier les sous‑modules (plats, orders, etc.)
+        apiObj.plats = {
+            getAll: (params) => apiObj.getWithQuery('/plats', params),
+            getById: (id) => apiObj.get(`/plats/${id}`),
+            create: (data) => apiObj.post('/plats', data),
+            update: (id, data) => apiObj.put(`/plats/${id}`, data),
+            delete: (id) => apiObj.delete(`/plats/${id}`),
+            toggleAvailability: (id) => apiObj.patch(`/plats/${id}/toggle`, {})
+        };
+        apiObj.orders = {
+            getAll: (params) => apiObj.getWithQuery('/orders', params),
+            getById: (id) => apiObj.get(`/orders/${id}`),
+            updateStatus: (id, status) => apiObj.put(`/orders/${id}/status`, { status })
+        };
+        apiObj.tables = {
+            getAll: (params) => apiObj.getWithQuery('/tables', params),
+            getById: (id) => apiObj.get(`/tables/${id}`),
+            create: (data) => apiObj.post('/tables', data),
+            update: (id, data) => apiObj.put(`/tables/${id}`, data),
+            delete: (id) => apiObj.delete(`/tables/${id}`)
+        };
+        apiObj.categories = {
+            getAll: (params) => apiObj.getWithQuery('/categories', params),
+            getById: (id) => apiObj.get(`/categories/${id}`),
+            create: (data) => apiObj.post('/categories', data),
+            update: (id, data) => apiObj.put(`/categories/${id}`, data),
+            delete: (id) => apiObj.delete(`/categories/${id}`),
+            getTypes: (categoryId) => apiObj.get(`/categories/${categoryId}/types`),
+            getAllTypes: (params) => apiObj.getWithQuery('/categories/types/all', params),
+            createType: (data) => apiObj.post('/categories/types/all', data),
+            updateType: (id, data) => apiObj.put(`/categories/types/all/${id}`, data),
+            deleteType: (id) => apiObj.delete(`/categories/types/all/${id}`)
+        };
+        apiObj.compositions = {
+            getAll: (params) => apiObj.getWithQuery('/compositions', params),
+            getById: (id) => apiObj.get(`/compositions/${id}`),
+            create: (data) => apiObj.post('/compositions', data),
+            update: (id, data) => apiObj.put(`/compositions/${id}`, data),
+            delete: (id) => apiObj.delete(`/compositions/${id}`)
+        };
+        // Ajoutez d'autres sous‑modules si besoin (dashboard, etc.)
+
+        return apiObj;
+    }
+
     auth = {
         login: (email, password) => this.post('/auth/login', { email, password }),
         signup: (data) => this.post('/auth/signup', data),
@@ -226,7 +284,9 @@ class ApiClient {
 
     compositions = {
         getAll: (params = {}) => this.getWithQuery('/compositions', params),
+        getById: (id) => this.get(`/compositions/${id}`),
         create: (data) => this.post('/compositions', data),
+        update: (id, data) => this.put(`/compositions/${id}`, data),
         delete: (id) => this.delete(`/compositions/${id}`)
     };
 
