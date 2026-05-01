@@ -95,7 +95,7 @@ function renderTables(tables) {
     }
 
     tablesList.className = tableLayout === 'plan'
-        ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'
+        ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
         : 'space-y-3';
 
     tablesList.innerHTML = tables.map((table) => (

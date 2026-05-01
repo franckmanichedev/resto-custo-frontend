@@ -445,36 +445,36 @@ function renderActions(item, compact = false) {
 
 function renderGridItem(item) {
     return `
-        // <article role="listitem" class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" aria-label="Article ${escapeHtml(item.name)}">
-        //     <div class="relative aspect-[4/3] bg-gray-100">
-        //         ${item.image_url ? `
-        //             <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover">
-        //         ` : `
-        //             <div class="flex h-full items-center justify-center text-gray-300" aria-hidden="true">
-        //                 <i class="fas fa-utensils text-4xl"></i>
-        //             </div>
-        //         `}
-        //         <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-        //             <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm">${escapeHtml(getKindLabel(item.kind))}</span>
-        //             ${item.is_promo ? '<span class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">Promo</span>' : ''}
-        //         </div>
-        //     </div>
-        //     <div class="p-4">
-        //         <div class="flex items-start justify-between gap-3">
-        //             <div class="min-w-0">
-        //                 <h3 class="truncate text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
-        //                 <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">${escapeHtml(item.description || 'Aucune description')}</p>
-        //             </div>
-        //             <p class="shrink-0 text-lg font-bold text-primary">${formatPrice(item.price)}</p>
-        //         </div>
-        //         <div class="mt-3 flex flex-wrap gap-2">${renderBadges(item)}</div>
-        //         <div class="mt-3 flex flex-wrap gap-1">${renderCompositionsPreview(item)}</div>
-        //         <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
-        //             <span class="text-xs font-medium text-gray-500"><i class="far fa-clock mr-1"></i>${item.prep_time || 0} min</span>
-        //             <div class="flex gap-1">${renderActions(item, true)}</div>
-        //         </div>
-        //     </div>
-        // </article>
+        <article role="listitem" class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" aria-label="Article ${escapeHtml(item.name)}">
+            <div class="relative aspect-[4/3] bg-gray-100">
+                ${item.image_url ? `
+                    <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover">
+                ` : `
+                    <div class="flex h-full items-center justify-center text-gray-300" aria-hidden="true">
+                        <i class="fas fa-utensils text-4xl"></i>
+                    </div>
+                `}
+                <div class="absolute left-3 top-3 flex flex-wrap gap-2">
+                    <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm">${escapeHtml(getKindLabel(item.kind))}</span>
+                    ${item.is_promo ? '<span class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">Promo</span>' : ''}
+                </div>
+            </div>
+            <div class="p-4">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <h3 class="truncate text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
+                        <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">${escapeHtml(item.description || 'Aucune description')}</p>
+                    </div>
+                    <p class="shrink-0 text-lg font-bold text-primary">${formatPrice(item.price)}</p>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-2">${renderBadges(item)}</div>
+                <div class="mt-3 flex flex-wrap gap-1">${renderCompositionsPreview(item)}</div>
+                <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
+                    <span class="text-xs font-medium text-gray-500"><i class="far fa-clock mr-1"></i>${item.prep_time || 0} min</span>
+                    <div class="flex gap-1">${renderActions(item, true)}</div>
+                </div>
+            </div>
+        </article>
     `;
 }
 
@@ -536,21 +536,25 @@ function showItemsSkeleton() {
     const el = document.getElementById('items-list');
     if (!el) return;
     el.innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="bg-white rounded-xl p-4">
-                <div class="skeleton h-32 w-full mb-3"></div>
-                <div class="skeleton h-6 w-3/4 mb-2"></div>
-                <div class="skeleton h-4 w-1/2"></div>
-            </div>
-            <div class="bg-white rounded-xl p-4">
-                <div class="skeleton h-32 w-full mb-3"></div>
-                <div class="skeleton h-6 w-3/4 mb-2"></div>
-                <div class="skeleton h-4 w-1/2"></div>
-            </div>
-            <div class="bg-white rounded-xl p-4">
-                <div class="skeleton h-32 w-full mb-3"></div>
-                <div class="skeleton h-6 w-3/4 mb-2"></div>
-                <div class="skeleton h-4 w-1/2"></div>
+        <div class="animate-pulse rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                <div class="h-28 w-full shrink-0 animate-pulse rounded-xl bg-gray-200 md:w-36"></div>
+                <div class="min-w-0 flex-1 space-y-2 py-1">
+                    <div class="h-4 w-1/3 animate-pulse rounded bg-gray-200"></div>
+                    <div class="h-3 w-full animate-pulse rounded bg-gray-200"></div>
+                    <div class="h-3 w-5/6 animate-pulse rounded bg-gray-200"></div>
+                </div>
+                <div class="flex shrink-0 flex-col gap-3 md:items-end">
+                    <div class="space-y-2">
+                        <div class="h-5 w-16 animate-pulse rounded bg-gray-200"></div>
+                        <div class="h-3 w-10 animate-pulse rounded bg-gray-200"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="h-9 w-20 animate-pulse rounded-lg bg-gray-200"></div>
+                        <div class="h-9 w-24 animate-pulse rounded-lg bg-gray-200"></div>
+                        <div class="h-9 w-20 animate-pulse rounded-lg bg-gray-200"></div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -565,8 +569,6 @@ function resetForm() {
     modalTitle.textContent = 'Nouvel article';
     itemForm.reset();
     kindSelect.value = 'plat';
-    document.getElementById('item-promo').checked = false;
-    document.getElementById('item-decomposable').checked = false;
     document.getElementById('item-available').checked = true;
     document.getElementById('allow-custom-message').checked = true;
     document.querySelector('input[name="availability-mode"][value="everyday"]').checked = true;
@@ -581,7 +583,6 @@ function resetForm() {
     loadCategories('plat');
     renderTypeCategoryOptions();
     setImagePreview('');
-    setCompositionSectionVisible(false, { clear: false });
 }
 
 function openModal() {
@@ -668,9 +669,7 @@ async function editItem(id) {
         setImagePreview(item.image_url || '');
         document.getElementById('item-promo').checked = item.is_promo || false;
         document.getElementById('item-available').checked = item.is_available !== false;
-        const isDecomposable = item.is_decomposable || (item.compositions || []).length > 0;
-        document.getElementById('item-decomposable').checked = isDecomposable;
-        setCompositionSectionVisible(isDecomposable, { clear: false });
+        document.getElementById('item-decomposable').checked = item.is_decomposable || false;
         document.getElementById('allow-custom-message').checked = item.allow_custom_message !== false;
         document.getElementById('custom-message-hint').value = item.custom_message_hint || '';
 
@@ -737,21 +736,48 @@ itemForm.addEventListener('submit', async (event) => {
             submitBtn.textContent = 'Enregistrement...';
         }
         const category = await ensureCategorySelection();
-        if (!category && newTypeCategoryInput.value.trim()) {
-            showToast('Selectionnez ou creez une categorie avant de creer un type', 'warning');
+        if (!category) {
+            showToast('Veuillez selectionner ou creer une categorie', 'warning');
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
             return;
         }
 
-        const typeCategory = category ? await ensureTypeCategorySelection(category.id) : null;
-        const isDecomposable = document.getElementById('item-decomposable').checked;
+        await loadTypeCategories(category.id, typeCategorySelect.value);
+        const typeCategory = await ensureTypeCategorySelection(category.id);
+
+        // Ensure any new compositions (created via Enter) exist on server before saving the plat
+        const newSelections = selectedCompositionSelections.filter(s => !s.composition_id && s.name).map(s => s.name.trim()).filter(Boolean);
+        const uniqueNew = [...new Set(newSelections.map(n => normalizeCompositionName(n)))];
+        const createdMap = {};
+        if (uniqueNew.length) {
+            for (const nameNorm of uniqueNew) {
+                const existing = compositionsCache.find(c => normalizeCompositionName(c.name) === nameNorm);
+                if (existing) {
+                    createdMap[nameNorm] = existing;
+                    continue;
+                }
+                try {
+                    const createdResp = await compositionsService.create({ name: nameNorm });
+                    const created = createdResp.data;
+                    if (created) {
+                        compositionsCache.push(created);
+                        createdMap[nameNorm] = created;
+                    }
+                } catch (err) {
+                    // ignore individual creation errors but notify user
+                    showToast(`Erreur creation composition: ${nameNorm}`, 'warning');
+                }
+            }
+            // refresh suggestions cache
+            renderCompositionSuggestions(compositionSearchInput?.value || '');
+        }
 
         const payload = {
             name: document.getElementById('item-name').value.trim(),
             kind: kindSelect.value,
             category: kindSelect.value,
-            categorie_id: category?.id || null,
-            categorie_name: category?.name || null,
+            categorie_id: category.id,
+            categorie_name: category.name,
             type_categorie_id: typeCategory?.id || null,
             type_categorie_name: typeCategory?.name || null,
             description: document.getElementById('item-description').value.trim(),
@@ -760,18 +786,18 @@ itemForm.addEventListener('submit', async (event) => {
             image_url: document.getElementById('item-image-url').value.trim(),
             is_promo: document.getElementById('item-promo').checked,
             is_available: document.getElementById('item-available').checked,
-            is_decomposable: isDecomposable,
+            is_decomposable: document.getElementById('item-decomposable').checked,
             allow_custom_message: document.getElementById('allow-custom-message').checked,
             custom_message_hint: document.getElementById('custom-message-hint').value.trim(),
             availability_mode: document.querySelector('input[name="availability-mode"]:checked').value,
             available_days: Array.from(document.querySelectorAll('.availability-day:checked')).map((day) => day.value),
-            compositionSelections: isDecomposable
-                ? selectedCompositionSelections.map((selection) => (
-                    selection.composition_id
-                        ? { composition_id: selection.composition_id }
-                        : { name: selection.name }
-                ))
-                : []
+            compositionSelections: selectedCompositionSelections.map((selection) => {
+                if (selection.composition_id) return { composition_id: selection.composition_id };
+                const norm = normalizeCompositionName(selection.name || '');
+                const created = createdMap[norm];
+                if (created) return { composition_id: created.id };
+                return { name: selection.name };
+            })
         };
 
         const formData = new FormData();
@@ -825,18 +851,6 @@ categorySelect.addEventListener('change', async () => {
     await loadTypeCategories(categorySelect.value);
 });
 
-decomposableInput?.addEventListener('change', () => {
-    setCompositionSectionVisible(decomposableInput.checked, { clear: decomposableInput.checked ? false : true });
-});
-
-layoutButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-        menuLayout = button.dataset.itemsLayout || 'grid';
-        localStorage.setItem('restaurantMenuLayout', menuLayout);
-        renderItems(itemsCache);
-    });
-});
-
 compositionSearchInput.addEventListener('input', () => {
     renderCompositionSuggestions(compositionSearchInput.value);
 });
@@ -886,6 +900,4 @@ await loadCategories('plat');
 renderTypeCategoryOptions();
 syncSelectedCompositionSelections([]);
 setDayInputsEnabled(false);
-setCompositionSectionVisible(false, { clear: false });
-applyLayoutButtons();
 await loadItems();
