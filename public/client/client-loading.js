@@ -27,22 +27,42 @@ retryButton?.addEventListener('click', () => {
     window.location.reload();
 });
 
-try {
+const runStartSessionWithRetry = async (attempts = 3, delayMs = 700) => {
     statusNode.textContent = 'Creation de votre session en cours...';
     hintNode.textContent = 'Nous verifions la table scannee avant de charger le menu.';
-    await startSession();
-    statusNode.textContent = 'Votre table est prete.';
-    hintNode.textContent = 'Redirection vers les menus dans un instant.';
-    loaderContainer?.classList.add('opacity-70');
-    buttonContainer?.classList.remove('hidden');
-    retryContainer?.classList.add('hidden');
-    setTimeout(() => {
-        window.location.href = target;
-    }, 700);
-} catch (error) {
-    statusNode.textContent = 'Impossible de demarrer cette table.';
-    hintNode.textContent = error.message || 'Verifiez le QR code ou la connexion avec le serveur.';
-    buttonContainer?.classList.add('hidden');
-    retryContainer?.classList.remove('hidden');
-    showToast(error.message || 'Erreur de creation de session', 'error');
-}
+
+    for (let i = 1; i <= attempts; i++) {
+        try {
+            statusNode.textContent = `Tentative ${i} / ${attempts} — creation de la session...`;
+            await startSession();
+            statusNode.textContent = 'Votre table est prete.';
+            hintNode.textContent = 'Redirection vers les menus dans un instant.';
+            loaderContainer?.classList.add('opacity-70');
+            buttonContainer?.classList.remove('hidden');
+            retryContainer?.classList.add('hidden');
+            setTimeout(() => { window.location.href = target; }, 700);
+            return;
+        } catch (error) {
+            console.error('startSession error (attempt ' + i + '):', error);
+            if (i < attempts) {
+                hintNode.textContent = `Erreur temporaire — nouvelle tentative dans ${Math.round(delayMs)}ms...`;
+                await new Promise((res) => setTimeout(res, delayMs));
+                delayMs *= 1.5;
+                continue;
+            }
+
+            statusNode.textContent = 'Impossible de demarrer cette table.';
+            hintNode.textContent = error.message || 'Verifiez le QR code ou la connexion avec le serveur.';
+            buttonContainer?.classList.add('hidden');
+            retryContainer?.classList.remove('hidden');
+            const message = (error.payload && error.payload.message) || error.message || 'Erreur de creation de session';
+            showToast(message, 'error');
+            return;
+        }
+    }
+};
+
+runStartSessionWithRetry().catch((err) => {
+    console.error('Unexpected error in loading flow:', err);
+    showToast('Erreur interne lors du chargement', 'error');
+});
