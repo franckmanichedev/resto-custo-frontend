@@ -31,10 +31,10 @@
 
         <main class="phone-shell">
             <header class="sticky top-0 z-20 flex items-center gap-4 border-b border-gray-200 bg-white px-4 py-3 shadow-sm">
-                <button class="text-gray-600 transition hover:text-gray-800" data-back>
+                <button class="text-gray-600 transition hover:text-gray-200" data-back>
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="flex-1 text-center text-lg font-semibold text-gray-800">Que cherchez-vous ?</h1>
+                <h1 class="flex-1 text-center text-lg font-semibold text-gray-200">Que cherchez-vous ?</h1>
                 <div class="w-8"></div>
             </header>
 
@@ -42,21 +42,21 @@
                 <div class="mb-6">
                     <label class="relative block">
                         <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input id="searchInput" type="text" placeholder="Pizza, burger, salade..." class="w-full rounded-xl border border-gray-200 bg-white py-4 pl-12 pr-4 text-base shadow-sm outline-none focus:ring-2 focus:ring-amber-400">
+                        <input id="searchInput" type="text" placeholder="Pizza, burger, salade..." class="liquid-glass w-full rounded-xl py-4 pl-12 pr-4 text-base text-slate-100 outline-none focus:ring-2 focus:ring-amber-400">
                     </label>
                 </div>
 
                 <section class="mb-8">
-                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Categories</h2>
+                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-100">Categories</h2>
                     <div id="searchCategoriesList" class="flex flex-wrap gap-2"></div>
                 </section>
 
                 <section>
-                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">Resultats</h2>
+                    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-100">Resultats</h2>
                     <div id="resultsContainer" class="space-y-0"></div>
                     <div id="noResults" class="hidden py-8 text-center">
                         <i class="fas fa-utensils mb-2 text-4xl text-gray-300"></i>
-                        <p class="text-gray-500">Aucun plat trouve</p>
+                        <p class="text-gray">Aucun plat trouve</p>
                     </div>
                 </section>
             </main>
@@ -66,3 +66,4 @@
     <script type="module" src="./client-search.js"></script>
 </body>
 </html>
+

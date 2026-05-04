@@ -31,28 +31,28 @@
 
         <main class="phone-shell">
             <header class="sticky top-0 z-20 flex items-center gap-4 border-b border-gray-100 bg-white px-4 py-4 shadow-sm">
-                <button class="text-gray-600 transition hover:text-gray-800" data-back>
+                <button class="text-gray-600 transition hover:text-gray-200" data-back>
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="flex-1 text-center text-lg font-semibold text-gray-800">Etat de votre commande</h1>
-                <button class="text-gray-600 transition hover:text-gray-800" data-go-home>
+                <h1 class="flex-1 text-center text-lg font-semibold text-gray-200">Etat de votre commande</h1>
+                <button class="text-gray-600 transition hover:text-gray-200" data-go-home>
                     <i class="fas fa-house text-lg"></i>
                 </button>
             </header>
 
             <main class="page-main mx-auto max-w-3xl px-4 py-6">
-                <div id="trackingEmpty" class="hidden rounded-2xl bg-white px-5 py-10 text-center shadow-sm">
+                <div id="trackingEmpty" class="glass-card hidden rounded-2xl px-5 py-10 text-center">
                     <i class="fas fa-receipt text-5xl text-gray-300"></i>
                     <p class="mt-4 text-sm font-semibold text-gray-600">Aucune commande en cours pour le moment.</p>
                 </div>
 
                 <section id="trackingMain" class="space-y-6">
-                    <div class="rounded-2xl bg-white p-8 shadow-sm">
+                    <div class="glass-card rounded-2xl p-8">
                         <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
                             <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gray-500">Commande active</p>
-                                <h2 id="trackingOrderCode" class="mt-2 text-xl font-bold text-gray-800">-</h2>
-                                <p id="trackingOrderMeta" class="mt-1 text-sm text-gray-500">En attente...</p>
+                                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-gray">Commande active</p>
+                                <h2 id="trackingOrderCode" class="mt-2 text-xl font-bold text-gray-200">-</h2>
+                                <p id="trackingOrderMeta" class="mt-1 text-sm text-gray">En attente...</p>
                             </div>
                             <span id="trackingStatusBadge" class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">En attente</span>
                         </div>
@@ -61,10 +61,10 @@
                             <div class="tracking-bar absolute left-0 right-0 top-6 h-[3px]"></div>
                             <div id="trackingProgress" class="tracking-bar-indicator absolute left-0 top-6 h-[3px]"></div>
                             <div class="relative flex items-center justify-between gap-2">
-                                <span id="trackingStep1" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">1</span>
-                                <span id="trackingStep2" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">2</span>
-                                <span id="trackingStep3" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">3</span>
-                                <span id="trackingStep4" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray-500">4</span>
+                                <span id="trackingStep1" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray">1</span>
+                                <span id="trackingStep2" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray">2</span>
+                                <span id="trackingStep3" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray">3</span>
+                                <span id="trackingStep4" class="tracking-step flex h-12 w-12 items-center justify-center rounded-full border-[3px] border-gray-300 bg-white text-sm font-semibold text-gray">4</span>
                             </div>
                         </div>
 
@@ -76,12 +76,12 @@
                         </div>
                     </div>
 
-                    <div id="orderDetails" class="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm"></div>
+                    <div id="orderDetails" class="glass-card rounded-[1.5rem] p-4"></div>
 
                     <section id="trackingHistorySection" class="hidden">
                         <div class="mb-3">
-                            <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Historique</p>
-                            <h3 class="text-xl font-bold text-gray-800">Autres commandes</h3>
+                            <p class="text-sm font-semibold uppercase tracking-wide text-gray">Historique</p>
+                            <h3 class="text-xl font-bold text-gray-200">Autres commandes</h3>
                         </div>
                         <div id="trackingHistory" class="space-y-3"></div>
                     </section>
@@ -93,3 +93,4 @@
     <script type="module" src="./client-tracking.js"></script>
 </body>
 </html>
+

@@ -55,21 +55,21 @@ function renderRecentOrders(orders) {
     if (!container) return;
 
     if (!orders.length) {
-        container.innerHTML = '<div class="p-6 text-center text-gray-500">Aucune commande récente</div>';
+        container.innerHTML = '<div class="p-6 text-center text-gray">Aucune commande récente</div>';
         container.setAttribute('role', 'list');
         return;
     }
     container.innerHTML = orders.map((order) => `
         <div class="p-4 flex items-center justify-between hover:bg-gray-50 fade-in" role="listitem">
             <div>
-                <p class="font-medium text-gray-800">Commande #${escapeHtml(order.id?.slice(-6) || order.id)}</p>
-                <p class="text-sm text-gray-500">Table ${escapeHtml(order.table?.name || order.table_id || '-')} • ${escapeHtml(order.customer?.name || 'Client')}</p>
+                <p class="font-medium text-gray-200">Commande #${escapeHtml(order.id?.slice(-6) || order.id)}</p>
+                <p class="text-sm text-gray">Table ${escapeHtml(order.table?.name || order.table_id || '-')} • ${escapeHtml(order.customer?.name || 'Client')}</p>
             </div>
             <div class="flex items-center gap-4">
                 <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(order.status)}">
                     ${getStatusLabel(order.status)}
                 </span>
-                <span class="text-sm text-gray-500">${new Date(order.createdAt || order.created_at || Date.now()).toLocaleTimeString('fr-FR')}</span>
+                <span class="text-sm text-gray">${new Date(order.createdAt || order.created_at || Date.now()).toLocaleTimeString('fr-FR')}</span>
             </div>
         </div>
     `).join('');
@@ -80,11 +80,11 @@ function getStatusClass(status) {
         pending: 'bg-yellow-100 text-yellow-700',
         preparing: 'bg-blue-100 text-blue-700',
         ready: 'bg-green-100 text-green-700',
-        served: 'bg-gray-100 text-gray-700',
+        served: 'bg-gray-100 text-white',
         cancelled: 'bg-red-100 text-red-700'
     };
 
-    return classes[status] || 'bg-gray-100 text-gray-700';
+    return classes[status] || 'bg-gray-100 text-white';
 }
 
 function getStatusLabel(status) {

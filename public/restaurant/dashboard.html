@@ -66,7 +66,7 @@
                 <div class="max-w-7xl mx-auto flex items-center gap-6">
                     <div class="flex-1">
                         <h1 class="text-2xl font-semibold text-gray-900">Tableau de bord</h1>
-                        <p class="text-sm text-gray-500 mt-1">Vue rapide sur l'activité du restaurant</p>
+                        <p class="text-sm text-gray mt-1">Vue rapide sur l'activité du restaurant</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <div class="relative">
@@ -80,8 +80,8 @@
                         <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-gray-200">
                             <img src="/public/assets/img/avatar.png" alt="avatar" class="w-8 h-8 rounded-full" onerror="this.style.display='none'" />
                             <div class="text-sm">
-                                <div id="user-name" class="font-medium text-gray-800">Admin</div>
-                                <div class="text-xs text-gray-500">resto@example.com</div>
+                                <div id="user-name" class="font-medium text-gray-200">Admin</div>
+                                <div class="text-xs text-gray">resto@example.com</div>
                             </div>
                         </div>
                     </div>
@@ -93,8 +93,8 @@
                     <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">Commandes aujourd'hui</p>
-                                <p id="stats-today" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-20" id="s-today"></span></p>
+                                <p class="text-sm text-gray">Commandes aujourd'hui</p>
+                                <p id="stats-today" class="mt-2 text-3xl font-bold text-gray-200"><span class="skeleton h-8 w-20" id="s-today"></span></p>
                             </div>
                             <div class="w-12 h-12 rounded-xl bg-yellow-100 text-yellow-600 flex items-center justify-center" aria-hidden="true">
                                 <i class="fas fa-receipt"></i>
@@ -104,8 +104,8 @@
                     <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">En attente</p>
-                                <p id="stats-pending" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-16" id="s-pending"></span></p>
+                                <p class="text-sm text-gray">En attente</p>
+                                <p id="stats-pending" class="mt-2 text-3xl font-bold text-gray-200"><span class="skeleton h-8 w-16" id="s-pending"></span></p>
                             </div>
                             <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center" aria-hidden="true">
                                 <i class="fas fa-hourglass-half"></i>
@@ -115,8 +115,8 @@
                     <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">Articles disponibles</p>
-                                <p id="stats-plats" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-20" id="s-plats"></span></p>
+                                <p class="text-sm text-gray">Articles disponibles</p>
+                                <p id="stats-plats" class="mt-2 text-3xl font-bold text-gray-200"><span class="skeleton h-8 w-20" id="s-plats"></span></p>
                             </div>
                             <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center" aria-hidden="true">
                                 <i class="fas fa-utensils"></i>
@@ -126,8 +126,8 @@
                     <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-gray-500">Tables actives</p>
-                                <p id="stats-tables" class="mt-2 text-3xl font-bold text-gray-800"><span class="skeleton h-8 w-16" id="s-tables"></span></p>
+                                <p class="text-sm text-gray">Tables actives</p>
+                                <p id="stats-tables" class="mt-2 text-3xl font-bold text-gray-200"><span class="skeleton h-8 w-16" id="s-tables"></span></p>
                             </div>
                             <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center" aria-hidden="true">
                                 <i class="fas fa-table"></i>
@@ -137,7 +137,7 @@
                 </section>
 
                 <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-4">Évolution des ventes</h3>
+                    <h3 class="text-sm font-semibold text-white mb-4">Évolution des ventes</h3>
                     <div class="w-full h-44">
                         <canvas id="salesChart" width="800" height="220"></canvas>
                     </div>
@@ -146,13 +146,13 @@
                 <section class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <div>
-                            <h2 class="text-lg font-semibold text-gray-800">Commandes recentes</h2>
-                            <p class="text-sm text-gray-500">Dernieres commandes recues par le restaurant.</p>
+                            <h2 class="text-lg font-semibold text-gray-200">Commandes recentes</h2>
+                            <p class="text-sm text-gray">Dernieres commandes recues par le restaurant.</p>
                         </div>
                         <a href="./orders.html" class="text-sm font-semibold text-primary hover:underline">Voir tout</a>
                     </div>
                     <div id="recent-orders" role="list" aria-live="polite">
-                        <div class="p-6 text-center text-gray-500">Chargement...</div>
+                        <div class="p-6 text-center text-gray">Chargement...</div>
                     </div>
                 </section>
             </div>

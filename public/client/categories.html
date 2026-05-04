@@ -14,8 +14,8 @@
         <aside class="desktop-rail">
             <section class="soft-card desktop-hero rounded-[2rem] p-6">
                 <p class="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">Categories</p>
-                <h2 class="mt-3 text-3xl font-black text-slate-950">Explorer la carte par univers</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-600">Ici, le client retrouve toutes les familles du restaurant avec un rendu image + nom, puis peut descendre directement vers les plats lies.</p>
+                <h2 class="mt-3 text-3xl font-black text-slate-950">Choisir une categorie</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-600">Le client cherche une famille, puis revient sur l accueil avec l accordéon correspondant deja ouvert.</p>
                 <div class="desktop-stat mt-6 rounded-[1.7rem] p-4 text-white">
                     <span class="desktop-pill"><i class="fas fa-chair"></i> Table <span data-table-label>-</span></span>
                     <p class="mt-4 text-sm text-white/75">Session active <span data-session-timer>--:--</span></p>
@@ -35,10 +35,10 @@
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex flex-col">
                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white shadow-md">RQ</div>
-                        <span class="mt-1 text-xs font-medium text-gray-500">Table <span data-table-label>-</span></span>
+                        <span class="mt-1 text-xs font-medium text-gray">Table <span data-table-label>-</span></span>
                     </div>
                     <button class="relative" data-go-cart>
-                        <i class="fas fa-shopping-basket text-2xl text-gray-700"></i>
+                        <i class="fas fa-shopping-basket text-2xl text-white"></i>
                         <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">0</span>
                     </button>
                 </div>
@@ -46,34 +46,21 @@
 
             <main class="page-main mx-auto max-w-7xl px-4 py-4">
                 <section class="mb-6">
-                    <div class="mb-3 flex items-center justify-between gap-3">
-                        <div>
-                            <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Categories</p>
-                            <h1 id="categoryCurrentTitle" class="text-2xl font-bold text-gray-800">Toutes les categories</h1>
-                        </div>
-                        <button class="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-white shadow-sm" data-go-search>
-                            Rechercher
-                        </button>
-                    </div>
-                    <div id="categoryFilters" class="scrollbar-hide flex gap-2 overflow-x-auto pb-2"></div>
+                    <label class="relative block">
+                        <i class="fas fa-search absolute left-4 top-1/2 z-10 -translate-y-1/2 text-white/60"></i>
+                        <input id="categorySearchInput" type="search" placeholder="Rechercher une categorie..." class="liquid-glass w-full rounded-2xl py-4 pl-12 pr-4 text-base text-white placeholder:text-white/58 outline-none focus:ring-2 focus:ring-amber-400">
+                    </label>
                 </section>
 
                 <section class="mb-8">
-                    <div id="categoriesGrid" class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
-                </section>
-
-                <section>
-                    <div class="mb-3">
-                        <p class="text-sm font-semibold uppercase tracking-wide text-gray-500">Selection</p>
-                        <h2 class="text-xl font-bold text-gray-800">Plats associes</h2>
-                    </div>
-                    <div id="categoryPlatsContainer"></div>
+                    <div id="categoriesGrid" class="grid grid-cols-3 gap-3"></div>
+                    <div id="noCategoryResults" class="glass-card mt-4 hidden rounded-2xl px-5 py-8 text-center text-white">Aucune categorie trouvee.</div>
                 </section>
             </main>
 
             <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white px-6 py-2 shadow-lg">
                 <div class="flex items-center justify-between">
-                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="index">
+                    <button class="nav-btn flex flex-col items-center text-gray" data-page="index">
                         <i class="fas fa-home text-xl"></i>
                         <span class="mt-1 text-xs">Accueil</span>
                     </button>
@@ -81,11 +68,11 @@
                         <i class="fas fa-list-ul text-xl"></i>
                         <span class="mt-1 text-xs">Categories</span>
                     </button>
-                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="tracking">
+                    <button class="nav-btn flex flex-col items-center text-gray" data-page="tracking">
                         <i class="fas fa-truck text-xl"></i>
-                        <span class="mt-1 text-xs">Commandes</span>
+                        <span class="mt-1 text-xs">Commandes</span><span data-active-order-badge class="active-order-badge absolute -right-1 top-0"></span>
                     </button>
-                    <button class="nav-btn relative flex flex-col items-center text-gray-500" data-page="cart">
+                    <button class="nav-btn relative flex flex-col items-center text-gray" data-page="cart">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span class="mt-1 text-xs">Panier</span>
                         <span data-cart-count class="cartBadge absolute -right-2 -top-2 hidden h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">0</span>

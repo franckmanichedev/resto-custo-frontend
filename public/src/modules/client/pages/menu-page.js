@@ -102,7 +102,7 @@ function renderDayTabs(days, selectedDay, currentDay) {
     }
 
     container.innerHTML = days.map((day) => `
-        <button type="button" data-day="${day}" class="day-tab rounded-2xl px-4 py-2 text-sm font-bold transition-all ${day === selectedDay ? 'bg-yellow-500 text-white shadow-md' : 'border border-gray-200 text-gray-700 hover:bg-gray-50'}">
+        <button type="button" data-day="${day}" class="day-tab rounded-2xl px-4 py-2 text-sm font-bold transition-all ${day === selectedDay ? 'bg-yellow-500 text-white shadow-md' : 'border border-gray-200 text-white hover:bg-gray-50'}">
             ${escapeHtml(getWeekDayLabel(day))}
             ${day === currentDay ? '<span class="ml-1 text-xs">(aujourd\'hui)</span>' : ''}
         </button>
@@ -133,7 +133,7 @@ function renderMenu(plats, selectedDay, currentDay) {
         container.innerHTML = `
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500">Aucun article ne correspond a vos criteres</p>
+                <p class="text-gray">Aucun article ne correspond a vos criteres</p>
                 <button id="clear-filters-btn" class="mt-4 text-primary font-medium">Reinitialiser les filtres</button>
             </div>
         `;
@@ -178,10 +178,10 @@ function renderMenu(plats, selectedDay, currentDay) {
             <section class="col-span-full mb-8">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h2 class="text-2xl font-serif font-semibold text-gray-800">${escapeHtml(group.categoryName)}</h2>
-                        <p class="text-sm text-gray-500">${group.kind === 'boisson' ? 'Boissons' : 'Plats'}</p>
+                        <h2 class="text-2xl font-serif font-semibold text-gray-200">${escapeHtml(group.categoryName)}</h2>
+                        <p class="text-sm text-gray">${group.kind === 'boisson' ? 'Boissons' : 'Plats'}</p>
                     </div>
-                    <span class="text-sm text-gray-500">${group.items.length} article(s)</span>
+                    <span class="text-sm text-gray">${group.items.length} article(s)</span>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     ${group.items.map((plat) => renderPlatCard(plat, selectedDay, currentDay)).join('')}
@@ -214,11 +214,11 @@ function renderCategoryFilters(plats) {
     }
 
     container.innerHTML = `
-        <button data-category-id="all" class="filter-menu-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all ${activeFilters.categoryId === 'all' ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+        <button data-category-id="all" class="filter-menu-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all ${activeFilters.categoryId === 'all' ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-white hover:bg-gray-200'}">
             Toutes
         </button>
         ${availableCategories.map((category) => `
-            <button data-category-id="${escapeHtml(category.id)}" class="filter-menu-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all ${activeFilters.categoryId === category.id ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">
+            <button data-category-id="${escapeHtml(category.id)}" class="filter-menu-category-btn py-2 px-3 rounded-xl text-sm font-medium transition-all ${activeFilters.categoryId === category.id ? 'bg-yellow-400 text-white' : 'bg-gray-100 text-white hover:bg-gray-200'}">
                 ${escapeHtml(category.label)}
                 <span class="ml-1 text-xs opacity-70">${category.count}</span>
             </button>
@@ -229,9 +229,9 @@ function renderCategoryFilters(plats) {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-menu-category-btn').forEach((entry) => {
                 entry.classList.remove('bg-yellow-400', 'text-white');
-                entry.classList.add('bg-gray-100', 'text-gray-700');
+                entry.classList.add('bg-gray-100', 'text-white');
             });
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-400', 'text-white');
         });
     });
@@ -311,14 +311,14 @@ function renderPlatCard(plat, selectedDay, currentDay) {
                     <div>
                         <h3 class="font-semibold text-lg">${escapeHtml(plat.name)}</h3>
                         <div class="mt-2 flex flex-wrap gap-2">
-                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">${escapeHtml(getNormalizedKind(plat) === 'boisson' ? 'Boisson' : 'Plat')}</span>
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-white">${escapeHtml(getNormalizedKind(plat) === 'boisson' ? 'Boisson' : 'Plat')}</span>
                             <span class="rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-semibold text-yellow-700">${escapeHtml(getDisplayCategoryName(plat))}</span>
                             ${typeCategoryName ? `<span class="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">${escapeHtml(typeCategoryName)}</span>` : ''}
                         </div>
                     </div>
                     <span class="font-bold text-primary">${formatPrice(plat.price)}</span>
                 </div>
-                <p class="text-gray-500 text-sm line-clamp-2">${escapeHtml(plat.description || 'Aucune description')}</p>
+                <p class="text-gray text-sm line-clamp-2">${escapeHtml(plat.description || 'Aucune description')}</p>
                 <div class="flex items-center justify-between mt-4">
                     <div class="flex items-center gap-1 text-sm text-gray-400">
                         <i class="far fa-clock"></i>
@@ -410,9 +410,9 @@ function setupFilterModal() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-kind-btn').forEach((entry) => {
                 entry.classList.remove('bg-yellow-500', 'text-white', 'active', 'bg-yellow-400');
-                entry.classList.add('bg-gray-100', 'text-gray-700');
+                entry.classList.add('bg-gray-100', 'text-white');
             });
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
 
             const nextKind = btn.dataset.kind || 'all';
@@ -436,9 +436,9 @@ function setupFilterModal() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-day-btn').forEach((entry) => {
                 entry.classList.remove('bg-yellow-500', 'text-white', 'active');
-                entry.classList.add('bg-gray-100', 'text-gray-700');
+                entry.classList.add('bg-gray-100', 'text-white');
             });
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
         });
     });
@@ -447,9 +447,9 @@ function setupFilterModal() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.filter-sort-btn').forEach((entry) => {
                 entry.classList.remove('bg-yellow-500', 'text-white', 'active');
-                entry.classList.add('bg-gray-100', 'text-gray-700');
+                entry.classList.add('bg-gray-100', 'text-white');
             });
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
         });
     });
@@ -458,41 +458,41 @@ function setupFilterModal() {
 function syncModalWithFilters() {
     document.querySelectorAll('.filter-kind-btn').forEach((btn) => {
         if (btn.dataset.kind === activeFilters.kind) {
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
         } else {
             btn.classList.remove('bg-yellow-500', 'text-white', 'active');
-            btn.classList.add('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-gray-100', 'text-white');
         }
     });
 
     document.querySelectorAll('.filter-menu-category-btn').forEach((btn) => {
         if (btn.dataset.categoryId === activeFilters.categoryId) {
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-400', 'text-white');
         } else {
             btn.classList.remove('bg-yellow-400', 'text-white');
-            btn.classList.add('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-gray-100', 'text-white');
         }
     });
 
     document.querySelectorAll('.filter-day-btn').forEach((btn) => {
         if (btn.dataset.day === activeFilters.selectedDay) {
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
         } else {
             btn.classList.remove('bg-yellow-500', 'text-white', 'active');
-            btn.classList.add('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-gray-100', 'text-white');
         }
     });
 
     document.querySelectorAll('.filter-sort-btn').forEach((btn) => {
         if (btn.dataset.sort === activeFilters.sortBy) {
-            btn.classList.remove('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-gray-100', 'text-white');
             btn.classList.add('bg-yellow-500', 'text-white', 'active');
         } else {
             btn.classList.remove('bg-yellow-500', 'text-white', 'active');
-            btn.classList.add('bg-gray-100', 'text-gray-700');
+            btn.classList.add('bg-gray-100', 'text-white');
         }
     });
 }

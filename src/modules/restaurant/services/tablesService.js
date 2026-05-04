@@ -7,6 +7,6 @@ export const tablesService = {
     update: (id, payload) => api.restaurant.tables.update(id, payload),
     remove: (id) => api.restaurant.tables.delete(id),
     getClientMenuUrl(table) {
-        return `/client/index.html?table=${encodeURIComponent(table.id)}`;
+        return `/client/loading.html?table=${encodeURIComponent(table.id)}`;
     }
 };

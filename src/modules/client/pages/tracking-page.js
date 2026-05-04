@@ -81,15 +81,15 @@ function renderOrderCard(order) {
             <div class="${isServed ? 'bg-gray-100' : 'bg-gradient-to-r from-primary/10 to-transparent'} p-4 border-b border-gray-100">
                 <div class="flex items-center justify-between flex-wrap gap-3">
                     <div>
-                        <p class="text-xs text-gray-500">Commande</p>
-                        <h3 class="font-semibold text-gray-800">#${escapeHtml(order.id?.slice(-8) || order.id)}</h3>
+                        <p class="text-xs text-gray">Commande</p>
+                        <h3 class="font-semibold text-gray-200">#${escapeHtml(order.id?.slice(-8) || order.id)}</h3>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500">Table</p>
+                        <p class="text-xs text-gray">Table</p>
                         <p class="font-medium">${escapeHtml(order.table?.name || order.table_id || '-')}</p>
                     </div>
                     <div class="text-right">
-                        <p class="text-xs text-gray-500">Total</p>
+                        <p class="text-xs text-gray">Total</p>
                         <p class="font-bold text-primary">${formatPrice(order.total_price || 0)}</p>
                     </div>
                 </div>
@@ -99,7 +99,7 @@ function renderOrderCard(order) {
             ${!isServed && !isCancelled ? `
                 <div class="p-4 border-b border-gray-100">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm font-medium text-gray-700">Statut</span>
+                        <span class="text-sm font-medium text-white">Statut</span>
                         <span class="status-badge ${statusInfo.color}">${statusInfo.text}</span>
                     </div>
                     
@@ -109,7 +109,7 @@ function renderOrderCard(order) {
                                  style="width: ${statusInfo.progress}%; background-color: ${getProgressColor(order.status)}">
                             </div>
                         </div>
-                        <div class="flex justify-between mt-2 text-xs text-gray-500">
+                        <div class="flex justify-between mt-2 text-xs text-gray">
                             <span>Commandé</span>
                             <span>En préparation</span>
                             <span>Prêt</span>
@@ -133,7 +133,7 @@ function renderOrderCard(order) {
                         ${isServed ? `
                             <i class="fas fa-check-circle text-green-500 text-xl"></i>
                             <span class="text-green-600 font-medium">Commande servie</span>
-                            <span class="text-sm text-gray-500 ml-auto">${new Date(order.served_at || order.updatedAt).toLocaleString('fr-FR')}</span>
+                            <span class="text-sm text-gray ml-auto">${new Date(order.served_at || order.updatedAt).toLocaleString('fr-FR')}</span>
                         ` : ''}
                         ${isCancelled ? `
                             <i class="fas fa-times-circle text-red-500 text-xl"></i>
@@ -145,14 +145,14 @@ function renderOrderCard(order) {
             
             <!-- Liste des plats -->
             <div class="p-4 space-y-3">
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Votre commande</p>
+                <p class="text-xs font-medium text-gray uppercase tracking-wider">Votre commande</p>
                 ${groupedItems.map(group => `
                     <div class="border-l-2 border-primary/30 pl-3">
                         <div class="flex justify-between items-start">
                             <div>
-                                <p class="font-medium text-gray-800">${escapeHtml(group.plat_name)}</p>
+                                <p class="font-medium text-gray-200">${escapeHtml(group.plat_name)}</p>
                                 ${renderItemTaxonomy(group)}
-                                <p class="text-sm text-gray-500">Quantité: ${group.total_quantity}</p>
+                                <p class="text-sm text-gray">Quantité: ${group.total_quantity}</p>
                             </div>
                             <span class="text-sm font-medium">${formatPrice(group.total_price)}</span>
                         </div>
@@ -162,8 +162,8 @@ function renderOrderCard(order) {
                                 ${group.variants.map(variant => `
                                     <div class="text-sm bg-gray-50 rounded-lg p-2">
                                         <div class="flex justify-between">
-                                            <span class="font-medium text-gray-700">${escapeHtml(variant.label)}</span>
-                                            <span class="text-gray-500">x${variant.quantity}</span>
+                                            <span class="font-medium text-white">${escapeHtml(variant.label)}</span>
+                                            <span class="text-gray">x${variant.quantity}</span>
                                         </div>
                                         ${variant.compositions.length ? `
                                             <div class="flex flex-wrap gap-1 mt-1">
@@ -200,7 +200,7 @@ function renderItemTaxonomy(item) {
     if (item.kind) {
         labels.push({
             text: item.kind === 'boisson' ? 'Boisson' : 'Plat',
-            classes: 'bg-gray-100 text-gray-700'
+            classes: 'bg-gray-100 text-white'
         });
     }
 

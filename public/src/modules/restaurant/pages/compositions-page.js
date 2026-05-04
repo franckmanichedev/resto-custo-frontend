@@ -73,7 +73,7 @@ function showCompositionsSkeleton() {
 
 function renderCompositions(compositions) {
     if (!compositions.length) {
-        compositionsList.innerHTML = '<div class="text-center py-8 text-gray-500">Aucune composition trouvee</div>';
+        compositionsList.innerHTML = '<div class="text-center py-8 text-gray">Aucune composition trouvee</div>';
         return;
     }
 
@@ -85,7 +85,7 @@ function renderCompositions(compositions) {
                     ${composition.is_allergen ? '<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Allergene</span>' : ''}
                     ${composition.is_active === false ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Inactive</span>' : ''}
                 </div>
-                ${composition.description ? `<p class="text-sm text-gray-500 mt-1">${escapeHtml(composition.description)}</p>` : ''}
+                ${composition.description ? `<p class="text-sm text-gray mt-1">${escapeHtml(composition.description)}</p>` : ''}
                 ${(composition.aliases || []).length ? `<p class="text-xs text-gray-400 mt-1">Alias: ${escapeHtml(composition.aliases.join(', '))}</p>` : ''}
                 <p class="text-xs text-gray-400 mt-1">ID: ${escapeHtml(composition.id)}</p>
             </div>

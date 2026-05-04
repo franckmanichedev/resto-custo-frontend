@@ -11,7 +11,9 @@ import {
     loadPlat,
     redirectTo,
     redirectToLoadingIfNeeded,
-    showToast
+    renderSkeleton,
+    showToast,
+    withButtonLoading
 } from './client-core.js';
 
 const MOBILE_BREAKPOINT = 1100;
@@ -20,6 +22,9 @@ bindChrome();
 
 if (!redirectToLoadingIfNeeded()) {
     try {
+        const unitsNodeInitial = document.getElementById('unitsContainer');
+        if (unitsNodeInitial) unitsNodeInitial.innerHTML = renderSkeleton('detail');
+
         const platId = new URLSearchParams(window.location.search).get('id');
         if (!platId) {
             throw new Error('Plat introuvable.');
@@ -81,12 +86,12 @@ if (!redirectToLoadingIfNeeded()) {
 
         const renderUnits = () => {
             if (!compositions.length) {
-                unitsNode.innerHTML = '<div class="rounded-[1.25rem] border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-sm">Ce plat n a pas de personnalisation disponible.</div>';
+                unitsNode.innerHTML = '<div class="glass-card rounded-[1.25rem] p-4 text-sm text-slate-700">Ce plat n a pas de personnalisation disponible.</div>';
                 return;
             }
 
             unitsNode.innerHTML = state.units.map((unit, index) => `
-                <div class="rounded-[1.25rem] border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="glass-card rounded-[1.25rem] p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <p class="text-sm font-bold text-slate-900">Exemplaire ${index + 1}</p>
@@ -177,7 +182,7 @@ if (!redirectToLoadingIfNeeded()) {
                 return;
             }
             try {
-                const response = await apiRequest('/front-office/cart/items', {
+                const response = await withButtonLoading(document.getElementById('addToCartBtn'), () => apiRequest('/front-office/cart/items', {
                     method: 'POST',
                     body: {
                         session_token: getSessionToken(),
@@ -187,10 +192,11 @@ if (!redirectToLoadingIfNeeded()) {
                             composition_actions: unit.removed.map((compositionId) => ({ composition_id: compositionId, action: 'removed' }))
                         }))
                     }
-                });
+                }), 'Ajout');
                 localStorage.setItem('resto.client.cart', JSON.stringify({ savedAt: Date.now(), data: response.data }));
                 showToast(`${state.quantity} ${plat.name} ajoute(s) au panier`, 'success');
                 await loadCart().catch(() => {});
+                redirectTo('cart');
             } catch (error) {
                 showToast(error.message || 'Impossible d ajouter ce plat au panier.', 'error');
             }

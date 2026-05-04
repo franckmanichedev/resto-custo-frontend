@@ -170,7 +170,7 @@ function renderSelectedCompositions() {
     if (!selectedCompositionsContainer) return;
 
     if (!selectedCompositionSelections.length) {
-        selectedCompositionsContainer.innerHTML = '<span class="text-sm text-gray-500">Aucune composition selectionnee</span>';
+        selectedCompositionsContainer.innerHTML = '<span class="text-sm text-gray">Aucune composition selectionnee</span>';
         return;
     }
 
@@ -183,7 +183,7 @@ function renderSelectedCompositions() {
         const isAllergen = Boolean(existing?.is_allergen);
 
         return `
-            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${isExisting ? 'bg-gray-100 text-gray-700' : 'bg-yellow-100 text-yellow-700'}">
+            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${isExisting ? 'bg-gray-100 text-white' : 'bg-yellow-100 text-yellow-700'}">
                 <span>${escapeHtml(label)}</span>
                 ${isAllergen ? '<span class="text-red-500">Allergene</span>' : ''}
                 ${!isExisting ? '<span class="opacity-70">Nouveau</span>' : ''}
@@ -231,7 +231,7 @@ function renderCompositionSuggestions(query = '') {
         ${filteredExisting.map((composition) => `
             <button type="button" class="composition-suggestion flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50" data-composition-id="${escapeHtml(composition.id)}">
                 <span>
-                    <span class="font-medium text-gray-800">${escapeHtml(composition.name)}</span>
+                    <span class="font-medium text-gray-200">${escapeHtml(composition.name)}</span>
                     ${composition.is_allergen ? '<span class="ml-2 text-xs text-red-500">Allergene</span>' : ''}
                 </span>
                 <span class="text-xs text-gray-400">Existant</span>
@@ -240,7 +240,7 @@ function renderCompositionSuggestions(query = '') {
         ${shouldOfferCreate ? `
             <button type="button" class="composition-create flex w-full items-center justify-between gap-3 border-t border-gray-100 px-4 py-3 text-left hover:bg-yellow-50" data-composition-name="${escapeHtml(query.trim())}">
                 <span>
-                    <span class="font-medium text-gray-800">${escapeHtml(query.trim())}</span>
+                    <span class="font-medium text-gray-200">${escapeHtml(query.trim())}</span>
                 </span>
                 <span class="text-xs font-semibold text-yellow-700">Creer</span>
             </button>
@@ -377,7 +377,7 @@ function renderItems(items) {
 
     if (!items.length) {
         itemsList.className = '';
-        itemsList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white py-14 text-center text-gray-500">Aucun article trouve</div>';
+        itemsList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white py-14 text-center text-gray">Aucun article trouve</div>';
         return;
     }
 
@@ -403,7 +403,7 @@ function renderBadges(item) {
         </span>
         ${item.is_promo ? '<span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">Promotion</span>' : ''}
         ${taxonomy.map((label, index) => `
-            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${index === 0 ? 'bg-gray-100 text-gray-700' : index === 1 ? 'bg-yellow-50 text-yellow-700' : 'bg-blue-50 text-blue-700'}">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${index === 0 ? 'bg-gray-100 text-white' : index === 1 ? 'bg-yellow-50 text-yellow-700' : 'bg-blue-50 text-blue-700'}">
                 ${escapeHtml(label)}
             </span>
         `).join('')}
@@ -455,7 +455,7 @@ function renderGridItem(item) {
                     </div>
                 `}
                 <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-                    <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm">${escapeHtml(getKindLabel(item.kind))}</span>
+                    <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">${escapeHtml(getKindLabel(item.kind))}</span>
                     ${item.is_promo ? '<span class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">Promo</span>' : ''}
                 </div>
             </div>
@@ -463,14 +463,14 @@ function renderGridItem(item) {
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <h3 class="truncate text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
-                        <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500">${escapeHtml(item.description || 'Aucune description')}</p>
+                        <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray">${escapeHtml(item.description || 'Aucune description')}</p>
                     </div>
                     <p class="shrink-0 text-lg font-bold text-primary">${formatPrice(item.price)}</p>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-2">${renderBadges(item)}</div>
                 <div class="mt-3 flex flex-wrap gap-1">${renderCompositionsPreview(item)}</div>
                 <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
-                    <span class="text-xs font-medium text-gray-500"><i class="far fa-clock mr-1"></i>${item.prep_time || 0} min</span>
+                    <span class="text-xs font-medium text-gray"><i class="far fa-clock mr-1"></i>${item.prep_time || 0} min</span>
                     <div class="flex gap-1">${renderActions(item, true)}</div>
                 </div>
             </div>
@@ -496,13 +496,13 @@ function renderListItem(item) {
                         <h3 class="text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
                         ${renderBadges(item)}
                     </div>
-                    <p class="mt-1 line-clamp-2 text-sm text-gray-500">${escapeHtml(item.description || 'Aucune description')}</p>
+                    <p class="mt-1 line-clamp-2 text-sm text-gray">${escapeHtml(item.description || 'Aucune description')}</p>
                     <div class="mt-2 flex flex-wrap gap-1">${renderCompositionsPreview(item, 5)}</div>
                 </div>
                 <div class="flex shrink-0 flex-col gap-3 md:items-end">
                     <div>
                         <p class="text-xl font-bold text-primary">${formatPrice(item.price)}</p>
-                        <p class="text-xs text-gray-500">${item.prep_time || 0} min</p>
+                        <p class="text-xs text-gray">${item.prep_time || 0} min</p>
                     </div>
                     <div class="flex flex-wrap gap-2">${renderActions(item)}</div>
                 </div>

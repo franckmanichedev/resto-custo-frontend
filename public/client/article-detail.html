@@ -37,13 +37,13 @@
             <div class="relative min-h-screen">
                 <section id="detailImageZone" class="relative min-h-[260px] overflow-hidden md:min-h-[340px]" style="height: 40vh;">
                     <img id="platImage" src="" alt="Plat" class="h-full w-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/24 via-black/10 to-transparent"></div>
 
-                    <button id="backBtn" class="absolute left-4 top-10 z-20 rounded-full bg-white/30 p-2 text-white backdrop-blur-md">
+                    <button id="backBtn" class="liquid-glass absolute left-4 top-10 z-20 rounded-full p-2 text-white">
                         <i class="fas fa-arrow-left text-xl"></i>
                     </button>
                     <h1 class="absolute left-1/2 top-10 z-20 -translate-x-1/2 text-lg font-semibold tracking-wide text-white drop-shadow-md">Details</h1>
-                    <button class="absolute right-4 top-10 z-20 rounded-full bg-white/20 p-2 text-white backdrop-blur-md" data-go-cart>
+                    <button class="liquid-glass absolute right-4 top-10 z-20 rounded-full p-2 text-white" data-go-cart>
                         <i class="fas fa-shopping-basket text-lg"></i>
                     </button>
                 </section>
@@ -68,13 +68,13 @@
                         <div class="mb-6 flex items-center justify-around border-y border-gray-100 py-3">
                             <div class="text-center">
                                 <i class="fas fa-tag mb-1 block text-xl text-amber-500"></i>
-                                <span class="block text-xs text-gray-500">Prix unitaire</span>
+                                <span class="block text-xs text-gray">Prix unitaire</span>
                                 <span id="prixUnitaire" class="text-lg font-bold text-gray-800">0 FCFA</span>
                             </div>
                             <div class="h-10 w-px bg-gray-200"></div>
                             <div class="text-center">
                                 <i class="fas fa-clock mb-1 block text-xl text-amber-500"></i>
-                                <span class="block text-xs text-gray-500">Preparation</span>
+                                <span class="block text-xs text-gray">Preparation</span>
                                 <span id="tempsPrep" class="text-lg font-bold text-gray-800">0 min</span>
                             </div>
                         </div>
@@ -100,10 +100,10 @@
 
                     <div class="flex items-center justify-between gap-4">
                         <div>
-                            <span class="block text-xs text-gray-500">Total</span>
+                            <span class="block text-xs text-gray">Total</span>
                             <span id="totalPrice" class="text-xl font-bold text-amber-700">0 FCFA</span>
                         </div>
-                        <button id="addToCartBtn" class="flex items-center gap-2 rounded-xl bg-amber-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-amber-700">
+                        <button id="addToCartBtn" class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 px-6 py-3 font-semibold text-white shadow-md transition hover:bg-amber-700">
                             <i class="fas fa-cart-plus"></i>
                             Ajouter au panier
                         </button>
@@ -116,3 +116,4 @@
     <script type="module" src="./client-detail.js"></script>
 </body>
 </html>
+

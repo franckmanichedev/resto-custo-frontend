@@ -34,14 +34,14 @@
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex flex-col">
                         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-600 text-sm font-bold text-white shadow-md">RQ</div>
-                        <span class="mt-1 text-xs font-medium text-gray-500">Table <span data-table-label>-</span></span>
+                        <span class="mt-1 text-xs font-medium text-gray">Table <span data-table-label>-</span></span>
                     </div>
                     <div class="w-10"></div>
                 </div>
             </header>
 
             <main class="page-main mx-auto max-w-4xl px-4 py-4 pb-28">
-                <h1 class="mb-6 flex items-center gap-2 text-2xl font-bold text-gray-800">
+                <h1 class="mb-6 flex items-center gap-2 text-2xl font-bold text-gray-200">
                     <i class="fas fa-shopping-basket text-amber-500"></i>
                     Mon panier
                 </h1>
@@ -50,7 +50,7 @@
 
                 <div id="emptyCartMessage" class="hidden py-12 text-center">
                     <i class="fas fa-shopping-cart mb-4 text-6xl text-gray-300"></i>
-                    <p class="text-gray-500">Votre panier est vide</p>
+                    <p class="text-gray">Votre panier est vide</p>
                     <button id="goToMenuBtn" class="mt-4 rounded-full bg-amber-500 px-6 py-2 text-sm text-white">Voir les menus</button>
                 </div>
             </main>
@@ -58,7 +58,7 @@
             <div id="totalContainer" class="desktop-total bottom-16 border-t border-gray-200 bg-white px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
                 <div class="flex items-center justify-between gap-4">
                     <div class="flex flex-col">
-                        <span class="font-medium text-gray-600">Total</span>
+                        <span class="font-medium text-gray-300">Total</span>
                         <span id="totalPrice" class="text-xl font-bold text-amber-700">0 FCFA</span>
                     </div>
                     <button id="checkoutBtn" class="rounded-xl bg-amber-600 p-3 font-semibold text-white transition hover:bg-amber-700">
@@ -69,17 +69,17 @@
 
             <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 z-20 border-t border-gray-200 bg-white px-6 py-2 shadow-lg">
                 <div class="flex items-center justify-between">
-                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="index">
+                    <button class="nav-btn flex flex-col items-center text-gray" data-page="index">
                         <i class="fas fa-home text-xl"></i>
                         <span class="mt-1 text-xs">Accueil</span>
                     </button>
-                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="categories">
+                    <button class="nav-btn flex flex-col items-center text-gray" data-page="categories">
                         <i class="fas fa-list-ul text-xl"></i>
                         <span class="mt-1 text-xs">Categories</span>
                     </button>
-                    <button class="nav-btn flex flex-col items-center text-gray-500" data-page="tracking">
+                    <button class="nav-btn flex flex-col items-center text-gray" data-page="tracking">
                         <i class="fas fa-truck text-xl"></i>
-                        <span class="mt-1 text-xs">Commandes</span>
+                        <span class="mt-1 text-xs">Commandes</span><span data-active-order-badge class="active-order-badge absolute -right-1 top-0"></span>
                     </button>
                     <button class="nav-btn is-active flex flex-col items-center text-amber-600" data-page="cart">
                         <i class="fas fa-shopping-cart text-xl"></i>

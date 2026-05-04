@@ -108,7 +108,7 @@ function renderCartTaxonomy(item) {
     if (item.kind) {
         labels.push({
             text: item.kind === 'boisson' ? 'Boisson' : 'Plat',
-            classes: 'bg-gray-100 text-gray-700'
+            classes: 'bg-gray-100 text-white'
         });
     }
 
@@ -147,9 +147,9 @@ function renderCartGroup(item) {
         <div class="cart-group bg-white rounded-xl p-4 shadow-sm border border-gray-100" data-item-id="${escapeHtml(item.id)}">
             <div class="flex justify-between items-start mb-3">
                 <div>
-                    <h4 class="font-semibold text-gray-800">${escapeHtml(item.plat_name)}</h4>
+                    <h4 class="font-semibold text-gray-200">${escapeHtml(item.plat_name)}</h4>
                     ${renderCartTaxonomy(item)}
-                    <p class="text-sm text-gray-500">${formatPrice(item.plat_price)} l'unite</p>
+                    <p class="text-sm text-gray">${formatPrice(item.plat_price)} l'unite</p>
                 </div>
                 <button class="remove-all text-gray-400 hover:text-red-500" data-id="${escapeHtml(item.id)}">
                     <i class="fas fa-trash-alt"></i>
@@ -162,7 +162,7 @@ function renderCartGroup(item) {
                         <div class="text-sm text-gray-600 mb-2 pb-2 border-b border-gray-100 last:border-0">
                             <span class="font-medium">${escapeHtml(variant.label)}</span>
                             <div class="flex items-center justify-between mt-1">
-                                <span class="text-gray-500">Quantite: ${variant.quantity}</span>
+                                <span class="text-gray">Quantite: ${variant.quantity}</span>
                                 <span class="font-medium">${formatPrice(variant.totalPrice)}</span>
                             </div>
                             ${variant.compositions.length ? `

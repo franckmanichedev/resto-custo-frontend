@@ -34,7 +34,7 @@
         const container = document.getElementById('recentOrdersList');
         container.innerHTML = recent.map(c => `
             <div class="flex justify-between items-center p-2 border-b">
-                <div><span class="font-semibold">Table ${c.tableNumber}</span><span class="text-xs text-gray-500 ml-2">${new Date(c.createdAt).toLocaleTimeString()}</span></div>
+                <div><span class="font-semibold">Table ${c.tableNumber}</span><span class="text-xs text-gray ml-2">${new Date(c.createdAt).toLocaleTimeString()}</span></div>
                 <span class="text-sm">${c.items.reduce((s,i)=>s+i.quantity,0)} articles</span>
             </div>
         `).join('');

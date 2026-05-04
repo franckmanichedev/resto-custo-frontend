@@ -46,14 +46,14 @@ showLoginBtn?.addEventListener('click', () => {
     loginForm.classList.remove('hidden');
     registerForm.classList.add('hidden');
     showLoginBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl bg-yellow-500 text-white';
-    showRegisterBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl text-gray-500 hover:bg-gray-50';
+    showRegisterBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl text-gray hover:bg-gray-50';
 });
 
 showRegisterBtn?.addEventListener('click', () => {
     loginForm.classList.add('hidden');
     registerForm.classList.remove('hidden');
     showRegisterBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl bg-yellow-500 text-white';
-    showLoginBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl text-gray-500 hover:bg-gray-50';
+    showLoginBtn.className = 'flex-1 py-2 text-center font-medium rounded-xl text-gray hover:bg-gray-50';
 });
 
 loginForm?.addEventListener('submit', async (event) => {

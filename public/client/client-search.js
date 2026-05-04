@@ -12,31 +12,38 @@ import {
     loadMenu,
     redirectTo,
     redirectToLoadingIfNeeded,
+    renderSkeleton,
     showToast,
-    updateChrome
+    updateChrome,
+    withButtonLoading,
+    setButtonLoading
 } from './client-core.js';
 
 const renderChip = (name, active = false) => `
-    <button class="rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-amber-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-amber-100'}" data-category-chip="${escapeHtml(name)}">
+    <button class="rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-amber-500 text-white' : 'liquid-glass text-white hover:bg-amber-100'}" data-category-chip="${escapeHtml(name)}">
         ${escapeHtml(name)}
     </button>
 `;
 
 const renderRow = (plat, payload) => `
-    <article class="border-b border-gray-100 py-3">
+    <article class="liquid-glass mb-3 rounded-2xl p-3">
         <div class="flex items-center gap-3">
             <button class="flex min-w-0 flex-1 items-center gap-3 text-left" data-open-detail="${escapeHtml(plat.id)}">
                 <img src="${escapeHtml(getImageUrl(plat))}" alt="${escapeHtml(plat.name)}" class="h-14 w-14 rounded-lg object-cover">
                 <div class="min-w-0 flex-1">
                     <div class="flex items-start justify-between gap-3">
-                        <h3 class="truncate font-semibold text-gray-800">${escapeHtml(plat.name)}</h3>
-                        <span class="text-sm font-bold text-amber-600">${formatPrice(plat.price)}</span>
+                        <h3 class="truncate text-sm font-semibold text-gray-200">
+                            ${escapeHtml(
+                                plat.name.split(' ').slice(0, 2).join(' ') + (plat.name.split(' ').length > 2 ? '...' : '')
+                            )}
+                        </h3>
+                        <span class="text-sm font-bold text-amber-500">${formatPrice(plat.price)}</span>
                     </div>
-                    <p class="text-xs text-gray-500">${escapeHtml(plat.description || '')} ${plat.description ? '-' : ''} ${formatDuration(plat.prep_time)}</p>
-                    <p class="mt-1 text-xs text-gray-400">${escapeHtml(plat.categorie_name || 'Autres')}</p>
+                    <p class="text-xs text-gray-400 line-clamp-2">${escapeHtml(plat.description || '')} ${plat.description ? '-' : ''} ${formatDuration(plat.prep_time)}</p>
+                    <p class="mt-1 text-xs text-amber-500">${escapeHtml(plat.categorie_name || 'Autres')}</p>
                 </div>
             </button>
-            <button class="flex h-8 w-8 items-center justify-center rounded-full ${isOrderable(plat, payload) ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-gray-200 text-gray-500'}" data-add-item="${escapeHtml(plat.id)}" ${isOrderable(plat, payload) ? '' : 'disabled'}>
+            <button class="flex h-9 w-9 items-center justify-center rounded-full ${isOrderable(plat, payload) ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-gray-200 text-gray'}" data-add-item="${escapeHtml(plat.id)}" ${isOrderable(plat, payload) ? '' : 'disabled'}>
                 <i class="fas ${isOrderable(plat, payload) ? 'fa-plus' : 'fa-eye'} text-xs"></i>
             </button>
         </div>
@@ -47,11 +54,14 @@ bindChrome();
 
 if (!redirectToLoadingIfNeeded()) {
     try {
+        const chips = document.getElementById('searchCategoriesList');
+        const results = document.getElementById('resultsContainer');
+        if (chips) chips.innerHTML = renderSkeleton('chips', 5);
+        if (results) results.innerHTML = renderSkeleton('rows', 5);
+
         const payload = await loadMenu();
         if (payload) {
             const input = document.getElementById('searchInput');
-            const chips = document.getElementById('searchCategoriesList');
-            const results = document.getElementById('resultsContainer');
             const noResults = document.getElementById('noResults');
             const categories = createCategoryGroups(payload?.plats || []);
             const state = { query: '', category: '' };
@@ -72,7 +82,10 @@ if (!redirectToLoadingIfNeeded()) {
                     });
                 });
                 document.querySelectorAll('[data-open-detail]').forEach((node) => {
-                    node.addEventListener('click', () => redirectTo('detail', { id: node.dataset.openDetail }));
+                    node.addEventListener('click', () => {
+                        setButtonLoading(node, true, 'Ouverture');
+                        redirectTo('detail', { id: node.dataset.openDetail });
+                    });
                 });
                 document.querySelectorAll('[data-add-item]').forEach((node) => {
                     node.addEventListener('click', async () => {
@@ -83,18 +96,19 @@ if (!redirectToLoadingIfNeeded()) {
                             return;
                         }
                         try {
-                            const response = await apiRequest('/front-office/cart/items', {
+                            const response = await withButtonLoading(node, () => apiRequest('/front-office/cart/items', {
                                 method: 'POST',
                                 body: {
                                     session_token: getSessionToken(),
                                     plat_id: plat.id,
                                     quantity: 1
                                 }
-                            });
+                            }), 'Ajout');
                             localStorage.setItem('resto.client.cart', JSON.stringify({ savedAt: Date.now(), data: response.data }));
                             updateChrome(response.data);
                             showToast(`${plat.name} ajoute au panier`, 'success');
                             await loadCart().catch(() => {});
+                            redirectTo('cart');
                         } catch (error) {
                             showToast(error.message || 'Impossible d ajouter ce plat.', 'error');
                         }

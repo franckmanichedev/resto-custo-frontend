@@ -4,7 +4,7 @@
         pending: { label: 'En attente', color: 'bg-yellow-100 text-yellow-800' },
         preparing: { label: 'En préparation', color: 'bg-blue-100 text-blue-800' },
         ready: { label: 'Prêt', color: 'bg-green-100 text-green-800' },
-        served: { label: 'Servi', color: 'bg-gray-100 text-gray-800' }
+        served: { label: 'Servi', color: 'bg-gray-100 text-gray-200' }
     };
     const statusOrder = ['pending', 'preparing', 'ready', 'served'];
 

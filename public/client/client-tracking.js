@@ -6,6 +6,7 @@ import {
     getStatusTone,
     loadOrders,
     redirectToLoadingIfNeeded,
+    renderSkeleton,
     showToast
 } from './client-core.js';
 
@@ -48,7 +49,7 @@ const renderOrderDetails = (order) => `
 `;
 
 const renderHistoryCard = (order) => `
-    <article class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/80">
+    <article class="glass-card rounded-2xl p-4">
         <div class="flex items-start justify-between gap-3">
             <div>
                 <p class="text-sm font-bold text-slate-900">${escapeHtml(order.id || '-')}</p>
@@ -74,6 +75,11 @@ bindChrome();
 
 if (!redirectToLoadingIfNeeded()) {
     try {
+        const orderDetails = document.getElementById('orderDetails');
+        const main = document.getElementById('trackingMain');
+        if (orderDetails) orderDetails.innerHTML = renderSkeleton('rows', 3);
+        main?.classList.remove('hidden');
+
         const payload = await loadOrders();
         if (payload) {
             const orders = payload?.orders || [];

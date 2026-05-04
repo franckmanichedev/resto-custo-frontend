@@ -12,7 +12,7 @@ const ORDER_STATUSES = [
     { key: 'pending', label: 'En attente', tone: 'bg-yellow-50 border-yellow-200', badge: 'bg-yellow-100 text-yellow-700', icon: 'fa-hourglass-start' },
     { key: 'preparing', label: 'En preparation', tone: 'bg-blue-50 border-blue-200', badge: 'bg-blue-100 text-blue-700', icon: 'fa-fire-burner' },
     { key: 'ready', label: 'Pret', tone: 'bg-green-50 border-green-200', badge: 'bg-green-100 text-green-700', icon: 'fa-bell-concierge' },
-    { key: 'served', label: 'Servi', tone: 'bg-gray-50 border-gray-200', badge: 'bg-gray-100 text-gray-700', icon: 'fa-circle-check' },
+    { key: 'served', label: 'Servi', tone: 'bg-gray-50 border-gray-200', badge: 'bg-gray-100 text-white', icon: 'fa-circle-check' },
     { key: 'cancelled', label: 'Annule', tone: 'bg-red-50 border-red-200', badge: 'bg-red-100 text-red-700', icon: 'fa-ban' }
 ];
 
@@ -139,10 +139,10 @@ function renderOrders(orders) {
         <section class="kanban-lane flex min-h-[520px] flex-col rounded-2xl border ${column.tone} p-3" data-status="${escapeHtml(column.key)}">
             <header class="mb-3 flex items-center justify-between gap-2">
                 <div class="flex min-w-0 items-center gap-2">
-                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-gray-700 shadow-sm">
+                    <span class="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-white shadow-sm">
                         <i class="fas ${column.icon} text-sm"></i>
                     </span>
-                    <h2 class="truncate text-sm font-bold text-gray-800">${escapeHtml(column.label)}</h2>
+                    <h2 class="truncate text-sm font-bold text-gray-200">${escapeHtml(column.label)}</h2>
                 </div>
                 <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-600 shadow-sm">${column.orders.length}</span>
             </header>
@@ -175,7 +175,7 @@ function renderKanbanCard(order) {
             <div class="mb-3 flex items-start justify-between gap-3">
                 <div class="min-w-0">
                     <p class="truncate text-sm font-bold text-gray-900">#${escapeHtml(order.id?.slice(-8) || order.id)}</p>
-                    <p class="mt-1 text-xs text-gray-500">
+                    <p class="mt-1 text-xs text-gray">
                         <i class="fas fa-table mr-1"></i>
                         Table ${escapeHtml(order.table?.number || order.table?.name || order.table_id || '-')}
                     </p>
@@ -186,11 +186,11 @@ function renderKanbanCard(order) {
             <div class="mb-3 grid grid-cols-2 gap-2 text-xs">
                 <div class="rounded-lg bg-gray-50 px-2 py-1.5">
                     <span class="block text-gray-400">Preparation</span>
-                    <strong class="text-gray-700">${escapeHtml(prepLabel)}</strong>
+                    <strong class="text-white">${escapeHtml(prepLabel)}</strong>
                 </div>
                 <div class="rounded-lg bg-gray-50 px-2 py-1.5">
                     <span class="block text-gray-400">Total</span>
-                    <strong class="text-gray-700">${formatPrice(order.total_price || 0)}</strong>
+                    <strong class="text-white">${formatPrice(order.total_price || 0)}</strong>
                 </div>
             </div>
 
@@ -198,16 +198,16 @@ function renderKanbanCard(order) {
                 ${groups.length ? groups.map((group) => `
                     <div class="rounded-lg border border-gray-100 bg-gray-50 p-2">
                         <div class="flex justify-between gap-2">
-                            <span class="truncate text-sm font-semibold text-gray-800">${escapeHtml(group.plat_name || 'Article')}</span>
-                            <span class="text-xs font-semibold text-gray-500">x${group.quantity}</span>
+                            <span class="truncate text-sm font-semibold text-gray-200">${escapeHtml(group.plat_name || 'Article')}</span>
+                            <span class="text-xs font-semibold text-gray">x${group.quantity}</span>
                         </div>
                         ${group.variants.map((variant) => `
-                            <div class="mt-1 text-xs text-gray-500">
+                            <div class="mt-1 text-xs text-gray">
                                 ${escapeHtml(variant.label)}
                                 ${variant.compositions.length ? `
                                     <div class="mt-1 flex flex-wrap gap-1">
                                         ${variant.compositions.slice(0, 4).map((composition) => `
-                                            <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-gray-500">
+                                            <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-gray">
                                                 ${escapeHtml(composition.action || '')} ${escapeHtml(composition.composition_name || composition.composition_id || '')}
                                             </span>
                                         `).join('')}
@@ -219,7 +219,7 @@ function renderKanbanCard(order) {
                 `).join('') : '<p class="rounded-lg bg-gray-50 p-2 text-xs text-gray-400">Aucun plat detaille</p>'}
             </div>
 
-            <footer class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray-500">
+            <footer class="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-xs text-gray">
                 <span><i class="far fa-clock mr-1"></i>${createdLabel}</span>
                 ${remainingSeconds !== null && !['served', 'cancelled'].includes(order.status) ? `
                     <span class="countdown font-mono font-bold text-primary" data-target="${escapeHtml(order.estimated_ready_at)}">${formatDuration(remainingSeconds)}</span>

@@ -78,7 +78,7 @@ function renderSummary(tables) {
     }, {});
 
     summaryEl.innerHTML = `
-        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700">${tables.length} table(s)</span>
+        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-white">${tables.length} table(s)</span>
         <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">${counts.free || 0} libre(s)</span>
         <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">${counts.occupied || 0} occupee(s)</span>
         <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">${counts.reserved || 0} reservee(s)</span>
@@ -90,7 +90,7 @@ function renderTables(tables) {
 
     if (!tables.length) {
         tablesList.className = '';
-        tablesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white py-12 text-center text-gray-500">Aucune table trouvee</div>';
+        tablesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white py-12 text-center text-gray">Aucune table trouvee</div>';
         return;
     }
 
@@ -124,7 +124,7 @@ function renderListTable(table) {
                         <h3 class="text-lg font-bold text-gray-900">${escapeHtml(table.name || `Table ${table.number || ''}`)}</h3>
                         <span class="rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}">${escapeHtml(status.label)}</span>
                     </div>
-                    <p class="mt-1 text-sm text-gray-500">Numero: <strong>${escapeHtml(table.number || '-')}</strong></p>
+                    <p class="mt-1 text-sm text-gray">Numero: <strong>${escapeHtml(table.number || '-')}</strong></p>
                     <p class="mt-2 max-w-2xl break-all text-xs text-gray-400">QR: ${escapeHtml(table.qr_code || 'Genere automatiquement')}</p>
                     <a href="${escapeHtml(menuUrl)}" target="_blank" class="mt-1 inline-flex max-w-2xl break-all text-xs font-medium text-primary hover:underline">
                         ${escapeHtml(menuUrl)}
@@ -147,12 +147,12 @@ function renderPlanTable(table) {
     const status = getTableStatus(table);
 
     return `
-        <article class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+        <article class="rounded-2xl border border-gray-100 bg-white p-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Table</p>
                     <h3 class="mt-1 text-2xl font-bold text-gray-900">${escapeHtml(table.number || '-')}</h3>
-                    <p class="mt-1 text-sm text-gray-500">${escapeHtml(table.name || 'Sans nom')}</p>
+                    <p class="mt-1 text-sm text-gray">${escapeHtml(table.name || 'Sans nom')}</p>
                 </div>
                 <span class="rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}">${escapeHtml(status.label)}</span>
             </div>

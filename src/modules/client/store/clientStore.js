@@ -116,7 +116,7 @@ export const STATUS_LABELS = {
     pending: { text: 'En attente', color: 'bg-yellow-100 text-yellow-800', progress: 25 },
     preparing: { text: 'En préparation', color: 'bg-blue-100 text-blue-800', progress: 60 },
     ready: { text: 'Prêt', color: 'bg-green-100 text-green-800', progress: 90 },
-    served: { text: 'Servi', color: 'bg-gray-100 text-gray-800', progress: 100 },
+    served: { text: 'Servi', color: 'bg-gray-100 text-gray-200', progress: 100 },
     cancelled: { text: 'Annulé', color: 'bg-red-100 text-red-800', progress: 0 }
 };
 

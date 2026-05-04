@@ -70,7 +70,7 @@ export function openPlatModal(plat) {
         const taxonomy = [
             {
                 label: (plat.kind || plat.category) === 'boisson' ? 'Boisson' : 'Plat',
-                classes: 'bg-gray-100 text-gray-700'
+                classes: 'bg-gray-100 text-white'
             },
             plat.categorie_name ? {
                 label: plat.categorie_name,
@@ -107,12 +107,12 @@ export function openPlatModal(plat) {
     if (daysContainer) {
         if (plat.consultable_days && plat.consultable_days.length) {
             daysContainer.innerHTML = plat.consultable_days.map((day) => `
-                <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-gray-700 whitespace-nowrap">
+                <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-white whitespace-nowrap">
                     ${escapeHtml(getWeekDayLabel(day))}
                 </span>
             `).join('');
         } else {
-            daysContainer.innerHTML = '<span class="text-sm text-gray-500">Tous les jours</span>';
+            daysContainer.innerHTML = '<span class="text-sm text-gray">Tous les jours</span>';
         }
     }
 
@@ -197,7 +197,7 @@ function renderUnitConfigurations(compositions) {
     }
 
     if (!compositions.length) {
-        container.innerHTML = '<p class="text-sm text-gray-500">Aucune composition configurable pour ce plat.</p>';
+        container.innerHTML = '<p class="text-sm text-gray">Aucune composition configurable pour ce plat.</p>';
         if (toggleBtn) toggleBtn.classList.add('hidden');
         return;
     }
@@ -205,7 +205,7 @@ function renderUnitConfigurations(compositions) {
     container.innerHTML = unitCustomizations.map((unitConfig, index) => `
         <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
             <div class="flex items-center justify-between mb-3">
-                <p class="font-medium text-gray-800">Exemplaire ${index + 1}</p>
+                <p class="font-medium text-gray-200">Exemplaire ${index + 1}</p>
                 <span class="text-xs bg-gray-100 px-2 py-1 rounded-full">${unitConfig.removedCompositionIds.size} retrait(s)</span>
             </div>
             <div class="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -216,7 +216,7 @@ function renderUnitConfigurations(compositions) {
                             type="button"
                             data-unit-index="${index}"
                             data-composition-id="${escapeHtml(comp.id)}"
-                            class="toggle-composition rounded-full px-3 py-2 text-xs font-medium transition-all flex-shrink-0 ${removed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                            class="toggle-composition rounded-full px-3 py-2 text-xs font-medium transition-all flex-shrink-0 ${removed ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-gray-100 text-white hover:bg-gray-200'}"
                         >
                             ${removed ? 'x ' : ''}${escapeHtml(comp.name)}${comp.is_allergen ? ' !' : ''}
                         </button>

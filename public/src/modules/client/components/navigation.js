@@ -74,12 +74,12 @@ class ClientNavigation {
         document.querySelectorAll('[data-view]').forEach(btn => {
             if (btn.dataset.view === view) {
                 btn.classList.add('active');
-                btn.classList.remove('text-gray-500');
+                btn.classList.remove('text-gray');
                 btn.classList.add('text-primary');
             } else {
                 btn.classList.remove('active');
                 btn.classList.remove('text-primary');
-                btn.classList.add('text-gray-500');
+                btn.classList.add('text-gray');
             }
         });
         
@@ -87,10 +87,10 @@ class ClientNavigation {
         document.querySelectorAll('.nav-item-desktop').forEach(btn => {
             if (btn.dataset.view === view) {
                 btn.classList.add('bg-gray-100', 'text-primary');
-                btn.classList.remove('text-gray-500');
+                btn.classList.remove('text-gray');
             } else {
                 btn.classList.remove('bg-gray-100', 'text-primary');
-                btn.classList.add('text-gray-500');
+                btn.classList.add('text-gray');
             }
         });
     }

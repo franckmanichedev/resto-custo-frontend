@@ -84,7 +84,7 @@ function renderCategories() {
     const selectedId = selectedCategoryId;
 
     if (!categoriesCache.length) {
-        categoriesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray-500">Aucune categorie disponible</div>';
+        categoriesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center text-gray">Aucune categorie disponible</div>';
         renderSelectedCategory();
         return;
     }
@@ -98,14 +98,14 @@ function renderCategories() {
                 <div class="flex items-start justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <h3 class="text-lg font-semibold text-gray-800">${escapeHtml(category.name)}</h3>
-                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">${escapeHtml(getKindLabel(category.kind))}</span>
+                            <h3 class="text-lg font-semibold text-gray-200">${escapeHtml(category.name)}</h3>
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-white">${escapeHtml(getKindLabel(category.kind))}</span>
                             ${category.is_active === false ? '<span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Inactive</span>' : ''}
                         </div>
-                        <p class="mt-2 text-sm text-gray-500 line-clamp-2">${escapeHtml(category.description || 'Aucune description')}</p>
+                        <p class="mt-2 text-sm text-gray line-clamp-2">${escapeHtml(category.description || 'Aucune description')}</p>
                     </div>
-                    <div class="text-right text-sm text-gray-500">
-                        <p class="font-semibold text-gray-700">${typeCount}</p>
+                    <div class="text-right text-sm text-gray">
+                        <p class="font-semibold text-white">${typeCount}</p>
                         <p>type(s)</p>
                     </div>
                 </div>
@@ -146,12 +146,12 @@ function renderSelectedCategory() {
 function renderTypes() {
     const category = categoriesCache.find((entry) => entry.id === selectedCategoryId);
     if (!category) {
-        typesList.innerHTML = '<div class="text-sm text-gray-500">Selectionnez une categorie.</div>';
+        typesList.innerHTML = '<div class="text-sm text-gray">Selectionnez une categorie.</div>';
         return;
     }
 
     if (!typesCache.length) {
-        typesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray-500">Aucun type lie a cette categorie.</div>';
+        typesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 p-6 text-center text-sm text-gray">Aucun type lie a cette categorie.</div>';
         return;
     }
 
@@ -160,10 +160,10 @@ function renderTypes() {
             <div class="flex items-start justify-between gap-4">
                 <div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <h4 class="font-semibold text-gray-800">${escapeHtml(type.name)}</h4>
+                        <h4 class="font-semibold text-gray-200">${escapeHtml(type.name)}</h4>
                         ${type.is_active === false ? '<span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">Inactif</span>' : ''}
                     </div>
-                    <p class="mt-1 text-sm text-gray-500">${escapeHtml(type.description || 'Aucune description')}</p>
+                    <p class="mt-1 text-sm text-gray">${escapeHtml(type.description || 'Aucune description')}</p>
                 </div>
                 <div class="flex gap-2">
                     <button data-type-id="${escapeHtml(type.id)}" class="edit-type px-3 py-2 rounded-xl text-sm text-primary hover:bg-white transition-colors">

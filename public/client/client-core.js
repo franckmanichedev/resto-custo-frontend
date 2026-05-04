@@ -112,6 +112,11 @@ const getHints = () => {
     return { tableId: query.get('table') || context.tableId || '', qrCode: query.get('code') || context.qrCode || '' };
 };
 
+const hasActiveOrders = (payload = null) => {
+    const source = payload?.orders || getOrdersCache()?.orders || [];
+    return Array.isArray(source) && source.some((order) => !['served', 'cancelled'].includes(String(order.status || '').toLowerCase()));
+};
+
 export const getSessionToken = () => {
     const context = getContext();
     const { tableId } = getHints();
@@ -159,6 +164,83 @@ export const showToast = (message, variant = 'info') => {
     setTimeout(() => toast.remove(), 2200);
 };
 
+export const setButtonLoading = (button, loading = true, label = '') => {
+    if (!button) return;
+    if (loading) {
+        if (!button.dataset.originalHtml) button.dataset.originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.classList.add('btn-loading');
+        const text = label || button.textContent.trim() || 'Chargement';
+        button.innerHTML = `<span class="button-spinner" aria-hidden="true"></span><span class="btn-label">${escapeHtml(text)}</span>`;
+        return;
+    }
+
+    button.disabled = false;
+    button.classList.remove('btn-loading');
+    if (button.dataset.originalHtml) {
+        button.innerHTML = button.dataset.originalHtml;
+        delete button.dataset.originalHtml;
+    }
+};
+
+export const withButtonLoading = async (button, task, label = '') => {
+    setButtonLoading(button, true, label);
+    try {
+        return await task();
+    } finally {
+        setButtonLoading(button, false);
+    }
+};
+
+const skeletonCard = (image = true) => `
+    <article class="glass-card overflow-hidden rounded-2xl">
+        ${image ? '<div class="skeleton h-40 w-full"></div>' : ''}
+        <div class="space-y-3 p-4">
+            <div class="skeleton h-4 w-1/3 rounded-full"></div>
+            <div class="skeleton h-5 w-4/5 rounded-full"></div>
+            <div class="skeleton h-3 w-full rounded-full"></div>
+            <div class="skeleton h-3 w-2/3 rounded-full"></div>
+        </div>
+    </article>
+`;
+
+const skeletonRow = () => `
+    <article class="glass-card rounded-2xl p-3">
+        <div class="flex gap-3">
+            <div class="skeleton h-16 w-16 shrink-0 rounded-xl"></div>
+            <div class="min-w-0 flex-1 space-y-3">
+                <div class="skeleton h-4 w-3/4 rounded-full"></div>
+                <div class="skeleton h-3 w-full rounded-full"></div>
+                <div class="skeleton h-3 w-1/2 rounded-full"></div>
+            </div>
+        </div>
+    </article>
+`;
+
+export const renderSkeleton = (type = 'cards', count = 4) => {
+    if (type === 'chips') {
+        return Array.from({ length: count }, () => '<div class="skeleton h-10 w-28 rounded-full"></div>').join('');
+    }
+    if (type === 'rows') {
+        return Array.from({ length: count }, skeletonRow).join('');
+    }
+    if (type === 'detail') {
+        return `
+            <div class="space-y-4">
+                <div class="skeleton h-5 w-2/3 rounded-full"></div>
+                <div class="skeleton h-4 w-full rounded-full"></div>
+                <div class="skeleton h-4 w-4/5 rounded-full"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="skeleton h-20 rounded-2xl"></div>
+                    <div class="skeleton h-20 rounded-2xl"></div>
+                </div>
+                ${Array.from({ length: 3 }, () => skeletonCard(false)).join('')}
+            </div>
+        `;
+    }
+    return Array.from({ length: count }, () => skeletonCard(true)).join('');
+};
+
 export const updateChrome = (payload = null) => {
     const context = getContext();
     const tableLabel = payload?.table?.number || payload?.table?.name || context.tableNumber || context.tableName || '-';
@@ -169,6 +251,9 @@ export const updateChrome = (payload = null) => {
     document.querySelectorAll('[data-cart-count], .cartBadge').forEach((node) => {
         node.textContent = String(cartCount);
         node.style.display = cartCount > 0 ? 'inline-flex' : 'none';
+    });
+    document.querySelectorAll('[data-active-order-badge]').forEach((node) => {
+        node.classList.toggle('is-visible', hasActiveOrders(payload));
     });
     document.querySelectorAll('.nav-btn, .desktop-link').forEach((node) => node.classList.toggle('is-active', node.dataset.page === getLogicalPage()));
 
