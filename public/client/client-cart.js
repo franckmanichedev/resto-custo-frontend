@@ -1,12 +1,14 @@
 import {
     apiRequest,
     bindChrome,
+    enableSpaNavigation,
     closeModal,
     escapeHtml,
     formatPrice,
     getImageUrl,
     getSessionToken,
     getProfile,
+    getCartCache,
     loadCart,
     openModal,
     redirectTo,
@@ -105,10 +107,19 @@ const renderCart = (payload) => {
 
 bindChrome();
 
+// enable lightweight SPA navigation
+enableSpaNavigation({ autoLoad: true });
+
 if (!redirectToLoadingIfNeeded()) {
     try {
         const list = document.getElementById('cartItemsList');
-        if (list) list.innerHTML = renderSkeleton('rows', 4);
+        const cached = getCartCache?.() || null;
+        if (cached) {
+            renderCart(cached);
+        } else if (list) {
+            list.innerHTML = renderSkeleton('rows', 4);
+        }
+
         const payload = await loadCart();
         if (payload) {
             renderCart(payload);

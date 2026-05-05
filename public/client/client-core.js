@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
     menu: 'resto.client.menu',
     cart: 'resto.client.cart',
     orders: 'resto.client.orders',
+    platsAll: 'resto.client.plats_all',
     profile: 'resto.client.profile',
     tableSessionPrefix: 'resto.client.session.'
 };
@@ -58,6 +59,21 @@ const resolveApiBaseUrl = () => {
 
 const API_BASE_URL = resolveApiBaseUrl();
 
+// Cache TTL (defaut 5 minutes)
+export const CACHE_TTL_MS = (window?.RESTO_CACHE_TTL_MS) || (5 * 60 * 1000);
+
+const readCache = (storageKey) => {
+    try {
+        const raw = readJson(storageKey, null);
+        if (!raw) return null;
+        const savedAt = Number(raw.savedAt || 0);
+        if (savedAt > 0 && Date.now() - savedAt > Number(CACHE_TTL_MS || 0)) return null;
+        return raw.data ?? null;
+    } catch (e) {
+        return null;
+    }
+};
+
 export const escapeHtml = (value) => {
     if (value === null || value === undefined) return '';
 
@@ -97,14 +113,28 @@ export const buildUrl = (pageName, params = {}) => {
 };
 
 export const redirectTo = (pageName, params = {}) => {
-    window.location.href = buildUrl(pageName, params);
+    const url = buildUrl(pageName, params);
+    if (window.__spaEnabled && typeof window.__loadUrl === 'function') {
+        window.history.pushState({}, '', url);
+        try { window.__loadUrl(url); } catch (e) { window.location.href = url; }
+        return;
+    }
+    window.location.href = url;
 };
 
 export const getProfile = () => readJson(STORAGE_KEYS.profile, {}) || {};
 export const saveProfile = (patch) => writeJson(STORAGE_KEYS.profile, { ...getProfile(), ...patch });
-export const getMenuCache = () => readJson(STORAGE_KEYS.menu, null)?.data || null;
-export const getCartCache = () => readJson(STORAGE_KEYS.cart, null)?.data || null;
-export const getOrdersCache = () => readJson(STORAGE_KEYS.orders, null)?.data || null;
+export const getMenuCache = () => readCache(STORAGE_KEYS.menu);
+export const getCartCache = () => readCache(STORAGE_KEYS.cart);
+export const getOrdersCache = () => readCache(STORAGE_KEYS.orders);
+export const getPlatsAllCache = () => readCache(STORAGE_KEYS.platsAll);
+
+const persistPlatsAll = (payload) => {
+    // store generic plats list
+    writeJson(STORAGE_KEYS.platsAll, { data: payload, savedAt: Date.now() });
+    // also update chrome if useful
+    try { updateChrome(payload); } catch (e) { /* ignore */ }
+};
 
 const getHints = () => {
     const query = getQuery();
@@ -322,6 +352,50 @@ const persistOrders = (payload) => {
     updateChrome(payload);
 };
 
+// Realtime subscription helpers (Firebase)
+export const startMenuRealtimeSubscription = async () => {
+    if (window.__menuUnsub) return window.__menuUnsub;
+    const context = getContext();
+    const cached = getMenuCache();
+    const tenantId = context.tableId || (cached?.session?.table?.id) || null;
+    if (!tenantId) return null;
+
+    try {
+        const mod = await import('../src/services/MenuRealtimeService.js');
+        const unsub = mod.subscribeToMenuUpdates(tenantId, (menuItems) => {
+            try {
+                const current = getMenuCache() || {};
+                const merged = { ...(current || {}) };
+                merged.plats = Array.isArray(merged.plats) ? merged.plats.slice() : [];
+                // remplacer les plats mis à jour par le realtime et éviter les doublons avec les plats existants
+                const byId = new Map(merged.plats.map(p => [String(p.id), p]));
+                (menuItems || []).forEach((item) => byId.set(String(item.id), { id: item.id, ...item }));
+                merged.plats = [...byId.values()];
+                // sauvegarder le menu mis à jour en cache
+                writeJson(STORAGE_KEYS.menu, { data: merged, savedAt: Date.now() });
+                // mettre à jour l'interface utilisateur
+                updateChrome(merged);
+                // déclencher un événement personnalisé pour informer les composants de l'interface d'une mise à jour du menu
+                try { window.dispatchEvent(new CustomEvent('resto.menu.updated', { detail: merged })); } catch (e) { /* ignore */ }
+            } catch (e) {
+                console.error('Error processing realtime menu update', e);
+            }
+        });
+        window.__menuUnsub = unsub;
+        return unsub;
+    } catch (e) {
+        console.warn('Failed to start menu realtime subscription', e);
+        return null;
+    }
+};
+
+export const stopMenuRealtimeSubscription = () => {
+    if (window.__menuUnsub) {
+        try { window.__menuUnsub(); } catch (e) { /* ignore */ }
+        window.__menuUnsub = null;
+    }
+};
+
 const withRecovery = async (loader) => {
     try {
         return await loader();
@@ -358,9 +432,77 @@ export const startSession = async () => {
 export const loadMenu = async () => withRecovery(async () => {
     if (!getSessionToken()) return redirectToLoadingIfNeeded() ? null : Promise.reject(new Error('Session introuvable.'));
     const day = getQuery().get('day') || '';
+    const cached = getMenuCache();
+    if (cached) {
+        // retourner immédiatement le menu en cache pour une expérience plus rapide, puis rafraîchir en arrière-plan
+        try { window.dispatchEvent(new CustomEvent('resto.menu.cached', { detail: cached })); } catch (e) { /* ignore */ }
+        console.debug('[client-core] loadMenu: returning cached menu, savedAt=', readJson(STORAGE_KEYS.menu)?.savedAt);
+        (async () => {
+            try {
+                const response = await apiRequest(`/front-office/menu/${encodeURIComponent(getSessionToken())}${day ? `?day=${encodeURIComponent(day)}` : ''}`);
+                persistMenu(response.data);
+                console.debug('[client-core] loadMenu: background refresh succeeded');
+            } catch (e) {
+                // ignorer les erreurs de rafraîchissement en arrière-plan, le menu en cache sera utilisé jusqu'à ce qu'il expire ou que l'utilisateur recharge la page
+                console.warn('Background menu refresh failed', e);
+            }
+        })();
+        return cached;
+    }
+
+    console.debug('[client-core] loadMenu: no cache, fetching from API');
     const response = await apiRequest(`/front-office/menu/${encodeURIComponent(getSessionToken())}${day ? `?day=${encodeURIComponent(day)}` : ''}`);
     persistMenu(response.data);
+    console.debug('[client-core] loadMenu: fetched menu, persisting');
     return response.data;
+});
+
+export const loadAllPlats = async () => withRecovery(async () => {
+    // fetch all active plats for the restaurant (requires session token)
+    if (!getSessionToken()) return redirectToLoadingIfNeeded() ? null : Promise.reject(new Error('Session introuvable.'));
+    const cached = getPlatsAllCache();
+    if (cached) {
+        try { window.dispatchEvent(new CustomEvent('resto.plats_all.cached', { detail: cached })); } catch (e) { /* ignore */ }
+        (async () => {
+            try {
+                console.debug('[client-core] loadAllPlats: background refresh: fetching /front-office/plats');
+                const response = await apiRequest(`/front-office/plats?session_token=${encodeURIComponent(getSessionToken())}&all=1`);
+                persistPlatsAll(response.data);
+            } catch (e) {
+                // Fallback: backend may expose public plats list at /api/plats
+                if (e && (e.status === 404 || String(e.message || '').toLowerCase().includes('route not found'))) {
+                    console.debug('[client-core] loadAllPlats: background refresh received 404, attempting fallback to /plats');
+                    try {
+                        const fallback = await apiRequest(`/plats?session_token=${encodeURIComponent(getSessionToken())}&all=1`);
+                        persistPlatsAll(fallback.data);
+                        console.debug('[client-core] loadAllPlats: background fallback /plats succeeded');
+                        return;
+                    } catch (err) {
+                        console.warn('Background plats_all fallback failed', err);
+                    }
+                }
+                console.warn('Background plats_all refresh failed', e);
+            }
+        })();
+        return cached;
+    }
+
+    try {
+        console.debug('[client-core] loadAllPlats: fetching /front-office/plats (primary)');
+        const response = await apiRequest(`/front-office/plats?session_token=${encodeURIComponent(getSessionToken())}&all=1`);
+        persistPlatsAll(response.data);
+        return response.data;
+    } catch (e) {
+        // if front-office listing is not implemented, try the public plats listing
+        if (e && (e.status === 404 || String(e.message || '').toLowerCase().includes('route not found'))) {
+            console.debug('[client-core] loadAllPlats: primary 404, attempting fallback /plats');
+            const fallback = await apiRequest(`/plats?session_token=${encodeURIComponent(getSessionToken())}&all=1`);
+            persistPlatsAll(fallback.data);
+            console.debug('[client-core] loadAllPlats: fallback /plats succeeded');
+            return fallback.data;
+        }
+        throw e;
+    }
 });
 
 export const loadCart = async () => withRecovery(async () => {
@@ -443,3 +585,90 @@ export const closeModal = () => {
     const root = document.getElementById('clientModalRoot');
     if (root) root.innerHTML = '';
 };
+
+// Permet de charger une nouvelle page via AJAX et de remplacer le contenu principal sans recharger complètement la page. 
+// Doit être utilisé en conjonction avec enableSpaNavigation pour intercepter les clics sur les liens internes. 
+// Cherche d'abord à extraire le contenu principal de la nouvelle page (élément avec classe .page-main ou main) 
+// pour éviter de remplacer tout le DOM, puis met à jour le titre, les données de contexte et réimporte les scripts de la page si nécessaire.
+const extractMainContent = (doc) => doc.querySelector('.page-main') || doc.querySelector('main') || null;
+
+const importModuleScript = async (doc, baseUrl) => {
+    const script = doc.querySelector('script[type="module"][src]');
+    if (!script) return null;
+    const src = script.getAttribute('src');
+    const url = new URL(src, baseUrl).href;
+    try {
+        return await import(url);
+    } catch (e) {
+        console.warn('Failed to import page module', url, e);
+        return null;
+    }
+};
+
+window.__loadUrl = async (url) => {
+    // prevent re-entrancy: ignore if the same URL is already being loaded
+    if (window.__spaLoadingUrl && window.__spaLoadingUrl === url) {
+        return;
+    }
+    window.__spaLoadingUrl = url;
+    try {
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('Fetch failed');
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const newMain = extractMainContent(doc);
+        if (newMain) {
+            const currentMain = document.querySelector('.page-main');
+            if (currentMain) currentMain.innerHTML = newMain.innerHTML;
+        }
+        // update title and body page dataset
+        if (doc.title) document.title = doc.title;
+        const page = doc.body?.dataset?.page || '';
+        if (page) document.body.dataset.page = page;
+        // rebind chrome and other UI
+        if (typeof window.bindChrome === 'function') window.bindChrome(document);
+        // import page module if present
+        await importModuleScript(doc, url);
+        // run a small update after replacing
+        if (typeof window.updateChrome === 'function') window.updateChrome();
+    } catch (e) {
+        console.error('SPA load failed for', url, e);
+        try { window.location.href = url; } catch (err) { /* ignore */ }
+    } finally {
+        // clear loading marker
+        if (window.__spaLoadingUrl === url) window.__spaLoadingUrl = null;
+    }
+};
+
+export const enableSpaNavigation = (options = {}) => {
+    if (window.__spaEnabled) return;
+    window.__spaEnabled = true;
+
+    // handle back/forward
+    window.addEventListener('popstate', () => {
+        try { window.__loadUrl(location.pathname + location.search); } catch (e) { location.reload(); }
+    });
+
+    document.addEventListener('click', (evt) => {
+        const a = evt.target.closest && evt.target.closest('a');
+        if (!a || a.target || a.hasAttribute('download') || a.rel === 'external') return;
+        const href = a.getAttribute('href');
+        if (!href || href.startsWith('http') && new URL(href).origin !== location.origin) return;
+        // internal navigation
+        evt.preventDefault();
+        const url = href.startsWith('/') ? href : new URL(href, location.href).pathname + new URL(href, location.href).search;
+        window.history.pushState({}, '', url);
+        window.__loadUrl(url);
+    }, true);
+
+    // optional: immediately enable for current page to avoid full reload on next redirectTo
+    if (options.autoLoad === true && location.href) {
+        window.history.replaceState({}, '', location.href);
+    }
+};
+
+// Permet d'activer la navigation SPA (sans rechargement complet) en interceptant les clics sur les liens internes et en chargeant le contenu via AJAX. Doit être appelé après que le DOM est prêt. L'option autoLoad permet de charger immédiatement le contenu de la page actuelle via AJAX pour éviter un double chargement lors du premier redirectTo.
+try { enableSpaNavigation({ autoLoad: false }); } catch (e) { /* ignore in non-browser contexts */ }
+// try to start realtime subscription automatically
+// realtime subscription is started manually when appropriate (e.g. after session restore)

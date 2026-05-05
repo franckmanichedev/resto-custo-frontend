@@ -41,7 +41,7 @@
             <main class="page-main mx-auto max-w-3xl px-4 py-4">
                 <div class="mb-6">
                     <label class="relative block">
-                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <i class="fas fa-search absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-400"></i>
                         <input id="searchInput" type="text" placeholder="Pizza, burger, salade..." class="liquid-glass w-full rounded-xl py-4 pl-12 pr-4 text-base text-slate-100 outline-none focus:ring-2 focus:ring-amber-400">
                     </label>
                 </div>
@@ -54,9 +54,9 @@
                 <section>
                     <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-100">Resultats</h2>
                     <div id="resultsContainer" class="space-y-0"></div>
-                    <div id="noResults" class="hidden py-8 text-center">
+                    <div id="noResults" class="liquid-glass hidden rounded-2xl px-5 py-8 text-center">
                         <i class="fas fa-utensils mb-2 text-4xl text-gray-300"></i>
-                        <p class="text-gray">Aucun plat trouve</p>
+                        <p class="text-white">Aucun plat trouve</p>
                     </div>
                 </section>
             </main>

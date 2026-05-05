@@ -3,6 +3,7 @@ import {
     bindChrome,
     escapeHtml,
     formatDuration,
+    formatDayLabel,
     formatPrice,
     getSessionToken,
     getImageUrl,
@@ -124,6 +125,30 @@ if (!redirectToLoadingIfNeeded()) {
                 });
             });
         };
+
+        // Orderability: if the plat is not orderable today, replace footer with availability dates
+        const orderable = isOrderable(plat, { can_order: payload?.can_order ?? true });
+        const consultableDaysNode = document.getElementById('consultableDays');
+        if (!orderable) {
+            const days = Array.isArray(plat.consultable_days) ? plat.consultable_days.map((d) => formatDayLabel(d)).join(', ') : '';
+            const messageHtml = `
+                <div class="px-4 py-3">
+                    <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-800 ring-1 ring-slate-200">
+                        Ce plat n'est pas commandable aujourd'hui. Disponible: <strong>${escapeHtml(days)}</strong>.
+                    </div>
+                </div>
+            `;
+
+            // show message inside the sheet (under description)
+            if (consultableDaysNode) {
+                consultableDaysNode.classList.remove('hidden');
+                consultableDaysNode.innerHTML = messageHtml;
+            }
+
+            // replace footer (remove qty / total / add to cart)
+            const footer = document.querySelector('.detail-footer');
+            if (footer) footer.innerHTML = messageHtml;
+        }
 
         const syncQuantity = () => {
             qtyValue.textContent = String(state.quantity);
