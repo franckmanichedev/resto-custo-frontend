@@ -1,6 +1,6 @@
 import { api } from '../../../shared/api/apiClient.js';
 import { initializeAdminPage } from '../../../shared/components/adminPage.js';
-import { escapeHtml, showToast } from '../../../shared/utils/index.js';
+import { escapeHtml, showToast, debounce } from '../../../shared/utils/index.js';
 
 const ACTIVE_ORDER_STATUSES = new Set(['pending', 'preparing']);
 
@@ -204,7 +204,35 @@ export function initializeRestaurantShell({
     bindShellInteractions();
     hydrateShellBadges();
 
-    window.setInterval(hydrateShellBadges, 30000);
+    // realtime badge updates via Socket.io
+    async function loadSocketIoClient() {
+        if (window.io) return;
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = '/socket.io/socket.io.js';
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = (e) => reject(e);
+            document.head.appendChild(s);
+        });
+    }
+
+    (async () => {
+        try {
+            await loadSocketIoClient();
+            if (!window.io) return;
+            const socket = io();
+            const user = authService.getUserData ? authService.getUserData() : null;
+            const restId = user?.restaurantId || user?.restaurant_id || null;
+            const room = restId ? `restaurant_${restId}_shell` : 'shell';
+            socket.emit('join_room', room);
+            const debounced = debounce(() => hydrateShellBadges(), 500);
+            socket.on('new_order', debounced);
+            socket.on('order_status_changed', debounced);
+        } catch (err) {
+            // ignore
+        }
+    })();
     return true;
 }
 

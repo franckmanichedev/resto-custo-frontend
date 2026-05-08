@@ -75,8 +75,34 @@
                 });
             });
         }
-        // Rafraîchissement auto
-        setInterval(renderKanban, 10000);
+        // Realtime updates via Socket.io
+        (async () => {
+            try {
+                if (!window.io) {
+                    await new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.src = '/socket.io/socket.io.js';
+                        s.async = true;
+                        s.onload = () => resolve();
+                        s.onerror = (e) => reject(e);
+                        document.head.appendChild(s);
+                    });
+                }
+                if (!window.io) return;
+                const socket = io();
+                socket.on('new_order', () => {
+                    renderKanban();
+                    updatePendingBadge && updatePendingBadge();
+                });
+                socket.on('order_status_changed', () => {
+                    renderKanban();
+                    updatePendingBadge && updatePendingBadge();
+                });
+            } catch (err) {
+                // fallback to periodic render if sockets unavailable
+                setInterval(renderKanban, 10000);
+            }
+        })();
     }
     init();
 })();

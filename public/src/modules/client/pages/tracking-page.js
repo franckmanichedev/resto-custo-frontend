@@ -3,7 +3,8 @@
  */
 
 import { formatPrice, formatDuration } from '../../../shared/api/apiClient.js';
-import { escapeHtml, groupItemsByVariant } from '../../../shared/utils/index.js';
+import { escapeHtml, groupItemsByVariant, debounce } from '../../../shared/utils/index.js';
+import { timerService } from '../../../shared/utils/timerService.js';
 import { store, getStatusInfo } from '../store/clientStore.js';
 import { sessionManager } from '../services/sessionService.js';
 
@@ -15,11 +16,34 @@ export async function initTracking() {
     renderTracking(orders);
     
     if (refreshInterval) clearInterval(refreshInterval);
-    refreshInterval = setInterval(async () => {
-        await sessionManager.refreshSessionData();
-        const updatedOrders = store.get('orders') || [];
-        renderTracking(updatedOrders);
-    }, 5000);
+    refreshInterval = null;
+
+    (async () => {
+        try {
+            if (!window.io) {
+                await new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = '/socket.io/socket.io.js';
+                    s.async = true;
+                    s.onload = () => resolve();
+                    s.onerror = (e) => reject(e);
+                    document.head.appendChild(s);
+                });
+            }
+            if (!window.io) return;
+            const socket = io();
+            const debounced = debounce(async () => {
+                await sessionManager.refreshSessionData();
+                const updatedOrders = store.get('orders') || [];
+                renderTracking(updatedOrders);
+            }, 300);
+
+            socket.on('new_order', debounced);
+            socket.on('order_status_changed', debounced);
+        } catch (err) {
+            console.warn('socket init failed', err);
+        }
+    })();
     
     const unsubscribe = store.subscribe('orders', (newOrders) => {
         renderTracking(newOrders);
@@ -295,7 +319,9 @@ function startCountdowns() {
     };
     
     updateCountdowns();
-    const interval = setInterval(updateCountdowns, 1000);
-    
-    return () => clearInterval(interval);
+    const unsub = timerService.subscribe(() => updateCountdowns());
+
+    return () => {
+        try { unsub(); } catch (e) { /* ignore */ }
+    };
 }

@@ -287,7 +287,10 @@ export const updateChrome = (payload = null) => {
     });
     document.querySelectorAll('.nav-btn, .desktop-link').forEach((node) => node.classList.toggle('is-active', node.dataset.page === getLogicalPage()));
 
-    if (window.__restoTimer) clearInterval(window.__restoTimer);
+    if (window.__restoTimerUnsub) {
+        try { window.__restoTimerUnsub(); } catch (e) { /* ignore */ }
+        window.__restoTimerUnsub = null;
+    }
     if (!expiresAt) return;
     const tick = () => {
         const seconds = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
@@ -296,7 +299,19 @@ export const updateChrome = (payload = null) => {
         document.querySelectorAll('[data-session-timer]').forEach((node) => { node.textContent = `${String(minutes).padStart(2, '0')}:${String(rest).padStart(2, '0')}`; });
     };
     tick();
-    window.__restoTimer = setInterval(tick, 1000);
+
+    if (!window.__restoTimerService) {
+        window.__restoTimerService = (function(){
+            const subs = new Set();
+            let id = null;
+            function tickAll(){ const now = Date.now(); subs.forEach(cb => { try { cb(now); } catch(e){} }); }
+            function start(){ if (id) return; id = setInterval(tickAll, 1000); }
+            function subscribe(cb){ subs.add(cb); start(); return ()=>{ subs.delete(cb); if (subs.size===0){ clearInterval(id); id=null; } }; }
+            return { subscribe };
+        })();
+    }
+
+    window.__restoTimerUnsub = window.__restoTimerService.subscribe(tick);
 };
 
 export const bindChrome = (root = document) => {

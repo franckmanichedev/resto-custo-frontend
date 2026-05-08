@@ -100,7 +100,38 @@ function getStatusLabel(status) {
 }
 
 await loadStats();
-window.setInterval(loadStats, 30000);
+// initialize socket to receive realtime updates
+async function loadSocketIoClient() {
+    if (window.io) return;
+    return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = '/socket.io/socket.io.js';
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+    });
+}
+
+async function initSocket() {
+    try {
+        await loadSocketIoClient();
+        if (!window.io) return;
+        const socket = io();
+        const user = authService.getUserData ? authService.getUserData() : null;
+        const restId = user?.restaurantId || user?.restaurant_id || null;
+        const room = restId ? `restaurant_${restId}_dashboard` : 'dashboard';
+        socket.emit('join_room', room);
+
+        const debouncedReload = debounce(() => loadStats(), 500);
+        socket.on('new_order', debouncedReload);
+        socket.on('order_status_changed', debouncedReload);
+    } catch (err) {
+        console.warn('Socket.io client not available', err);
+    }
+}
+
+initSocket();
 
 function computeSalesSeries(orders) {
     // build simple daily totals for last 7 days

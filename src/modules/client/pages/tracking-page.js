@@ -3,7 +3,8 @@
  */
 
 import { formatPrice, formatDuration } from '../../../shared/api/apiClient.js';
-import { escapeHtml, groupItemsByVariant } from '../../../shared/utils/index.js';
+import { escapeHtml, groupItemsByVariant, debounce } from '../../../shared/utils/index.js';
+import { timerService } from '../../../shared/utils/timerService.js';
 import { store, getStatusInfo } from '../store/clientStore.js';
 import { sessionManager } from '../services/sessionService.js';
 
@@ -14,12 +15,41 @@ export async function initTracking() {
     
     renderTracking(orders);
     
+    // replace polling with realtime socket updates
     if (refreshInterval) clearInterval(refreshInterval);
-    refreshInterval = setInterval(async () => {
-        await sessionManager.refreshSessionData();
-        const updatedOrders = store.get('orders') || [];
-        renderTracking(updatedOrders);
-    }, 5000);
+    refreshInterval = null;
+
+    // initialize socket client for realtime updates
+    async function loadSocketIoClient() {
+        if (window.io) return;
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = '/socket.io/socket.io.js';
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = (e) => reject(e);
+            document.head.appendChild(s);
+        });
+    }
+
+    (async () => {
+        try {
+            await loadSocketIoClient();
+            if (!window.io) return;
+            const socket = io();
+            const debounced = debounce(async () => {
+                await sessionManager.refreshSessionData();
+                const updatedOrders = store.get('orders') || [];
+                renderTracking(updatedOrders);
+            }, 300);
+
+            socket.on('new_order', debounced);
+            socket.on('order_status_changed', debounced);
+        } catch (err) {
+            // fallback: do nothing, store subscription will still update UI
+            console.warn('socket init failed', err);
+        }
+    })();
     
     const unsubscribe = store.subscribe('orders', (newOrders) => {
         renderTracking(newOrders);
@@ -295,7 +325,9 @@ function startCountdowns() {
     };
     
     updateCountdowns();
-    const interval = setInterval(updateCountdowns, 1000);
-    
-    return () => clearInterval(interval);
+    const unsub = timerService.subscribe(() => updateCountdowns());
+
+    return () => {
+        try { unsub(); } catch (e) { /* ignore */ }
+    };
 }

@@ -55,9 +55,26 @@
         renderPopularTables();
     }
     init();
-    // Rafraîchir toutes les 30 secondes (optionnel)
-    setInterval(() => {
-        updateStats();
-        renderRecentOrders();
-    }, 30000);
+    // Realtime updates via Socket.io
+    (async () => {
+        try {
+            if (!window.io) {
+                await new Promise((resolve, reject) => {
+                    const s = document.createElement('script');
+                    s.src = '/socket.io/socket.io.js';
+                    s.async = true;
+                    s.onload = () => resolve();
+                    s.onerror = (e) => reject(e);
+                    document.head.appendChild(s);
+                });
+            }
+            if (!window.io) return;
+            const socket = io();
+            socket.on('new_order', () => { updateStats(); renderRecentOrders(); });
+            socket.on('order_status_changed', () => { updateStats(); renderRecentOrders(); });
+        } catch (err) {
+            // fallback to polling
+            setInterval(() => { updateStats(); renderRecentOrders(); }, 30000);
+        }
+    })();
 })();

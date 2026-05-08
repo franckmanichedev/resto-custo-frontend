@@ -4,7 +4,7 @@ import { authService } from '../services/authService.js';
 import { tablesService } from '../services/tablesService.js';
 
 if (!initializeAdminPage({ authService })) {
-    throw new Error('Acces administrateur requis');
+    throw new Error('Accès administrateur requis');
 }
 
 let editingTableId = null;
@@ -22,11 +22,16 @@ const layoutButtons = document.querySelectorAll('[data-table-layout]');
 function applyLayoutButtons() {
     layoutButtons.forEach((button) => {
         const isActive = button.dataset.tableLayout === tableLayout;
-        button.classList.toggle('bg-gray-900', isActive);
-        button.classList.toggle('text-white', isActive);
-        button.classList.toggle('border-gray-900', isActive);
-        button.classList.toggle('bg-white', !isActive);
-        button.classList.toggle('text-gray-600', !isActive);
+        button.className = isActive 
+            ? "rounded-lg bg-white px-3 py-1 text-xs font-bold text-gray-800 shadow-sm border border-gray-200/40 transition-all flex items-center justify-center gap-1.5"
+            : "rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800 px-3 py-1 transition-all flex items-center justify-center gap-1.5";
+            
+        const icon = button.querySelector('i');
+        if (icon) {
+            icon.className = button.dataset.tableLayout === 'list' 
+                ? `fas fa-list text-[11px] ${isActive ? 'text-orange-500' : 'text-gray-400'}`
+                : `fas fa-border-all text-[11px] ${isActive ? 'text-orange-500' : 'text-gray-400'}`;
+        }
         button.setAttribute('aria-pressed', String(isActive));
     });
 }
@@ -40,7 +45,7 @@ async function loadTables() {
         renderSummary(tablesCache);
     } catch (error) {
         showToast(error.message || 'Erreur de chargement', 'error');
-        tablesList.innerHTML = '<div class="text-center py-8 text-red-500">Erreur de chargement</div>';
+        if (tablesList) tablesList.innerHTML = '<div class="text-center py-12 text-sm font-semibold text-red-500">Erreur de chargement des tables</div>';
     }
 }
 
@@ -70,13 +75,12 @@ function showTablesSkeleton() {
 
 function renderSummary(tables) {
     if (!summaryEl) return;
-
     const counts = tables.reduce((acc, table) => {
         const status = getTableStatus(table).key;
         acc[status] = (acc[status] || 0) + 1;
         return acc;
     }, {});
-
+    
     summaryEl.innerHTML = `
         <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-0.5 text-xs font-bold text-gray-600 border border-gray-200/50">${tables.length} Table(s)</span>
         <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">${counts.free || 0} Libre(s)</span>
@@ -87,25 +91,24 @@ function renderSummary(tables) {
 
 function renderTables(tables) {
     applyLayoutButtons();
-
     if (!tables.length) {
-        tablesList.className = '';
-        tablesList.innerHTML = '<div class="rounded-2xl border border-dashed border-gray-200 bg-white py-12 text-center text-gray">Aucune table trouvee</div>';
+        if (tablesList) {
+            tablesList.className = '';
+            tablesList.innerHTML = `
+                <div class="rounded-2xl border-2 border-dashed border-gray-200 bg-white py-14 text-center text-sm font-semibold text-gray-400">
+                    <i class="fas fa-folder-open text-2xl block mb-2 text-gray-300"></i> Aucune table trouvée
+                </div>`;
+        }
         return;
     }
-
-    tablesList.className = tableLayout === 'plan'
-        ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3'
-        : 'space-y-3';
-
-    tablesList.innerHTML = tables.map((table) => (
-        tableLayout === 'plan' ? renderPlanTable(table) : renderListTable(table)
-    )).join('');
-
+    if (tablesList) {
+        tablesList.className = tableLayout === 'plan' ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3' : 'space-y-3';
+        tablesList.innerHTML = tables.map((table) => (tableLayout === 'plan' ? renderPlanTable(table) : renderListTable(table))).join('');
+    }
+    
     document.querySelectorAll('.edit-table').forEach((button) => {
         button.addEventListener('click', () => editTable(button.dataset.id));
     });
-
     document.querySelectorAll('.delete-table').forEach((button) => {
         button.addEventListener('click', () => deleteTable(button.dataset.id));
     });
@@ -114,7 +117,6 @@ function renderTables(tables) {
 function renderListTable(table) {
     const status = getTableStatus(table);
     const menuUrl = table.menu_url || tablesService.getClientMenuUrl(table);
-
     return `
         <article class="group flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200 md:flex-row md:items-center justify-between">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center flex-1 min-w-0">
@@ -161,7 +163,6 @@ function renderListTable(table) {
 
 function renderPlanTable(table) {
     const status = getTableStatus(table);
-
     return `
         <article class="group relative rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-gray-200">
             <div class="flex items-start justify-between gap-4">
@@ -202,9 +203,8 @@ function renderPlanTable(table) {
 function renderQrPreview(table, sizeClass) {
     const qrValue = table.qr_code || table.menu_url || tablesService.getClientMenuUrl(table);
     const src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=8&data=${encodeURIComponent(qrValue)}`;
-
     return `
-        <div class="${sizeClass} shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white p-1">
+        <div class="${sizeClass} shrink-0 overflow-hidden rounded-lg border border-gray-200/50 bg-white p-1">
             <img src="${escapeHtml(src)}" alt="QR code table ${escapeHtml(table.number || table.name || '')}" class="h-full w-full object-contain" loading="lazy">
         </div>
     `;
@@ -212,41 +212,29 @@ function renderQrPreview(table, sizeClass) {
 
 function getTableStatus(table) {
     const rawStatus = String(table.status || table.table_status || table.occupation_status || '').trim().toLowerCase();
-
     if (table.is_active === false || rawStatus === 'inactive') {
-        return { key: 'inactive', label: 'Inactive', className: 'bg-gray-100 text-gray-600' };
+        return { key: 'inactive', label: 'Inactive', className: 'bg-gray-100 text-gray-600 border-gray-200' };
     }
-
     if (table.is_reserved || table.reserved || ['reserved', 'reservee'].includes(rawStatus)) {
-        return { key: 'reserved', label: 'Reservee', className: 'bg-amber-100 text-amber-700' };
+        return { key: 'reserved', label: 'Réservée', className: 'bg-amber-50 text-amber-700 border-amber-200' };
     }
-
-    if (
-        table.is_occupied
-        || table.occupied
-        || table.current_session_id
-        || table.active_session_id
-        || ['occupied', 'occupee'].includes(rawStatus)
-    ) {
-        return { key: 'occupied', label: 'Occupee', className: 'bg-blue-100 text-blue-700' };
+    if (table.is_occupied || table.occupied || table.current_session_id || table.active_session_id || ['occupied', 'occupee'].includes(rawStatus)) {
+        return { key: 'occupied', label: 'Occupée', className: 'bg-blue-50 text-blue-700 border-blue-200' };
     }
-
-    return { key: 'free', label: 'Libre', className: 'bg-green-100 text-green-700' };
+    return { key: 'free', label: 'Libre', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' };
 }
 
 async function editTable(id) {
     try {
         const response = await tablesService.getById(id);
         const table = response.data;
-
         editingTableId = table.id;
-        formTitle.textContent = `Modifier: ${table.name}`;
+        if (formTitle) formTitle.textContent = `Modifier : ${table.name}`;
         document.getElementById('table-name').value = table.name || '';
         document.getElementById('table-number').value = table.number || '';
         document.getElementById('table-qr-code').value = table.qr_code || '';
         document.getElementById('table-active').checked = table.is_active !== false;
-        cancelEdit.classList.remove('hidden');
-
+        cancelEdit?.classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
         showToast(error.message || 'Erreur de chargement', 'error');
@@ -254,17 +242,14 @@ async function editTable(id) {
 }
 
 async function deleteTable(id) {
-    const confirmed = await confirmDialog('Supprimer cette table ?', 'Confirmation');
+    const confirmed = await confirmDialog('Supprimer définitivement cette table ?', 'Confirmation');
     if (!confirmed) return;
-
     try {
         await tablesService.remove(id);
-        showToast('Table supprimee', 'success');
-
+        showToast('Table supprimée', 'success');
         if (editingTableId === id) {
             resetForm();
         }
-
         await loadTables();
     } catch (error) {
         showToast(error.message || 'Erreur de suppression', 'error');
@@ -273,15 +258,15 @@ async function deleteTable(id) {
 
 function resetForm() {
     editingTableId = null;
-    formTitle.textContent = 'Nouvelle table';
-    tableForm.reset();
-    document.getElementById('table-active').checked = true;
-    cancelEdit.classList.add('hidden');
+    if (formTitle) formTitle.textContent = 'Nouvelle table';
+    tableForm?.reset();
+    const activeCheck = document.getElementById('table-active');
+    if (activeCheck) activeCheck.checked = true;
+    cancelEdit?.classList.add('hidden');
 }
 
 tableForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
-
     const payload = {
         name: document.getElementById('table-name').value.trim(),
         number: document.getElementById('table-number').value.trim(),
@@ -290,19 +275,18 @@ tableForm?.addEventListener('submit', async (event) => {
     };
 
     if (!payload.name || !payload.number) {
-        showToast('Le nom et le numero sont requis', 'warning');
+        showToast('Le nom et le numéro sont requis', 'warning');
         return;
     }
 
     try {
         if (editingTableId) {
             await tablesService.update(editingTableId, payload);
-            showToast('Table modifiee', 'success');
+            showToast('Table modifiée avec succès', 'success');
         } else {
             await tablesService.create(payload);
-            showToast('Table creee', 'success');
+            showToast('Table créée avec succès', 'success');
         }
-
         resetForm();
         await loadTables();
     } catch (error) {
@@ -319,7 +303,7 @@ layoutButtons.forEach((button) => {
 });
 
 cancelEdit?.addEventListener('click', resetForm);
-refreshBtn?.addEventListener('click', loadTables);
+if (refreshBtn) refreshBtn.addEventListener('click', loadTables);
 
 applyLayoutButtons();
 await loadTables();

@@ -3,13 +3,14 @@
  */
 
 import { api, getCurrentDay, formatDuration } from '../../../shared/api/apiClient.js';
-import { showToast, showLoading, hideLoading } from '../../../shared/utils/index.js';
+import { showToast, showLoading, hideLoading, debounce } from '../../../shared/utils/index.js';
+import { timerService } from '../../../shared/utils/timerService.js';
 import { store } from '../store/clientStore.js';
 import { hydrateLocalCart } from './localCartService.js';
 
 class SessionManager {
     constructor() {
-        this.sessionTimer = null;
+        this.sessionTimerUnsub = null;
         this.refreshInterval = null;
     }
 
@@ -79,12 +80,15 @@ class SessionManager {
     }
 
     startSessionTimer() {
-        if (this.sessionTimer) clearInterval(this.sessionTimer);
+        if (this.sessionTimerUnsub) {
+            try { this.sessionTimerUnsub(); } catch (e) { /* ignore */ }
+            this.sessionTimerUnsub = null;
+        }
 
         const timerElement = document.getElementById('session-timer');
         if (!timerElement) return;
 
-        this.sessionTimer = setInterval(() => {
+        const cb = () => {
             const session = store.get('session');
             if (!session?.expires_at) {
                 timerElement.textContent = '--:--';
@@ -97,23 +101,55 @@ class SessionManager {
             if (remaining <= 0) {
                 this.handleSessionExpired();
             }
-        }, 1000);
+        };
+
+        // subscribe to centralized timer
+        this.sessionTimerUnsub = timerService.subscribe(cb);
     }
 
     startPeriodicRefresh() {
-        if (this.refreshInterval) clearInterval(this.refreshInterval);
+        // replace periodic polling with Socket.io-driven refresh
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
 
-        this.refreshInterval = setInterval(async () => {
+        (async () => {
             try {
-                await this.refreshSessionData();
-            } catch (error) {
-                console.error('Erreur rafraichissement session:', error);
+                if (!window.io) {
+                    await new Promise((resolve, reject) => {
+                        const s = document.createElement('script');
+                        s.src = '/socket.io/socket.io.js';
+                        s.async = true;
+                        s.onload = () => resolve();
+                        s.onerror = (e) => reject(e);
+                        document.head.appendChild(s);
+                    });
+                }
+                if (!window.io) return;
+                const socket = io();
+                const debouncedRefresh = debounce(async () => {
+                    try {
+                        await this.refreshSessionData();
+                    } catch (err) {
+                        console.error('Erreur rafraichissement session:', err);
+                    }
+                }, 300);
+
+                socket.on('new_order', debouncedRefresh);
+                socket.on('order_status_changed', debouncedRefresh);
+            } catch (err) {
+                // fallback: keep silent; app will still work via store subscriptions
+                console.warn('Socket init failed for session refresh', err);
             }
-        }, 30000);
+        })();
     }
 
     handleSessionExpired() {
-        if (this.sessionTimer) clearInterval(this.sessionTimer);
+        if (this.sessionTimerUnsub) {
+            try { this.sessionTimerUnsub(); } catch (e) { /* ignore */ }
+            this.sessionTimerUnsub = null;
+        }
         if (this.refreshInterval) clearInterval(this.refreshInterval);
 
         showToast('La session a expire, veuillez scanner a nouveau le QR code', 'warning');
@@ -124,7 +160,10 @@ class SessionManager {
     }
 
     clearSession() {
-        if (this.sessionTimer) clearInterval(this.sessionTimer);
+        if (this.sessionTimerUnsub) {
+            try { this.sessionTimerUnsub(); } catch (e) { /* ignore */ }
+            this.sessionTimerUnsub = null;
+        }
         if (this.refreshInterval) clearInterval(this.refreshInterval);
 
         store.setMultiple({

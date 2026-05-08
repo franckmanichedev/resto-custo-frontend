@@ -4,7 +4,7 @@ import { authService } from '../services/authService.js';
 import { compositionsService } from '../services/compositionsService.js';
 
 if (!initializeAdminPage({ authService })) {
-    throw new Error('Acces administrateur requis');
+    throw new Error('Accès administrateur requis');
 }
 
 const compositionsList = document.getElementById('compositions-list');
@@ -33,7 +33,8 @@ function getCompositionPayload() {
 function resetCompositionForm() {
     editingCompositionId = null;
     compositionForm?.reset();
-    document.getElementById('comp-active').checked = true;
+    const activeCheckbox = document.getElementById('comp-active');
+    if (activeCheckbox) activeCheckbox.checked = true;
     if (submitLabel) submitLabel.textContent = 'Ajouter';
     cancelEditBtn?.classList.add('hidden');
 }
@@ -41,13 +42,15 @@ function resetCompositionForm() {
 async function loadCompositions() {
     showCompositionsSkeleton();
     try {
-        const search = searchInput.value.trim();
+        const search = searchInput ? searchInput.value.trim() : '';
         const response = await compositionsService.getAll(search ? { search } : {});
         compositionsCache = response.data || [];
         renderCompositions(compositionsCache);
     } catch (error) {
         showToast(error.message || 'Erreur de chargement', 'error');
-        compositionsList.innerHTML = '<div class="text-center py-8 text-red-500">Erreur de chargement</div>';
+        if (compositionsList) {
+            compositionsList.innerHTML = '<div class="text-center py-12 text-sm font-semibold text-red-500">Erreur de chargement du registre</div>';
+        }
     }
 }
 
@@ -55,15 +58,16 @@ function showCompositionsSkeleton() {
     if (!compositionsList) return;
     compositionsList.innerHTML = `
         <div class="space-y-3">
-            ${[1,2,3,4].map(() => `
-                <div class="flex items-center justify-between gap-4 p-3 border border-gray-100 rounded-lg">
-                    <div class="flex-1">
-                        <div class="skeleton h-5 w-48 mb-2"></div>
-                        <div class="skeleton h-4 w-3/4"></div>
+            ${[1, 2, 3, 4].map(() => `
+                <div class="p-4 border border-gray-100 rounded-xl space-y-2 bg-white opacity-70">
+                    <div class="flex justify-between">
+                        <div class="skeleton h-5 w-32"></div>
+                        <div class="skeleton h-5 w-14 rounded-full"></div>
                     </div>
-                    <div class="flex gap-2">
-                        <div class="skeleton h-8 w-8 rounded-lg"></div>
-                        <div class="skeleton h-8 w-8 rounded-lg"></div>
+                    <div class="skeleton h-4 w-3/4"></div>
+                    <div class="flex gap-2 pt-1">
+                        <div class="skeleton h-4 w-16"></div>
+                        <div class="skeleton h-4 w-20"></div>
                     </div>
                 </div>
             `).join('')}
@@ -72,6 +76,7 @@ function showCompositionsSkeleton() {
 }
 
 function renderCompositions(compositions) {
+    if (!compositionsList) return;
     if (!compositions.length) {
         compositionsList.innerHTML = `
             <div class="rounded-2xl border-2 border-dashed border-gray-200 bg-white py-14 text-center text-sm font-semibold text-gray-400">
@@ -136,7 +141,6 @@ function renderCompositions(compositions) {
     document.querySelectorAll('.edit-comp').forEach((button) => {
         button.addEventListener('click', () => editComposition(button.dataset.id));
     });
-
     document.querySelectorAll('.delete-comp').forEach((button) => {
         button.addEventListener('click', () => deleteComposition(button.dataset.id));
     });
@@ -147,7 +151,6 @@ async function editComposition(id) {
         const fallback = compositionsCache.find((composition) => composition.id === id);
         const response = await compositionsService.getById(id);
         const composition = response.data || fallback;
-
         if (!composition) {
             showToast('Composition introuvable', 'error');
             return;
@@ -159,8 +162,10 @@ async function editComposition(id) {
         document.getElementById('comp-allergen').checked = composition.is_allergen === true;
         document.getElementById('comp-active').checked = composition.is_active !== false;
         document.getElementById('comp-aliases').value = (composition.aliases || []).join(', ');
+        
         if (submitLabel) submitLabel.textContent = 'Modifier';
         cancelEditBtn?.classList.remove('hidden');
+        
         compositionForm?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         showToast(error.message || 'Erreur de chargement', 'error');
@@ -170,10 +175,9 @@ async function editComposition(id) {
 async function deleteComposition(id) {
     const confirmed = await confirmDialog('Supprimer cette composition ?', 'Confirmation');
     if (!confirmed) return;
-
     try {
         await compositionsService.remove(id);
-        showToast('Composition supprimee', 'success');
+        showToast('Composition supprimée', 'success');
         if (editingCompositionId === id) {
             resetCompositionForm();
         }
@@ -185,32 +189,44 @@ async function deleteComposition(id) {
 
 compositionForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
-
     const payload = getCompositionPayload();
     if (!payload.name) {
         showToast('Le nom est requis', 'warning');
         return;
     }
+    
+    let submitBtn = compositionForm.querySelector('button[type="submit"]');
+    let originalLabel = submitBtn ? submitBtn.textContent : null;
 
     try {
-        if (editingCompositionId) {
-            await compositionsService.update(editingCompositionId, payload);
-            showToast('Composition modifiee', 'success');
-        } else {
-            await compositionsService.create(payload);
-            showToast('Composition ajoutee', 'success');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enregistrement...';
         }
 
+        if (editingCompositionId) {
+            await compositionsService.update(editingCompositionId, payload);
+            showToast('Composition modifiée', 'success');
+        } else {
+            await compositionsService.create(payload);
+            showToast('Composition ajoutée', 'success');
+        }
         resetCompositionForm();
         await loadCompositions();
     } catch (error) {
         showToast(error.message || 'Erreur lors de la sauvegarde', 'error');
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel || 'Ajouter';
+        }
     }
 });
 
 cancelEditBtn?.addEventListener('click', resetCompositionForm);
-searchInput?.addEventListener('input', debounce(loadCompositions, 300));
-refreshBtn?.addEventListener('click', loadCompositions);
+if (searchInput) searchInput.addEventListener('input', debounce(loadCompositions, 300));
+if (refreshBtn) refreshBtn.addEventListener('click', loadCompositions);
 
+// Amorçage initial
 resetCompositionForm();
 await loadCompositions();

@@ -1,6 +1,7 @@
 import { formatPrice, formatDuration } from '../../../shared/api/apiClient.js';
 import { initializeAdminPage } from '../../../shared/components/adminPage.js';
 import { showToast, escapeHtml, groupItemsByVariant, debounce } from '../../../shared/utils/index.js';
+import { timerService } from '../../../shared/utils/timerService.js';
 import { authService } from '../services/authService.js';
 import { ordersService } from '../services/ordersService.js';
 
@@ -16,8 +17,7 @@ const ORDER_STATUSES = [
     { key: 'cancelled', label: 'Annule', tone: 'bg-red-50 border-red-200', badge: 'bg-red-100 text-red-700', icon: 'fa-ban' }
 ];
 
-let refreshInterval = null;
-let countdownInterval = null;
+let countdownUnsub = null;
 let ordersCache = [];
 let draggedOrderId = '';
 let isDragging = false;
@@ -28,6 +28,8 @@ const tableFilter = document.getElementById('table-filter');
 const refreshBtn = document.getElementById('refresh-orders');
 const autoRefreshCheckbox = document.getElementById('auto-refresh');
 const lastUpdatedEl = document.getElementById('orders-last-updated');
+
+let socket = null;
 
 function getStatusInfo(status) {
     return ORDER_STATUSES.find((entry) => entry.key === status) || ORDER_STATUSES[0];
@@ -337,8 +339,9 @@ async function moveOrder(orderId, nextStatus) {
 }
 
 function restartCountdowns() {
-    if (countdownInterval) {
-        window.clearInterval(countdownInterval);
+    if (countdownUnsub) {
+        try { countdownUnsub(); } catch (e) { /* ignore */ }
+        countdownUnsub = null;
     }
 
     const updateCountdowns = () => {
@@ -352,27 +355,64 @@ function restartCountdowns() {
     };
 
     updateCountdowns();
-    countdownInterval = window.setInterval(updateCountdowns, 1000);
+    countdownUnsub = timerService.subscribe(() => updateCountdowns());
 }
 
-function setupAutoRefresh() {
-    if (refreshInterval) {
-        window.clearInterval(refreshInterval);
-    }
+async function loadSocketIoClient() {
+    if (window.io) return;
+    return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = '/socket.io/socket.io.js';
+        s.async = true;
+        s.onload = () => resolve();
+        s.onerror = (e) => reject(e);
+        document.head.appendChild(s);
+    });
+}
 
-    if (autoRefreshCheckbox.checked) {
-        refreshInterval = window.setInterval(() => {
-            if (!isDragging) {
-                loadOrders({ silent: true });
+async function initSocket() {
+    try {
+        await loadSocketIoClient();
+        if (!window.io) return;
+        socket = io();
+
+        const user = authService.getUserData ? authService.getUserData() : null;
+        const restId = user?.restaurantId || user?.restaurant_id || null;
+        const room = restId ? `restaurant_${restId}_kitchen` : 'kitchen';
+
+        socket.emit('join_room', room);
+
+        socket.on('new_order', (order) => {
+            try {
+                ordersCache.unshift(order);
+                renderOrders(filterOrders(ordersCache));
+                updatePendingBadge(ordersCache);
+                showToast('Nouvelle commande', 'info');
+            } catch (err) {
+                console.warn('new_order handler', err);
             }
-        }, 10000);
+        });
+
+        socket.on('order_status_changed', (order) => {
+            try {
+                const idx = ordersCache.findIndex((o) => o.id === order.id);
+                if (idx >= 0) ordersCache[idx] = order;
+                else ordersCache.unshift(order);
+                renderOrders(filterOrders(ordersCache));
+                updatePendingBadge(ordersCache);
+            } catch (err) {
+                console.warn('order_status_changed handler', err);
+            }
+        });
+    } catch (err) {
+        console.warn('Socket.io client not available', err);
     }
 }
 
-autoRefreshCheckbox?.addEventListener('change', setupAutoRefresh);
 refreshBtn?.addEventListener('click', () => loadOrders());
 statusFilter?.addEventListener('change', () => renderOrders(filterOrders(ordersCache)));
 tableFilter?.addEventListener('input', debounce(() => renderOrders(filterOrders(ordersCache)), 300));
 
 await loadOrders();
-setupAutoRefresh();
+// initialize socket after initial load
+initSocket();
