@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base-url" content="onrender.com">
+    <title>Resto QRCode - Intelligence Clients</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="../src/styles/main.css">
+    <style>
+        .skeleton {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            display: inline-block;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar latérale Premium -->
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-xl shrink-0">
+            <div class="p-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-orange-500/20">R</div>
+                    <div>
+                        <div class="font-extrabold text-lg tracking-tight">RestoQR</div>
+                        <div class="text-[11px] text-gray-400 font-medium tracking-wide uppercase mt-0.5">Espace restaurateur</div>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
+                    <span class="text-sm font-medium">Tableau de bord</span>
+                </a>
+                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 transition-all">
+                    <i class="fas fa-clipboard-list w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Commandes</span>
+                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white shadow-sm ring-1 ring-red-500/30">0</span>
+                </a>
+                <div class="border-t border-white/5 my-3"></div>
+                <details class="group">
+                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 cursor-pointer transition-all list-none">
+                        <i class="fas fa-utensils w-5 text-gray-400 text-sm"></i>
+                        <span class="text-sm font-medium">Menu</span>
+                        <i class="fas fa-chevron-right ml-auto text-[10px] text-gray-500 transition-transform group-open:rotate-90"></i>
+                    </summary>
+                    <div class="mt-1 space-y-1 pl-9 text-sm">
+                        <a href="./plats.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Plats</a>
+                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Compositions</a>
+                        <a href="./categories.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Catégories</a>
+                    </div>
+                </details>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all shadow-sm">
+                    <i class="fas fa-table w-5 text-gray-400 text-sm"></i> <span class="text-sm font-semibold">Tables</span>
+                </a>
+                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <i class="fas fa-users w-5  text-orange-400 text-sm"></i> <span class="text-sm font-medium">Clients</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-white/5">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-red-600/10 hover:text-red-400 transition-all font-medium text-sm">
+                    <i class="fas fa-sign-out-alt w-5"></i> <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Conteneur Principal -->
+        <main class="flex-1 overflow-y-auto bg-[#f8fafc]">
+            <!-- En-tête -->
+            <header class="bg-white border-b border-gray-100 px-8 py-5 shadow-sm">
+                <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+                    <div class="space-y-0.5">
+                        <h1 class="text-2xl font-black tracking-tight text-gray-900">Portefeuille Clients</h1>
+                        <p class="text-xs font-medium text-gray-500">Données comportementales et leviers de fidélisation</p>
+                    </div>
+                    <button id="export-clients-btn" class="inline-flex h-10 px-4 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-bold transition-all shadow-sm active:scale-[0.98]">
+                        <i class="fas fa-file-export text-gray-400 text-sm"></i> <span>Exporter en CSV</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Zone de contenu -->
+            <div class="p-8 space-y-6 max-w-7xl mx-auto">
+                
+                <!-- 📊 SECTION DÉCISIONNELLE : Les KPIs Clients -->
+                <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Clients Totaux</p>
+                            <p id="total-clients" class="text-3xl font-black text-gray-900 tracking-tight"><span class="skeleton h-8 w-12"></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-gray-50 text-gray-600 border border-gray-100 flex items-center justify-center text-lg">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </article>
+                    
+                    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Clients VIP (Top Spenders)</p>
+                            <p id="vip-clients" class="text-3xl font-black text-emerald-600 tracking-tight"><span class="skeleton h-8 w-12"></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center text-lg">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">À risque (Inactifs)</p>
+                            <p id="at-risk-clients" class="text-3xl font-black text-red-600 tracking-tight"><span class="skeleton h-8 w-12"></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 border border-red-100 flex items-center justify-center text-lg">
+                            <i class="fas fa-heart-broken"></i>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Panier Moyen Client</p>
+                            <p id="avg-basket" class="text-3xl font-black text-orange-600 tracking-tight"><span class="skeleton h-8 w-16"></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 border border-orange-100 flex items-center justify-center text-lg">
+                            <i class="fas fa-shopping-basket"></i>
+                        </div>
+                    </article>
+                </section>
+
+                <!-- Barre d'outils et segmentation rapide -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div class="relative md:col-span-2">
+                            <input type="text" id="search-clients" placeholder="Rechercher par nom, téléphone ou email..." class="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium transition-all">
+                            <i class="fas fa-search absolute left-3.5 top-3 text-xs text-gray-400"></i>
+                        </div>
+                        <select id="segment-filter" class="px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium transition-all">
+                            <option value="all">Tous les clients</option>
+                            <option value="vip">Portefeuille VIP (Gros budgets)</option>
+                            <option value="loyal">Clients Réguliers</option>
+                            <option value="at_risk">À reconquérir (Inactifs)</option>
+                        </select>
+                        <button id="refresh-clients" class="inline-flex h-10 px-4 items-center justify-center rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                            <i class="fas fa-sync-alt mr-2 text-gray-400"></i>Actualiser
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Liste des clients (Intelligence CRM) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/30">
+                        <h2 class="text-base font-bold text-gray-900 tracking-tight">Base de données qualifiée</h2>
+                    </div>
+                    
+                    <!-- Liste injectée -->
+                    <div id="clients-list" class="divide-y divide-gray-100" role="list" aria-live="polite">
+                        <div class="p-8 text-center text-sm font-medium text-gray-400">
+                            <i class="fas fa-spinner fa-spin mr-2 text-gray-300"></i> Chargement des profils acheteurs...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Script principal de gestion -->
+    <script type="module">
+        import { initAdminShell } from "../src/shared/components/adminShell.js";
+        initAdminShell();
+    </script>
+    <script type="module" src="../src/modules/restaurant/pages/clients-page.js"></script>
+</body>
+</html>

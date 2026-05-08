@@ -3,134 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api">
-    <title>Resto QRCode - Categories</title>
-
+    <meta name="api-base-url" content="onrender.com">
+    <title>Resto QRCode - Catégories</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../src/styles/main.css">
+    <style>
+        .skeleton {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            display: inline-block;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans">
-    <div class="flex h-screen">
-        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-lg">
+<body class="bg-gray-50 font-sans text-gray-900 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar latérale Premium -->
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-xl shrink-0">
             <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold">R</div>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-orange-500/20">R</div>
                     <div>
-                        <div class="font-semibold text-lg">RestoQR</div>
-                        <div class="text-xs text-gray-400 mt-0.5">Espace restaurateur</div>
+                        <div class="font-extrabold text-lg tracking-tight">RestoQR</div>
+                        <div class="text-[11px] text-gray-400 font-medium tracking-wide uppercase mt-0.5">Espace restaurateur</div>
                     </div>
                 </div>
             </div>
-
-            <nav class="flex-1 p-4 space-y-2">
-                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
-                    <span class="font-medium">Tableau de bord</span>
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <svg xmlns="w3.org" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
+                    <span class="text-sm font-medium">Tableau de bord</span>
                 </a>
-                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
-                    <i class="fas fa-clipboard-list w-5 text-gray-300"></i>
-                    <span>Commandes</span>
-                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-red-600 text-white">0</span>
+                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 transition-all">
+                    <i class="fas fa-clipboard-list w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Commandes</span>
+                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white shadow-sm ring-1 ring-red-500/30">0</span>
                 </a>
-                <div class="border-t border-white/5 my-2"></div>
-                <details class="group">
-                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 cursor-pointer"> <i class="fas fa-utensils w-5 text-gray-300"></i> <span>Menu</span></summary>
-                    <div class="mt-2 space-y-1 pl-6">
-                        <a href="./plats.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Plats</a>
-                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg hover:bg-white/5">Compositions</a>
-                        <a href="./categories.html" class="block px-4 py-2 text-orange-400 rounded-lg hover:bg-white/5">Categories</a>
+                <div class="border-t border-white/5 my-3"></div>
+                <details class="group" open>
+                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 cursor-pointer transition-all list-none">
+                        <i class="fas fa-utensils w-5 text-gray-400 text-sm"></i>
+                        <span class="text-sm font-medium">Menu</span>
+                        <i class="fas fa-chevron-right ml-auto text-[10px] text-gray-500 transition-transform group-open:rotate-90"></i>
+                    </summary>
+                    <div class="mt-1 space-y-1 pl-9 text-sm">
+                        <a href="./plats.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Plats</a>
+                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Compositions</a>
+                        <a href="./categories.html" class="block px-4 py-2 rounded-lg bg-white/10 text-white font-semibold transition-colors">Catégories</a>
                     </div>
                 </details>
-                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
-                    <i class="fas fa-table w-5 text-gray-300"></i>
-                    <span>Tables</span>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <i class="fas fa-table w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Tables</span>
                 </a>
-                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors">
-                    <i class="fas fa-users w-5 text-gray-300"></i>
-                    <span>Clients</span>
+                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <i class="fas fa-users w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Clients</span>
                 </a>
             </nav>
-
             <div class="p-4 border-t border-white/5">
-                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors">
-                    <i class="fas fa-sign-out-alt w-5"></i>
-                    <span>Déconnexion</span>
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-red-600/10 hover:text-red-400 transition-all font-medium text-sm">
+                    <i class="fas fa-sign-out-alt w-5"></i> <span>Déconnexion</span>
                 </button>
             </div>
         </aside>
 
-        <main class="flex-1 overflow-auto">
-            <header class="bg-white border-b border-gray-200 px-8 py-4">
-                <h1 class="text-2xl font-bold text-gray-200">Categories et types</h1>
-                <p class="text-sm text-gray mt-1">Classez les plats et boissons par famille et sous-type.</p>
+        <!-- Conteneur Principal -->
+        <main class="flex-1 overflow-y-auto bg-[#f8fafc]">
+            <!-- En-tête -->
+            <header class="bg-white border-b border-gray-100 px-8 py-5 shadow-sm">
+                <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+                    <div class="space-y-0.5">
+                        <h1 class="text-2xl font-black tracking-tight text-gray-900">Catégories et types</h1>
+                        <p class="text-xs font-medium text-gray-500">Structurez et hiérarchisez vos plats et boissons par famille et sous-types</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button id="new-category-btn" class="inline-flex h-10 px-4 items-center justify-center gap-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold shadow-md shadow-orange-500/5 transition-all active:scale-[0.98]">
+                            <i class="fas fa-plus text-[10px]"></i> <span>Nouvelle catégorie</span>
+                        </button>
+                        <button id="new-type-btn" class="inline-flex h-10 px-4 items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-bold transition-all shadow-sm active:scale-[0.98]">
+                            <i class="fas fa-sitemap text-[10px] text-gray-400"></i> <span>Nouveau sous-type</span>
+                        </button>
+                    </div>
+                </div>
             </header>
 
-            <div class="p-8">
-                <div class="mb-6 flex items-center justify-between gap-4 flex-wrap">
-                    <div class="flex gap-3 flex-wrap">
-                        <button id="new-category-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-colors">
-                            <i class="fas fa-plus"></i>
-                            <span>Nouvelle categorie</span>
-                        </button>
-                        <button id="new-type-btn" class="border border-gray-200 bg-white hover:bg-gray-50 px-5 py-2.5 rounded-xl flex items-center gap-2 transition-colors">
-                            <i class="fas fa-sitemap"></i>
-                            <span>Nouveau type</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" id="category-search" placeholder="Rechercher une categorie..." class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                        <select id="category-kind-filter" class="px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                            <option value="all">Tous les types</option>
-                            <option value="plat">Plats</option>
-                            <option value="boisson">Boissons</option>
+            <!-- Zone de contenu -->
+            <div class="p-8 max-w-7xl mx-auto space-y-6">
+                
+                <!-- Zone de filtrage et recherche SaaS -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="relative">
+                            <input type="text" id="category-search" placeholder="Rechercher une famille de produits..." class="w-full pl-9 pr-4 py-1.5 text-sm border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium transition-all">
+                            <i class="fas fa-search absolute left-3.5 top-2.5 text-xs text-gray-400"></i>
+                        </div>
+                        <select id="category-kind-filter" class="px-3 py-1.5 text-sm border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 font-medium transition-all">
+                            <option value="all">Tous les types de carte</option>
+                            <option value="plat">Plats uniquement</option>
+                            <option value="boisson">Boissons uniquement</option>
                         </select>
-                        <button id="refresh-categories" class="px-4 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                            <i class="fas fa-sync-alt mr-2"></i>Actualiser
+                        <button id="refresh-categories" class="inline-flex h-9 px-4 items-center justify-center rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                            <i class="fas fa-sync-alt mr-2 text-gray-400"></i>Actualiser la structure
                         </button>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-6">
+                <!-- Grille divisée (Liste à gauche, Panneau technique à droite) -->
+                <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-6 items-start">
+                    
+                    <!-- Colonne gauche : Liste globale -->
                     <section>
-                        <div id="categories-list" class="space-y-3">
-                            <div class="text-center py-12 text-gray">Chargement...</div>
+                        <div id="categories-list" class="space-y-3" role="list" aria-live="polite">
+                            <div class="p-8 text-center text-sm font-medium text-gray-400 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                                <i class="fas fa-spinner fa-spin mr-2 text-gray-300"></i> Analyse de la taxonomie...
+                            </div>
                         </div>
                     </section>
 
-                    <aside class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-fit">
-                        <div id="selected-category-empty" class="rounded-xl border border-dashed border-gray-200 p-8 text-center text-gray">
-                            Selectionnez une categorie pour gerer ses types.
+                    <!-- Colonne droite : Panneau contextuel stable -->
+                    <aside class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sticky top-6">
+                        <!-- État vide initial -->
+                        <div id="selected-category-empty" class="rounded-xl border-2 border-dashed border-gray-200 p-8 text-center text-gray-400 space-y-2">
+                            <i class="fas fa-mouse-pointer text-xl text-gray-300 block"></i>
+                            <p class="text-xs font-semibold">Sélectionnez une catégorie à gauche pour administrer et ordonner ses sous-types associés.</p>
                         </div>
-
-                        <div id="selected-category-panel" class="hidden">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h2 id="selected-category-name" class="text-xl font-bold text-gray-200"></h2>
-                                    <p id="selected-category-kind" class="mt-1 inline-flex rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-white"></p>
+                        
+                        <!-- Contenu actif si sélectionné -->
+                        <div id="selected-category-panel" class="hidden space-y-4">
+                            <div class="flex items-start justify-between gap-4 border-b border-gray-100 pb-3">
+                                <div class="min-w-0">
+                                    <h2 id="selected-category-name" class="text-base font-black text-gray-900 tracking-tight truncate"></h2>
+                                    <span id="selected-category-kind" class="mt-1 inline-flex rounded-md bg-gray-50 px-2 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200/50 uppercase tracking-wide"></span>
                                 </div>
-                                <div class="flex gap-2">
-                                    <button id="edit-category-btn" class="px-3 py-2 rounded-xl text-sm text-primary hover:bg-yellow-50 transition-colors">
-                                        <i class="fas fa-edit"></i>
+                                <div class="flex gap-1 shrink-0">
+                                    <button id="edit-category-btn" aria-label="Modifier la catégorie" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-orange-600 transition-colors shadow-sm">
+                                        <i class="fas fa-edit text-xs"></i>
                                     </button>
-                                    <button id="delete-category-btn" class="px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 transition-colors">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <button id="delete-category-btn" aria-label="Supprimer la catégorie" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm">
+                                        <i class="fas fa-trash-alt text-xs"></i>
                                     </button>
                                 </div>
                             </div>
-                            <p id="selected-category-description" class="mt-3 text-sm text-gray"></p>
-
-                            <div class="mt-6 flex items-center justify-between">
-                                <h3 class="font-semibold text-gray-200">Types de categorie</h3>
-                                <button id="add-type-to-category-btn" class="px-3 py-2 rounded-xl text-sm bg-yellow-500 text-white hover:bg-yellow-600 transition-colors">
-                                    <i class="fas fa-plus mr-1"></i>Ajouter
+                            
+                            <p id="selected-category-description" class="text-xs font-medium text-gray-500 leading-relaxed"></p>
+                            
+                            <div class="flex items-center justify-between pt-2">
+                                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Sous-types rattachés</h3>
+                                <button id="add-type-to-category-btn" class="inline-flex h-7 px-2.5 items-center justify-center gap-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-[11px] font-bold shadow-sm transition-colors">
+                                    <i class="fas fa-plus text-[9px]"></i>Ajouter
                                 </button>
                             </div>
-                            <div id="types-list" class="mt-4 space-y-3"></div>
+                            
+                            <div id="types-list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-1"></div>
                         </div>
                     </aside>
                 </div>
@@ -138,88 +165,90 @@
         </main>
     </div>
 
-    <div id="category-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
-        <div class="max-w-xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div class="border-b border-gray-100 p-4 flex items-center justify-between">
-                <h2 id="category-modal-title" class="text-xl font-bold">Nouvelle categorie</h2>
-                <button id="close-category-modal" class="text-gray-400 hover:text-gray-600" aria-label="Fermer la fenêtre">
-                    <i class="fas fa-times text-xl"></i>
+    <!-- 1. Modale d'administration des Catégories Principales -->
+    <div id="category-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+        <div class="max-w-xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+            <div class="border-b border-gray-100 px-6 py-4 flex items-center justify-between bg-gray-50/50">
+                <div>
+                    <h2 id="category-modal-title" class="text-base font-black text-gray-900 tracking-tight">Nouvelle catégorie</h2>
+                    <p class="text-[11px] font-medium text-gray-400 mt-0.5">Ajout ou édition d'un axe majeur du menu</p>
+                </div>
+                <button id="close-category-modal" class="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex items-center justify-center rounded-lg transition-colors" aria-label="Fermer la fenêtre">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-
-            <form id="category-form" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Nom *</label>
-                    <input type="text" id="category-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+            <form id="category-form" class="p-6 space-y-4 text-sm font-medium text-gray-700">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Nom *</label>
+                    <input type="text" id="category-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Type d'article *</label>
-                    <select id="category-kind" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
-                        <option value="plat">Plat</option>
-                        <option value="boisson">Boisson</option>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Type d'article *</label>
+                    <select id="category-kind" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all">
+                        <option value="plat">Plat (Nourriture / Cuisine)</option>
+                        <option value="boisson">Boisson (Bar / Cave)</option>
                     </select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Description</label>
-                    <textarea id="category-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Description</label>
+                    <textarea id="category-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="Notes complémentaires visibles par le client..."></textarea>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">URL image</label>
-                    <input type="text" id="category-image-url" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://...">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">URL de l'image (Optionnel)</label>
+                    <input type="text" id="category-image-url" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="https://...">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Ou televerser une image</label>
-                    <input type="file" id="category-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Ou téléverser un fichier</label>
+                    <input type="file" id="category-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50/50 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 transition-all">
                 </div>
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" id="category-active" checked class="rounded border-gray-300 text-primary focus:ring-primary">
-                    <span class="text-sm">Categorie active</span>
+                <label class="flex items-center gap-2 cursor-pointer select-none font-semibold text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <input type="checkbox" id="category-active" checked class="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500/20">
+                    <span>Catégorie active (Affichée sur les menus)</span>
                 </label>
-                <div class="flex gap-3 pt-2">
-                    <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-colors">Enregistrer</button>
-                    <button type="button" id="cancel-category-modal" class="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">Annuler</button>
+                <div class="flex gap-3 pt-2 border-t border-gray-100">
+                    <button type="submit" class="flex-1 inline-flex h-11 items-center justify-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-[0.99]">Enregistrer la catégorie</button>
+                    <button type="button" id="cancel-category-modal" class="px-6 inline-flex h-11 items-center justify-center border border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition-all">Annuler</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="type-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4" role="dialog" aria-modal="true" aria-labelledby="type-modal-title">
-        <div class="max-w-xl w-full bg-white rounded-2xl shadow-xl overflow-hidden">
-            <div class="border-b border-gray-100 p-4 flex items-center justify-between">
-                <h2 id="type-modal-title" class="text-xl font-bold">Nouveau type</h2>
-                <button id="close-type-modal" class="text-gray-400 hover:text-gray-600" aria-label="Fermer la fenêtre">
-                    <i class="fas fa-times text-xl"></i>
+    <!-- 2. Modale d'administration des Sous-types (Type Categories) -->
+    <div id="type-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/40 backdrop-blur-md p-4" role="dialog" aria-modal="true" aria-labelledby="type-modal-title">
+        <div class="max-w-xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+            <div class="border-b border-gray-100 px-6 py-4 flex items-center justify-between bg-gray-50/50">
+                <div>
+                    <h2 id="type-modal-title" class="text-base font-black text-gray-900 tracking-tight">Nouveau sous-type</h2>
+                    <p class="text-[11px] font-medium text-gray-400 mt-0.5">Spécifiez le sous-groupe technique rattaché</p>
+                </div>
+                <button id="close-type-modal" class="h-8 w-8 text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex items-center justify-center rounded-lg transition-colors" aria-label="Fermer la fenêtre">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
-
-            <form id="type-form" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Categorie parente *</label>
-                    <select id="type-category-parent" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"></select>
+            <form id="type-form" class="p-6 space-y-4 text-sm font-medium text-gray-700">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Catégorie parente rattachée *</label>
+                    <select id="type-parent-category-id" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all"></select>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Nom *</label>
-                    <input type="text" id="type-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Nom du sous-type *</label>
+                    <input type="text" id="type-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="Ex: Vins Rouges, Entrées Chaudes">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Description</label>
-                    <textarea id="type-description" rows="3" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">URL de l'image (Optionnel)</label>
+                    <input type="text" id="type-image-url" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="https://...">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">URL image</label>
-                    <input type="text" id="type-image-url" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="https://...">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Ou téléverser un fichier</label>
+                    <input type="file" id="type-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl bg-gray-50/50 file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 transition-all">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">Ou televerser une image</label>
-                    <input type="file" id="type-image-file" accept="image/*" class="w-full px-4 py-2 border border-gray-200 rounded-xl">
-                </div>
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" id="type-active" checked class="rounded border-gray-300 text-primary focus:ring-primary">
-                    <span class="text-sm">Type actif</span>
+                <label class="flex items-center gap-2 cursor-pointer select-none font-semibold text-gray-600 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                    <input type="checkbox" id="type-active" checked class="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500/20">
+                    <span>Sous-type actif</span>
                 </label>
-                <div class="flex gap-3 pt-2">
-                    <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-colors">Enregistrer</button>
-                    <button type="button" id="cancel-type-modal" class="px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">Annuler</button>
+                <div class="flex gap-3 pt-2 border-t border-gray-100">
+                    <button type="submit" class="flex-1 inline-flex h-11 items-center justify-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all shadow-md active:scale-[0.99]">Enregistrer le sous-type</button>
+                    <button type="button" id="cancel-type-modal" class="px-6 inline-flex h-11 items-center justify-center border border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition-all">Annuler</button>
                 </div>
             </form>
         </div>

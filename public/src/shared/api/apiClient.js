@@ -227,6 +227,13 @@ class ApiClient {
             delete: (id) => apiObj.delete(`/plats/${id}`),
             toggleAvailability: (id) => apiObj.patch(`/plats/${id}/toggle`, {})
         };
+        apiObj.clients = {
+            getAll: (params) => apiObj.getWithQuery('/clients', params),
+            getById: (id) => apiObj.get(`/clients/${id}`),
+            create: (data) => apiObj.post('/clients', data),
+            update: (id, data) => apiObj.put(`/clients/${id}`, data),
+            delete: (id) => apiObj.delete(`/clients/${id}`)
+        };
         apiObj.orders = {
             getAll: (params) => apiObj.getWithQuery('/orders', params),
             getById: (id) => apiObj.get(`/orders/${id}`),

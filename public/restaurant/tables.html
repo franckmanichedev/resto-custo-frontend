@@ -1,224 +1,185 @@
 ﻿<!doctype html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="api-base-url"
-      content="https://resto-custo-backend.onrender.com/api"
-    />
+    <meta name="api-base-url" content="https://resto-custo-backend.onrender.com/api" />
     <title>Resto QRCode - Gestion des tables</title>
-
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="../src/styles/main.css" />
     <link rel="stylesheet" href="assets/css/admin.css" />
-  </head>
-
-  <body class="bg-gray-50 font-sans">
-    <div class="flex h-screen">
-      <!-- Sidebar -->
-      <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-lg">
-        <div class="p-6 border-b border-gray-800">
-          <div class="flex items-center gap-3">
-            <div
-              class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 font-bold"
-            >
-              R
-            </div>
-            <div>
-              <div class="font-semibold text-lg">RestoQR</div>
-              <div class="text-xs text-gray-400 mt-0.5">
-                Espace restaurateur
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <nav class="flex-1 p-4 space-y-2">
-          <a
-            href="./dashboard.html"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M11 11V3m0 8v8m0-8H3m8 0h8"
-              />
-            </svg>
-            <span class="font-medium">Tableau de bord</span>
-          </a>
-          <a
-            href="./orders.html"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors"
-          >
-            <i class="fas fa-clipboard-list w-5 text-gray-300"></i>
-            <span>Commandes</span>
-            <span
-              id="pendingOrdersBadge"
-              class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-red-600 text-white"
-              >0</span
-            >
-          </a>
-          <div class="border-t border-white/5 my-2"></div>
-          <details class="group">
-            <summary
-              class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 cursor-pointer"
-            >
-              <i class="fas fa-utensils w-5 text-gray-300"></i>
-              <span>Menu</span>
-            </summary>
-            <div class="mt-2 space-y-1 pl-6">
-              <a
-                href="./plats.html"
-                class="block px-4 py-2 rounded-lg hover:bg-white/5"
-                >Plats</a
-              >
-              <a
-                href="./compositions.html"
-                class="block px-4 py-2 rounded-lg hover:bg-white/5"
-                >Compositions</a
-              >
-              <a
-                href="./categories.html"
-                class="block px-4 py-2 rounded-lg hover:bg-white/5"
-                >Categories</a
-              >
-            </div>
-          </details>
-          <a
-            href="./tables.html"
-            class="flex items-center gap-3 px-4 py-3 text-orange-400 rounded-xl hover:bg-white/5 transition-colors"
-          >
-            <i class="fas fa-table w-5 text-gray-300"></i>
-            <span>Tables</span>
-          </a>
-          <a
-            href="./clients.html"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors"
-          >
-            <i class="fas fa-users w-5 text-gray-300"></i>
-            <span>Clients</span>
-          </a>
-        </nav>
-
-        <div class="p-4 border-t border-white/5">
-          <button
-            id="logout-btn"
-            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
-          >
-            <i class="fas fa-sign-out-alt w-5"></i>
-            <span>Déconnexion</span>
-          </button>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="flex-1 overflow-auto">
-        <header class="bg-white border-b border-gray-200 px-8 py-4">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 class="text-2xl font-bold text-gray-200">Gestion des tables</h1>
-              <p class="text-sm text-gray mt-1">
-                Liste simple, statut de salle et apercu du QR code genere.
-              </p>
-            </div>
-            <div id="tables-summary" class="flex flex-wrap gap-2"></div>
-          </div>
-        </header>
-
-        <div class="p-8">
-          <div class="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-6">
-            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 h-fit">
-              <h2 id="form-title" class="text-lg font-semibold mb-4">Nouvelle table</h2>
-
-              <form id="table-form" class="space-y-4">
-                <div>
-                  <label class="block text-sm font-medium mb-1">Nom de la table *</label>
-                  <input type="text" id="table-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Terrasse Sud" />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium mb-1">Numero *</label>
-                  <input type="text" id="table-number" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Ex: Table 12" />
-                </div>
-
-                <div>
-                  <label class="block text-sm font-medium mb-1">Code QR optionnel</label>
-                  <input type="text" id="table-qr-code" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Laissez vide pour generation automatique" />
-                  <p class="text-xs text-gray mt-1">Si vide, le backend genere le lien du menu de la table.</p>
-                </div>
-
-                <label class="flex items-center gap-2">
-                  <input type="checkbox" id="table-active" checked class="rounded border-gray-300 text-primary focus:ring-primary" />
-                  <span class="text-sm">Table active</span>
-                </label>
-
-                <div class="flex gap-3">
-                  <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 rounded-xl transition-colors">
-                    Enregistrer
-                  </button>
-                  <button type="button" id="cancel-edit" class="hidden px-6 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
-                    Annuler
-                  </button>
-                </div>
-              </form>
-            </section>
-
-            <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-                <div>
-                  <h2 class="text-lg font-semibold">Tables du restaurant</h2>
-                  <p class="text-sm text-gray">Libre, occupee, reservee et QR code associe.</p>
-                </div>
+    <style>
+        .skeleton {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+            display: inline-block;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-900 antialiased">
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar latérale Premium -->
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-xl shrink-0">
+            <div class="p-6 border-b border-gray-800">
                 <div class="flex items-center gap-3">
-                  <div class="flex rounded-xl border border-gray-200 bg-gray-50 p-1" aria-label="Disposition des tables">
-                    <button type="button" data-table-layout="list" class="rounded-lg border border-transparent px-3 py-1.5 text-sm transition-colors" aria-pressed="true">
-                      <i class="fas fa-list mr-1"></i>Liste
-                    </button>
-                    <button type="button" data-table-layout="plan" class="rounded-lg border border-transparent px-3 py-1.5 text-sm transition-colors" aria-pressed="false">
-                      <i class="fas fa-border-all mr-1"></i>Plan
-                    </button>
-                  </div>
-                  <button id="refresh-tables" class="px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors" aria-label="Actualiser les tables">
-                    <i class="fas fa-sync-alt"></i>
-                  </button>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-orange-500/20">R</div>
+                    <div>
+                        <div class="font-extrabold text-lg tracking-tight">RestoQR</div>
+                        <div class="text-[11px] text-gray-400 font-medium tracking-wide uppercase mt-0.5">Espace restaurateur</div>
+                    </div>
                 </div>
-              </div>
+            </div>
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <a href="./dashboard.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 11V3m0 8v8m0-8H3m8 0h8"/></svg>
+                    <span class="text-sm font-medium">Tableau de bord</span>
+                </a>
+                <a href="./orders.html" class="flex items-center gap-3 px-4 py-3 text-gray-300 rounded-xl hover:bg-white/5 transition-all">
+                    <i class="fas fa-clipboard-list w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Commandes</span>
+                    <span id="pendingOrdersBadge" class="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-600 text-white shadow-sm ring-1 ring-red-500/30">0</span>
+                </a>
+                <div class="border-t border-white/5 my-3"></div>
+                <details class="group">
+                    <summary class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 cursor-pointer transition-all list-none">
+                        <i class="fas fa-utensils w-5 text-gray-400 text-sm"></i>
+                        <span class="text-sm font-medium">Menu</span>
+                        <i class="fas fa-chevron-right ml-auto text-[10px] text-gray-500 transition-transform group-open:rotate-90"></i>
+                    </summary>
+                    <div class="mt-1 space-y-1 pl-9 text-sm">
+                        <a href="./plats.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Plats</a>
+                        <a href="./compositions.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Compositions</a>
+                        <a href="./categories.html" class="block px-4 py-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors">Catégories</a>
+                    </div>
+                </details>
+                <a href="./tables.html" class="flex items-center gap-3 px-4 py-3 bg-white/10 text-white rounded-xl transition-all shadow-sm">
+                    <i class="fas fa-table w-5 text-orange-400 text-sm"></i> <span class="text-sm font-semibold">Tables</span>
+                </a>
+                <a href="./clients.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition-all">
+                    <i class="fas fa-users w-5 text-gray-400 text-sm"></i> <span class="text-sm font-medium">Clients</span>
+                </a>
+            </nav>
+            <div class="p-4 border-t border-white/5">
+                <button id="logout-btn" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-red-600/10 hover:text-red-400 transition-all font-medium text-sm">
+                    <i class="fas fa-sign-out-alt w-5"></i> <span>Déconnexion</span>
+                </button>
+            </div>
+        </aside>
 
-              <div id="tables-list" class="space-y-3" role="list" aria-live="polite">
-                <div class="text-center py-8 text-gray">Chargement...</div>
-              </div>
-            </section>
-          </div>
-        </div>
-      </main>
+        <!-- Conteneur Principal -->
+        <main class="flex-1 overflow-y-auto bg-[#f8fafc]">
+            <!-- En-tête -->
+            <header class="bg-white border-b border-gray-100 px-8 py-5 shadow-sm">
+                <div class="max-w-7xl mx-auto flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+                    <div class="space-y-0.5">
+                        <h1 class="text-2xl font-black tracking-tight text-gray-900">Gestion des tables</h1>
+                        <p class="text-xs font-medium text-gray-500">Liste exhaustive, statut de salle et aperçu des QR codes générés</p>
+                    </div>
+                    <div id="tables-summary" class="flex flex-wrap gap-2"></div>
+                </div>
+            </header>
+
+            <!-- Zone de contenu -->
+            <div class="p-8 max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 xl:grid-cols-[380px_minmax(0,1fr)] gap-6 items-start">
+                    
+                    <!-- Section Formulaire d'Édition (Gauche) -->
+                    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                        <div>
+                            <h2 id="form-title" class="text-base font-black text-gray-900 tracking-tight">Nouvelle table</h2>
+                            <p class="text-[11px] font-medium text-gray-400 mt-0.5">Associez un identifiant et un QR code au module physique</p>
+                        </div>
+                        
+                        <form id="table-form" class="space-y-4 text-sm font-medium text-gray-700">
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Nom de la table *</label>
+                                <input type="text" id="table-name" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="Ex: Terrasse Sud" />
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Numéro *</label>
+                                <input type="text" id="table-number" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="Ex: Table 12" />
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider">Code QR (Optionnel)</label>
+                                <input type="text" id="table-qr-code" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 bg-gray-50/30 focus:bg-white transition-all" placeholder="Laissez vide pour génération automatique" />
+                                <p class="text-[10px] text-gray-400 font-medium leading-normal mt-1">Si laissé vide, l'API génèrera le lien d'accès pointant directement vers le menu client.</p>
+                            </div>
+                            
+                            <!-- Options Toggles -->
+                            <div class="bg-gray-50 border border-gray-100 p-3 rounded-xl select-none">
+                                <label class="flex items-center gap-2 cursor-pointer font-semibold text-gray-600">
+                                    <input type="checkbox" id="table-active" checked class="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-500/20" />
+                                    <span>Table active</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Boutons actions formulaire -->
+                            <div class="flex gap-2 pt-2">
+                                <button type="submit" class="flex-1 inline-flex h-11 items-center justify-center bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl transition-all shadow-md shadow-orange-500/5 active:scale-[0.99]">
+                                    Enregistrer
+                                </button>
+                                <button type="button" id="cancel-edit" class="hidden px-4 inline-flex h-11 items-center justify-center border border-gray-200 rounded-xl text-gray-600 font-semibold hover:bg-gray-50 transition-all">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </section>
+                    
+                    <!-- Section Liste et Recherche (Droite) -->
+                    <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <h2 class="text-base font-black text-gray-900 tracking-tight">Tables du restaurant</h2>
+                                <p class="text-xs font-medium text-gray-500 mt-0.5">Suivi de l'occupation (Libre, occupée, réservée)</p>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <!-- Sélecteur Layout Premium -->
+                                <div class="flex rounded-xl border border-gray-200 bg-gray-50 p-1 select-none" aria-label="Disposition des tables">
+                                    <button type="button" data-table-layout="list" class="rounded-lg bg-white px-3 py-1 text-xs font-bold text-gray-800 shadow-sm border border-gray-200/40 transition-all flex items-center justify-center gap-1.5" aria-pressed="true">
+                                        <i class="fas fa-list text-[11px] text-orange-500"></i>Liste
+                                    </button>
+                                    <button type="button" data-table-layout="plan" class="rounded-lg text-xs font-semibold text-gray-500 hover:text-gray-800 px-3 py-1 transition-all flex items-center justify-center gap-1.5" aria-pressed="false">
+                                        <i class="fas fa-border-all text-[11px]"></i>Plan
+                                    </button>
+                                </div>
+                                <button id="refresh-tables" class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-all shadow-sm" aria-label="Actualiser les tables">
+                                    <i class="fas fa-sync-alt text-xs text-gray-400"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone Liste injectée -->
+                        <div id="tables-list" class="space-y-3" role="list" aria-live="polite">
+                            <!-- Squelettes de chargement initiaux (2 lignes) -->
+                            <div class="p-4 border border-gray-100 rounded-xl space-y-2 opacity-70">
+                                <div class="flex justify-between"><div class="skeleton h-4 w-28"></div><div class="skeleton h-4 w-12 rounded-full"></div></div>
+                                <div class="skeleton h-3 w-3/4"></div>
+                            </div>
+                            <div class="p-4 border border-gray-100 rounded-xl space-y-2 opacity-70">
+                                <div class="flex justify-between"><div class="skeleton h-4 w-20"></div><div class="skeleton h-4 w-12 rounded-full"></div></div>
+                                <div class="skeleton h-3 w-1/2"></div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                </div>
+            </div>
+        </main>
     </div>
 
-    <!-- Pas de legacy assets/js/tables.js : on utilise le module moderne tables-page.js -->
+    <!-- Script principal de gestion -->
     <script type="module">
-      import { initAdminShell } from "../src/shared/components/adminShell.js";
-      initAdminShell();
+        import { initAdminShell } from "../src/shared/components/adminShell.js";
+        initAdminShell();
     </script>
-    <script
-      type="module"
-      src="../src/modules/restaurant/pages/tables-page.js"
-    ></script>
-  </body>
+    <script type="module" src="../src/modules/restaurant/pages/tables-page.js"></script>
+</body>
 </html>
