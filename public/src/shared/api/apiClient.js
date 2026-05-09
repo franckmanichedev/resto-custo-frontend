@@ -32,7 +32,7 @@ const buildLocalApiBaseUrl = (location = window.location) => {
 
 const resolveApiBaseUrl = () => {
     const hostname = window.location.hostname;
-    let configuredValue = document.querySelector('meta[name="api-base-url"]')?.content
+    const configuredValue = document.querySelector('meta[name="api-base-url"]')?.content
         || readImportMetaApiBaseUrl();
 
     if (window.API_BASE_URL) {
@@ -44,22 +44,6 @@ const resolveApiBaseUrl = () => {
     }
 
     if (configuredValue) {
-        // Normalize and try to ensure it contains the `/api` path.
-        configuredValue = normalizeBaseUrl(configuredValue);
-        try {
-            // If it's a full URL without a meaningful path, append `/api`.
-            const parsed = new URL(configuredValue);
-            if (!parsed.pathname || parsed.pathname === '/') {
-                configuredValue = `${configuredValue}/api`;
-            } else if (!configuredValue.includes('/api')) {
-                configuredValue = `${configuredValue}/api`;
-            }
-        } catch (err) {
-            // Not a full URL (e.g. "resto-custo-backend.onrender.com") — assume https host and append /api
-            const hostOnly = configuredValue.replace(/^https?:\/\//, '');
-            configuredValue = `https://${hostOnly}/api`;
-        }
-
         return normalizeBaseUrl(configuredValue);
     }
 

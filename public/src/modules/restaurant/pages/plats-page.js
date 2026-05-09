@@ -229,15 +229,20 @@ function renderCompositionSuggestions(query = '') {
 
     compositionSuggestions.innerHTML = `
         ${filteredExisting.map((composition) => `
-            <button type="button" class="composition-suggestion w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center justify-between group transition-colors" data-composition-id="${escapeHtml(composition.id)}">
-                <span class="font-semibold text-gray-800">${escapeHtml(composition.name)}</span>
-                ${composition.is_allergen ? '<span class="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-1.5 py-0.5 rounded">Allergène</span>' : ''}
+            <button type="button" class="composition-suggestion flex w-full items-center justify-between gap-3 px-4 py-3 text-left hover:bg-gray-50" data-composition-id="${escapeHtml(composition.id)}">
+                <span>
+                    <span class="font-medium text-gray-200">${escapeHtml(composition.name)}</span>
+                    ${composition.is_allergen ? '<span class="ml-2 text-xs text-red-500">Allergene</span>' : ''}
+                </span>
+                <span class="text-xs text-gray-400">Existant</span>
             </button>
         `).join('')}
         ${shouldOfferCreate ? `
-            <button type="button" class="composition-create w-full px-4 py-2.5 text-left bg-orange-50/50 hover:bg-orange-50 flex items-center gap-2 text-orange-700 font-bold border-t border-orange-100" data-composition-name="${escapeHtml(query)}">
-                <i class="fas fa-plus-circle text-orange-500"></i>
-                <span>Créer "${escapeHtml(query)}"</span>
+            <button type="button" class="composition-create flex w-full items-center justify-between gap-3 border-t border-gray-100 px-4 py-3 text-left hover:bg-yellow-50" data-composition-name="${escapeHtml(query.trim())}">
+                <span>
+                    <span class="font-medium text-gray-200">${escapeHtml(query.trim())}</span>
+                </span>
+                <span class="text-xs font-semibold text-yellow-700">Creer</span>
             </button>
         ` : ''}
     `;
@@ -440,41 +445,33 @@ function renderActions(item, compact = false) {
 
 function renderGridItem(item) {
     return `
-        <article role="listitem" class="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gray-200" aria-label="Article ${escapeHtml(item.name)}">
-            <div class="relative aspect-[4/3] bg-gray-50 overflow-hidden border-b border-gray-50">
+        <article role="listitem" class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" aria-label="Article ${escapeHtml(item.name)}">
+            <div class="relative aspect-[4/3] bg-gray-100">
                 ${item.image_url ? `
-                    <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
+                    <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover">
                 ` : `
-                    <div class="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 text-gray-300 transition-colors group-hover:bg-gray-100">
-                        <i class="fas fa-utensils text-4xl transition-transform duration-300 group-hover:scale-110"></i>
+                    <div class="flex h-full items-center justify-center text-gray-300" aria-hidden="true">
+                        <i class="fas fa-utensils text-4xl"></i>
                     </div>
                 `}
-                <div class="absolute left-3 top-3 flex flex-wrap gap-1.5 z-10">
-                    <span class="inline-flex items-center rounded-lg bg-white/80 backdrop-blur-md px-2.5 py-1 text-xs font-semibold text-gray-700 shadow-sm ring-1 ring-black/5">
-                        ${escapeHtml(getKindLabel(item.kind))}
-                    </span>
-                    ${item.is_promo ? `
-                        <span class="inline-flex items-center rounded-lg bg-amber-500/90 backdrop-blur-sm px-2.5 py-1 text-xs font-bold text-white shadow-sm ring-1 ring-amber-600/20 tracking-wide uppercase">Promo</span>
-                    ` : ''}
+                <div class="absolute left-3 top-3 flex flex-wrap gap-2">
+                    <span class="rounded-full bg-white/95 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">${escapeHtml(getKindLabel(item.kind))}</span>
+                    ${item.is_promo ? '<span class="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">Promo</span>' : ''}
                 </div>
             </div>
-            <div class="p-4 space-y-3">
+            <div class="p-4">
                 <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0 flex-1">
-                        <h3 class="truncate text-lg font-bold tracking-tight text-gray-900 group-hover:text-orange-600 transition-colors">${escapeHtml(item.name)}</h3>
-                        <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray-500 leading-relaxed">${escapeHtml(item.description || 'Aucune description spécifiée.')}</p>
+                    <div class="min-w-0">
+                        <h3 class="truncate text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
+                        <p class="mt-1 line-clamp-2 min-h-[2.5rem] text-sm text-gray">${escapeHtml(item.description || 'Aucune description')}</p>
                     </div>
-                    <p class="shrink-0 text-xl font-extrabold text-amber-600 tracking-tight">${formatPrice(item.price)}</p>
+                    <p class="shrink-0 text-lg font-bold text-primary">${formatPrice(item.price)}</p>
                 </div>
-                <div class="space-y-2 pt-1">
-                    <div class="flex flex-wrap gap-1.5">${renderBadges(item)}</div>
-                    <div class="flex flex-wrap gap-1 font-mono text-[11px]">${renderCompositionsPreview(item)}</div>
-                </div>
-                <div class="flex items-center justify-between border-t border-gray-100 pt-3 mt-1">
-                    <span class="inline-flex items-center text-xs font-semibold text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
-                        <i class="far fa-clock mr-1.5 text-gray-400"></i>${item.prep_time || 0} min
-                    </span>
-                    <div class="flex gap-1 opacity-90 transition-opacity group-hover:opacity-100">${renderActions(item, true)}</div>
+                <div class="mt-3 flex flex-wrap gap-2">${renderBadges(item)}</div>
+                <div class="mt-3 flex flex-wrap gap-1">${renderCompositionsPreview(item)}</div>
+                <div class="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
+                    <span class="text-xs font-medium text-gray"><i class="far fa-clock mr-1"></i>${item.prep_time || 0} min</span>
+                    <div class="flex gap-1">${renderActions(item, true)}</div>
                 </div>
             </div>
         </article>
@@ -483,33 +480,31 @@ function renderGridItem(item) {
 
 function renderListItem(item) {
     return `
-        <article role="listitem" class="group rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200" aria-label="Article ${escapeHtml(item.name)}">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-start md:items-center">
-                <div class="relative h-24 w-full sm:h-24 sm:w-24 md:h-28 md:w-36 shrink-0 overflow-hidden rounded-xl bg-gray-50 border border-gray-100/50">
+        <article role="listitem" class="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md" aria-label="Article ${escapeHtml(item.name)}">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                <div class="h-28 w-full shrink-0 overflow-hidden rounded-xl bg-gray-100 md:w-36">
                     ${item.image_url ? `
-                        <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
+                        <img src="${escapeHtml(item.image_url)}" alt="${escapeHtml(item.name)}" class="h-full w-full object-cover">
                     ` : `
-                        <div class="flex h-full items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 text-gray-300">
-                            <i class="fas fa-utensils text-2xl transition-transform duration-300 group-hover:scale-110"></i>
+                        <div class="flex h-full items-center justify-center text-gray-300" aria-hidden="true">
+                            <i class="fas fa-utensils text-3xl"></i>
                         </div>
                     `}
                 </div>
-                <div class="min-w-0 flex-1 space-y-1.5">
-                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <h3 class="text-lg font-bold tracking-tight text-gray-900 group-hover:text-orange-600 transition-colors">${escapeHtml(item.name)}</h3>
-                        <div class="flex flex-wrap gap-1">${renderBadges(item)}</div>
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-lg font-semibold text-gray-900">${escapeHtml(item.name)}</h3>
+                        ${renderBadges(item)}
                     </div>
-                    <p class="line-clamp-2 text-sm text-gray-500 leading-relaxed">${escapeHtml(item.description || 'Aucune description disponible.')}</p>
-                    <div class="pt-0.5 flex flex-wrap gap-1 font-mono text-[11px]">${renderCompositionsPreview(item, 5)}</div>
+                    <p class="mt-1 line-clamp-2 text-sm text-gray">${escapeHtml(item.description || 'Aucune description')}</p>
+                    <div class="mt-2 flex flex-wrap gap-1">${renderCompositionsPreview(item, 5)}</div>
                 </div>
-                <div class="flex shrink-0 flex-row items-center justify-between border-t border-gray-50 pt-3 sm:flex-col sm:items-end sm:justify-center sm:border-0 sm:pt-0 sm:pl-4 gap-3 w-full sm:w-auto">
-                    <div class="sm:text-right">
-                        <p class="text-xl font-extrabold text-amber-600 tracking-tight">${formatPrice(item.price)}</p>
-                        <p class="inline-flex items-center text-xs font-medium text-gray-400 mt-0.5">
-                            <i class="far fa-clock mr-1 text-[11px]"></i>${item.prep_time || 0} min
-                        </p>
+                <div class="flex shrink-0 flex-col gap-3 md:items-end">
+                    <div>
+                        <p class="text-xl font-bold text-primary">${formatPrice(item.price)}</p>
+                        <p class="text-xs text-gray">${item.prep_time || 0} min</p>
                     </div>
-                    <div class="flex flex-wrap gap-1.5 opacity-90 transition-opacity group-hover:opacity-100">${renderActions(item)}</div>
+                    <div class="flex flex-wrap gap-2">${renderActions(item)}</div>
                 </div>
             </div>
         </article>
@@ -538,18 +533,31 @@ async function loadItems() {
 }
 
 function showItemsSkeleton() {
-    if (!itemsList) return;
-    itemsList.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5';
-    itemsList.innerHTML = [1, 2, 3].map(() => `
-        <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm space-y-4 opacity-70">
-            <div class="skeleton h-44 w-full"></div>
-            <div class="space-y-2">
-                <div class="flex justify-between"><div class="skeleton h-5 w-2/3"></div><div class="skeleton h-5 w-16"></div></div>
-                <div class="skeleton h-4 w-full"></div>
+    const el = document.getElementById('items-list');
+    if (!el) return;
+    el.innerHTML = `
+        <div class="animate-pulse rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+            <div class="flex flex-col gap-4 md:flex-row md:items-center">
+                <div class="h-28 w-full shrink-0 animate-pulse rounded-xl bg-gray-200 md:w-36"></div>
+                <div class="min-w-0 flex-1 space-y-2 py-1">
+                    <div class="h-4 w-1/3 animate-pulse rounded bg-gray-200"></div>
+                    <div class="h-3 w-full animate-pulse rounded bg-gray-200"></div>
+                    <div class="h-3 w-5/6 animate-pulse rounded bg-gray-200"></div>
+                </div>
+                <div class="flex shrink-0 flex-col gap-3 md:items-end">
+                    <div class="space-y-2">
+                        <div class="h-5 w-16 animate-pulse rounded bg-gray-200"></div>
+                        <div class="h-3 w-10 animate-pulse rounded bg-gray-200"></div>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="h-9 w-20 animate-pulse rounded-lg bg-gray-200"></div>
+                        <div class="h-9 w-24 animate-pulse rounded-lg bg-gray-200"></div>
+                        <div class="h-9 w-20 animate-pulse rounded-lg bg-gray-200"></div>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-2 pt-2"><div class="skeleton h-4 w-12 rounded-md"></div><div class="skeleton h-4 w-16 rounded-md"></div></div>
         </div>
-    `).join('');
+    `;
 }
 
 function hideItemsSkeleton() {

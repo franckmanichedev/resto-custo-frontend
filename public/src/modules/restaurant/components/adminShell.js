@@ -204,18 +204,22 @@ export function initializeRestaurantShell({
     bindShellInteractions();
     hydrateShellBadges();
 
+    // realtime badge updates via Socket.io
+    async function loadSocketIoClient() {
+        if (window.io) return;
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = '/socket.io/socket.io.js';
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = (e) => reject(e);
+            document.head.appendChild(s);
+        });
+    }
+
     (async () => {
         try {
-            if (!window.io) {
-                await new Promise((resolve, reject) => {
-                    const s = document.createElement('script');
-                    s.src = '/socket.io/socket.io.js';
-                    s.async = true;
-                    s.onload = () => resolve();
-                    s.onerror = (e) => reject(e);
-                    document.head.appendChild(s);
-                });
-            }
+            await loadSocketIoClient();
             if (!window.io) return;
             const socket = io();
             const user = authService.getUserData ? authService.getUserData() : null;
@@ -225,19 +229,6 @@ export function initializeRestaurantShell({
             const debounced = debounce(() => hydrateShellBadges(), 500);
             socket.on('new_order', debounced);
             socket.on('order_status_changed', debounced);
-            socket.on('stats_updated', (payload) => {
-                if (payload?.pending != null) {
-                    const pendingBadge = document.getElementById('shell-pending-orders-badge');
-                    const notificationBadge = document.getElementById('admin-notifications-badge');
-                    [pendingBadge, notificationBadge].forEach((badge) => {
-                        if (!badge) return;
-                        badge.textContent = payload.pending;
-                        badge.classList.toggle('hidden', payload.pending <= 0);
-                    });
-                } else {
-                    debounced();
-                }
-            });
         } catch (err) {
             // ignore
         }

@@ -1,130 +1,129 @@
-import {
-    apiRequest,
-    bindChrome,
-    createCategoryGroups,
-    escapeHtml,
-    formatDuration,
-    formatPrice,
-    getImageUrl,
-    getSessionToken,
-    isOrderable,
-    loadCart,
-    loadMenu,
-    redirectTo,
-    redirectToLoadingIfNeeded,
-    renderSkeleton,
-    showToast,
-    updateChrome,
-    withButtonLoading,
-    setButtonLoading
+import { 
+    bindChrome, 
+    createCategoryGroups, 
+    escapeHtml, 
+    formatPrice, 
+    getImageUrl, 
+    loadAllPlats, 
+    loadCart, 
+    redirectTo, 
+    redirectToLoadingIfNeeded, 
+    renderSkeleton, 
+    showToast 
 } from './client-core.js';
 
-const renderChip = (name, active = false) => `
-    <button class="rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-amber-500 text-white' : 'liquid-glass text-white hover:bg-amber-100'}" data-category-chip="${escapeHtml(name)}">
+/**
+ * Rendu d'un résultat de recherche (Format liste compacte)
+ */
+const renderResultItem = (plat) => `
+    <button class="liquid-glass mb-3 flex w-full items-center gap-4 rounded-2xl p-3 text-left transition hover:-translate-y-0.5 active:scale-[0.98]" 
+            data-open-detail="${escapeHtml(plat.id)}">
+        <img src="${escapeHtml(getImageUrl(plat))}" alt="${escapeHtml(plat.name)}" 
+             class="h-16 w-16 shrink-0 rounded-xl object-cover shadow-md">
+        <div class="min-w-0 flex-1">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-500/80">${escapeHtml(plat.categorie_name || plat.category || 'Plat')}</p>
+            <h3 class="truncate text-base font-bold text-white">${escapeHtml(plat.name)}</h3>
+            <p class="mt-1 text-sm font-black text-amber-500">${formatPrice(plat.price)}</p>
+        </div>
+        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white/5 text-amber-500 shadow-inner">
+            <i class="fas fa-chevron-right text-xs"></i>
+        </div>
+    </button>
+`;
+
+/**
+ * Rendu des chips de catégories pour le filtrage rapide
+ */
+const renderSearchCategory = (name) => `
+    <button class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-bold text-white/70 transition hover:bg-amber-500 hover:text-white active:scale-95" 
+            data-filter-cat="${escapeHtml(name)}">
         ${escapeHtml(name)}
     </button>
 `;
 
-const renderRow = (plat, payload) => `
-    <article class="liquid-glass mb-3 rounded-2xl p-3">
-        <div class="flex items-center gap-3">
-            <button class="flex min-w-0 flex-1 items-center gap-3 text-left" data-open-detail="${escapeHtml(plat.id)}">
-                <img src="${escapeHtml(getImageUrl(plat))}" alt="${escapeHtml(plat.name)}" class="h-14 w-14 rounded-lg object-cover">
-                <div class="min-w-0 flex-1">
-                    <div class="flex items-start justify-between gap-3">
-                        <h3 class="truncate text-sm font-semibold text-gray-200">
-                            ${escapeHtml(
-                                plat.name.split(' ').slice(0, 2).join(' ') + (plat.name.split(' ').length > 2 ? '...' : '')
-                            )}
-                        </h3>
-                        <span class="text-sm font-bold text-amber-500">${formatPrice(plat.price)}</span>
-                    </div>
-                    <p class="text-xs text-gray-400 line-clamp-2">${escapeHtml(plat.description || '')} ${plat.description ? '-' : ''} ${formatDuration(plat.prep_time)}</p>
-                    <p class="mt-1 text-xs text-amber-500">${escapeHtml(plat.categorie_name || 'Autres')}</p>
-                </div>
-            </button>
-            <button class="flex h-9 w-9 items-center justify-center rounded-full ${isOrderable(plat, payload) ? 'bg-amber-500 text-white hover:bg-amber-600' : 'bg-gray-200 text-gray'}" data-add-item="${escapeHtml(plat.id)}" ${isOrderable(plat, payload) ? '' : 'disabled'}>
-                <i class="fas ${isOrderable(plat, payload) ? 'fa-plus' : 'fa-eye'} text-xs"></i>
-            </button>
-        </div>
-    </article>
-`;
-
+// --- INITIALISATION ---
 bindChrome();
 
 if (!redirectToLoadingIfNeeded()) {
-    try {
-        const chips = document.getElementById('searchCategoriesList');
-        const results = document.getElementById('resultsContainer');
-        if (chips) chips.innerHTML = renderSkeleton('chips', 5);
-        if (results) results.innerHTML = renderSkeleton('rows', 5);
-
-        const payload = await loadMenu();
-        if (payload) {
-            const input = document.getElementById('searchInput');
+    (async () => {
+        try {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const searchInput = document.getElementById('searchInput');
+            const categoriesContainer = document.getElementById('searchCategoriesList');
             const noResults = document.getElementById('noResults');
-            const categories = createCategoryGroups(payload?.plats || []);
+
+            if (resultsContainer) resultsContainer.innerHTML = renderSkeleton('rows', 5);
+
+            // On charge tous les plats (SaaS : accès à l'inventaire complet)
+            const payload = await loadAllPlats();
+            const allPlats = payload?.plats || payload || [];
+            
+            // Extraction des noms de catégories uniques
+            const categoryNames = [...new Set(allPlats.map(p => p.categorie_name || p.category))].filter(Boolean);
+
             const state = { query: '', category: '' };
 
             const render = () => {
-                const query = state.query.trim().toLowerCase();
-                const source = state.category ? (categories.find((entry) => entry.name === state.category)?.plats || []) : (payload?.plats || []);
-                const filtered = source.filter((plat) => !query || [plat.name, plat.description, plat.categorie_name].filter(Boolean).some((value) => String(value).toLowerCase().includes(query)));
-
-                chips.innerHTML = categories.map((entry) => renderChip(entry.name, entry.name === state.category)).join('');
-                results.innerHTML = filtered.map((plat) => renderRow(plat, payload)).join('');
-                noResults.classList.toggle('hidden', filtered.length > 0);
-
-                document.querySelectorAll('[data-category-chip]').forEach((node) => {
-                    node.addEventListener('click', () => {
-                        state.category = state.category === node.dataset.categoryChip ? '' : node.dataset.categoryChip;
-                        render();
-                    });
+                const q = state.query.toLowerCase().trim();
+                const filtered = allPlats.filter(plat => {
+                    const matchesQuery = !q || 
+                        plat.name.toLowerCase().includes(q) || 
+                        (plat.description && plat.description.toLowerCase().includes(q));
+                    const matchesCat = !state.category || 
+                        (plat.categorie_name || plat.category) === state.category;
+                    return matchesQuery && matchesCat;
                 });
-                document.querySelectorAll('[data-open-detail]').forEach((node) => {
-                    node.addEventListener('click', () => {
-                        setButtonLoading(node, true, 'Ouverture');
-                        redirectTo('detail', { id: node.dataset.openDetail });
-                    });
-                });
-                document.querySelectorAll('[data-add-item]').forEach((node) => {
-                    node.addEventListener('click', async () => {
-                        const plat = filtered.find((entry) => String(entry.id) === String(node.dataset.addItem));
-                        if (!plat) return;
-                        if (!isOrderable(plat, payload)) {
-                            redirectTo('detail', { id: node.dataset.addItem });
-                            return;
-                        }
-                        try {
-                            const response = await withButtonLoading(node, () => apiRequest('/front-office/cart/items', {
-                                method: 'POST',
-                                body: {
-                                    session_token: getSessionToken(),
-                                    plat_id: plat.id,
-                                    quantity: 1
-                                }
-                            }), 'Ajout');
-                            localStorage.setItem('resto.client.cart', JSON.stringify({ savedAt: Date.now(), data: response.data }));
-                            updateChrome(response.data);
-                            showToast(`${plat.name} ajoute au panier`, 'success');
-                            await loadCart().catch(() => {});
-                            redirectTo('cart');
-                        } catch (error) {
-                            showToast(error.message || 'Impossible d ajouter ce plat.', 'error');
-                        }
-                    });
+
+                resultsContainer.innerHTML = filtered.map(renderResultItem).join('');
+                noResults?.classList.toggle('hidden', filtered.length > 0);
+
+                // Bind des clics
+                document.querySelectorAll('[data-open-detail]').forEach(node => {
+                    node.onclick = () => redirectTo('detail', { id: node.dataset.openDetail });
                 });
             };
 
-            input?.addEventListener('input', () => {
-                state.query = input.value || '';
+            // Rendu des catégories
+            if (categoriesContainer) {
+                categoriesContainer.innerHTML = categoryNames.map(renderSearchCategory).join('');
+                document.querySelectorAll('[data-filter-cat]').forEach(node => {
+                    node.onclick = () => {
+                        // Toggle logic
+                        const cat = node.dataset.filterCat;
+                        state.category = state.category === cat ? '' : cat;
+                        
+                        // Update UI des boutons
+                        document.querySelectorAll('[data-filter-cat]').forEach(btn => {
+                            const active = btn.dataset.filterCat === state.category;
+                            btn.classList.toggle('bg-amber-500', active);
+                            btn.classList.toggle('text-white', active);
+                            btn.classList.toggle('border-amber-500', active);
+                        });
+                        render();
+                    };
+                });
+            }
+
+            // Écouteur de saisie
+            searchInput?.addEventListener('input', (e) => {
+                state.query = e.target.value;
                 render();
             });
 
+            // Premier rendu
             render();
+            
+            // Focus automatique pour gagner du temps
+            setTimeout(() => searchInput?.focus(), 300);
+
+            // Boutons de navigation
+            document.querySelector('[data-back]')?.addEventListener('click', () => window.history.back());
+            
             void loadCart().catch(() => {});
+
+        } catch (error) {
+            console.error(error);
+            showToast('Erreur lors de la recherche', 'error');
         }
-    } catch (error) {
-        showToast(error.message || 'Erreur de chargement de la recherche', 'error');
-    }
+    })();
 }

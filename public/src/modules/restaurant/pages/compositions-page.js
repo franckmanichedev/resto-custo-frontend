@@ -73,61 +73,28 @@ function showCompositionsSkeleton() {
 
 function renderCompositions(compositions) {
     if (!compositions.length) {
-        compositionsList.innerHTML = `
-            <div class="rounded-2xl border-2 border-dashed border-gray-200 bg-white py-14 text-center text-sm font-semibold text-gray-400">
-                <i class="fas fa-tags text-2xl block mb-2 text-gray-300"></i> Aucune composition trouvée
-            </div>`;
+        compositionsList.innerHTML = '<div class="text-center py-8 text-gray">Aucune composition trouvee</div>';
         return;
     }
 
     compositionsList.innerHTML = compositions.map((composition) => `
-        <div class="group flex items-center justify-between gap-4 p-4 border border-gray-100 rounded-xl bg-white transition-all duration-150 hover:bg-gray-50/70 hover:border-gray-200 ${composition.is_active === false ? 'bg-gray-50/40 opacity-65' : ''}">
-            
-            <!-- Section Informations -->
-            <div class="flex-1 min-w-0 space-y-1">
+        <div class="flex items-center justify-between gap-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+            <div class="flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-semibold text-gray-900 tracking-tight">${escapeHtml(composition.name)}</span>
-                    
-                    <!-- Badge Allergène -->
-                    ${composition.is_allergen ? `
-                        <span class="inline-flex items-center gap-1 text-[11px] font-medium bg-red-50 text-red-700 px-2 py-0.5 rounded-md ring-1 ring-inset ring-red-600/10">
-                            <span class="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse"></span>
-                            Allergène
-                        </span>
-                    ` : ''}
-                    
-                    <!-- Badge Inactif -->
-                    ${composition.is_active === false ? `
-                        <span class="inline-flex items-center text-[11px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md border border-gray-200">
-                            Inactif
-                        </span>
-                    ` : ''}
+                    <span class="font-medium">${escapeHtml(composition.name)}</span>
+                    ${composition.is_allergen ? '<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Allergene</span>' : ''}
+                    ${composition.is_active === false ? '<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">Inactive</span>' : ''}
                 </div>
-
-                <!-- Description -->
-                ${composition.description ? `
-                    <p class="text-sm text-gray-500 leading-relaxed max-w-2xl">${escapeHtml(composition.description)}</p>
-                ` : ''}
-
-                <!-- Métadonnées (Alias & ID) -->
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[11px] text-gray-400 font-medium">
-                    ${(composition.aliases || []).length ? `
-                        <span class="inline-flex items-center gap-1 bg-gray-100/70 px-1.5 py-0.5 rounded text-gray-500 font-sans">
-                            <i class="fas fa-tags text-[9px] text-gray-400"></i>
-                            ${escapeHtml(composition.aliases.join(', '))}
-                        </span>
-                    ` : ''}
-                    <span class="font-mono text-[10px]">ID: ${escapeHtml(composition.id)}</span>
-                </div>
+                ${composition.description ? `<p class="text-sm text-gray mt-1">${escapeHtml(composition.description)}</p>` : ''}
+                ${(composition.aliases || []).length ? `<p class="text-xs text-gray-400 mt-1">Alias: ${escapeHtml(composition.aliases.join(', '))}</p>` : ''}
+                <p class="text-xs text-gray-400 mt-1">ID: ${escapeHtml(composition.id)}</p>
             </div>
-
-            <!-- Section Actions (Boutons carrés épurés) -->
-            <div class="flex gap-1 flex-shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
-                <button class="edit-comp inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-amber-600 transition-colors" data-id="${escapeHtml(composition.id)}" aria-label="Modifier">
-                    <i class="fas fa-edit text-sm"></i>
+            <div class="flex gap-2">
+                <button class="edit-comp text-primary hover:bg-yellow-100 px-3 py-1.5 rounded-lg text-sm transition-colors" data-id="${escapeHtml(composition.id)}">
+                    <i class="fas fa-edit"></i>
                 </button>
-                <button class="delete-comp inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors" data-id="${escapeHtml(composition.id)}" aria-label="Supprimer">
-                    <i class="fas fa-trash-alt text-sm"></i>
+                <button class="delete-comp text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm transition-colors" data-id="${escapeHtml(composition.id)}">
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         </div>

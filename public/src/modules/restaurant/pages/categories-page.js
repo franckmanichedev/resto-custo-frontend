@@ -73,7 +73,6 @@ function closeModal(modal) {
 }
 
 function renderTypeParentOptions(selectedId = '') {
-    if (!typeParentSelect) return;
     typeParentSelect.innerHTML = categoriesCache.map((category) => `
         <option value="${escapeHtml(category.id)}" ${category.id === selectedId ? 'selected' : ''}>
             ${escapeHtml(category.name)} (${getKindLabel(category.kind)})
@@ -95,19 +94,19 @@ function renderCategories() {
         const isSelected = category.id === selectedId;
 
         return `
-            <button data-category-id="${escapeHtml(category.id)}" class="category-card w-full text-left rounded-xl border p-4 shadow-sm transition-all duration-200 ${isSelected ? 'border-orange-500 bg-orange-50/50 shadow-md ring-1 ring-orange-500/20' : 'border-gray-100 bg-white hover:border-orange-200 hover:shadow-md'}">
+            <button data-category-id="${escapeHtml(category.id)}" class="category-card w-full text-left rounded-2xl border p-4 shadow-sm transition-all ${isSelected ? 'border-yellow-400 bg-yellow-50 shadow-md' : 'border-gray-100 bg-white hover:border-yellow-200 hover:shadow-md'}">
                 <div class="flex items-start justify-between gap-4">
-                    <div class="min-w-0 flex-1">
+                    <div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <h3 class="text-base font-bold text-gray-900 tracking-tight">${escapeHtml(category.name)}</h3>
-                            <span class="rounded-md bg-gray-50 px-2 py-0.5 text-[10px] font-bold text-gray-600 border border-gray-200/50 uppercase tracking-wide">${escapeHtml(getKindLabel(category.kind))}</span>
-                            ${category.is_active === false ? '<span class="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-600 border border-red-100 uppercase tracking-wide">Inactif</span>' : ''}
+                            <h3 class="text-lg font-semibold text-gray-200">${escapeHtml(category.name)}</h3>
+                            <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-white">${escapeHtml(getKindLabel(category.kind))}</span>
+                            ${category.is_active === false ? '<span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Inactive</span>' : ''}
                         </div>
-                        <p class="mt-1 text-xs font-medium text-gray-500 line-clamp-2 leading-relaxed">${escapeHtml(category.description || 'Aucune description spécifiée.')}</p>
+                        <p class="mt-2 text-sm text-gray line-clamp-2">${escapeHtml(category.description || 'Aucune description')}</p>
                     </div>
-                    <div class="text-right text-xs font-bold shrink-0">
-                        <p class="text-gray-900 font-extrabold text-lg leading-none">${typeCount}</p>
-                        <p class="text-gray-400 text-[10px] uppercase tracking-wider mt-0.5">types</p>
+                    <div class="text-right text-sm text-gray">
+                        <p class="font-semibold text-white">${typeCount}</p>
+                        <p>type(s)</p>
                     </div>
                 </div>
             </button>
@@ -157,21 +156,21 @@ function renderTypes() {
     }
 
     typesList.innerHTML = typesCache.map((type) => `
-        <div class="rounded-xl border border-gray-100 bg-gray-50/50 p-3 hover:bg-gray-50 transition-colors">
+        <div class="rounded-2xl border border-gray-100 bg-gray-50 p-4">
             <div class="flex items-start justify-between gap-4">
-                <div class="min-w-0 flex-1">
+                <div>
                     <div class="flex items-center gap-2 flex-wrap">
-                        <h4 class="text-sm font-bold text-gray-800 tracking-tight">${escapeHtml(type.name)}</h4>
-                        ${type.is_active === false ? '<span class="rounded-md bg-gray-100 px-1.5 py-0.5 text-[10px] font-bold text-gray-500 border border-gray-200 uppercase tracking-wide">Désactivé</span>' : ''}
+                        <h4 class="font-semibold text-gray-200">${escapeHtml(type.name)}</h4>
+                        ${type.is_active === false ? '<span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">Inactif</span>' : ''}
                     </div>
-                    <p class="mt-0.5 text-xs font-medium text-gray-500 leading-relaxed">${escapeHtml(type.description || 'Aucune description')}</p>
+                    <p class="mt-1 text-sm text-gray">${escapeHtml(type.description || 'Aucune description')}</p>
                 </div>
-                <div class="flex gap-1 shrink-0">
-                    <button data-type-id="${escapeHtml(type.id)}" class="edit-type h-7 px-2 rounded-lg text-xs font-bold text-gray-600 border border-gray-200 bg-white hover:bg-gray-100 hover:text-gray-900 transition-colors shadow-sm">
-                        <i class="fas fa-edit mr-1 text-gray-400"></i>Gérer
+                <div class="flex gap-2">
+                    <button data-type-id="${escapeHtml(type.id)}" class="edit-type px-3 py-2 rounded-xl text-sm text-primary hover:bg-white transition-colors">
+                        <i class="fas fa-edit mr-1"></i>Modifier
                     </button>
-                    <button data-type-id="${escapeHtml(type.id)}" class="delete-type h-7 px-2 rounded-lg text-xs font-bold text-red-500 border border-gray-200 bg-white hover:bg-red-50 hover:text-red-600 transition-colors shadow-sm">
-                        <i class="fas fa-trash-alt mr-1"></i>Retirer
+                    <button data-type-id="${escapeHtml(type.id)}" class="delete-type px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-white transition-colors">
+                        <i class="fas fa-trash-alt mr-1"></i>Supprimer
                     </button>
                 </div>
             </div>
@@ -225,12 +224,12 @@ async function loadCategories() {
 function showCategoriesSkeleton() {
     if (!categoriesList) return;
     categoriesList.innerHTML = `
-        <div class="space-y-3">
-            ${Array(5).fill().map(() => `
-                <div class="rounded-xl border p-4 bg-white opacity-70 border-gray-100 space-y-3">
-                    <div class="flex justify-between"><div class="skeleton h-5 w-40"></div><div class="skeleton h-4 w-10"></div></div>
-                    <div class="skeleton h-4 w-3/4"></div>
-                    <div class="skeleton h-3 w-1/4"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            ${[1,2,3,4,5,6].map(() => `
+                <div class="rounded-2xl border p-6 bg-white">
+                    <div class="skeleton h-6 w-40 mb-3"></div>
+                    <div class="skeleton h-4 w-3/4 mb-2"></div>
+                    <div class="skeleton h-4 w-1/2"></div>
                 </div>
             `).join('')}
         </div>
@@ -300,14 +299,10 @@ function openEditType(typeId) {
     editingTypeId = type.id;
     typeModalTitle.textContent = `Modifier: ${type.name}`;
     renderTypeParentOptions(type.categorie_id || selectedCategoryId);
-    const typeNameEl = document.getElementById('type-name');
-    const typeDescEl = document.getElementById('type-description');
-    const typeImageUrlEl = document.getElementById('type-image-url');
-    const typeActiveEl = document.getElementById('type-active');
-    if (typeNameEl) typeNameEl.value = type.name || '';
-    if (typeDescEl) typeDescEl.value = type.description || '';
-    if (typeImageUrlEl) typeImageUrlEl.value = type.image_url || '';
-    if (typeActiveEl) typeActiveEl.checked = type.is_active !== false;
+    document.getElementById('type-name').value = type.name || '';
+    document.getElementById('type-description').value = type.description || '';
+    document.getElementById('type-image-url').value = type.image_url || '';
+    document.getElementById('type-active').checked = type.is_active !== false;
     openModal(typeModal);
 }
 
@@ -389,17 +384,12 @@ categoryForm.addEventListener('submit', async (event) => {
 typeForm.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const typeNameEl = document.getElementById('type-name');
-    const typeDescEl = document.getElementById('type-description');
-    const typeImageUrlEl = document.getElementById('type-image-url');
-    const typeActiveEl = document.getElementById('type-active');
-
     const payload = {
-        categorie_id: typeParentSelect ? typeParentSelect.value : (document.getElementById('type-parent-category-id')?.value || ''),
-        name: typeNameEl ? typeNameEl.value.trim() : '',
-        description: typeDescEl ? typeDescEl.value.trim() : '',
-        image_url: typeImageUrlEl ? typeImageUrlEl.value.trim() : '',
-        is_active: !!(typeActiveEl && typeActiveEl.checked)
+        categorie_id: typeParentSelect.value,
+        name: document.getElementById('type-name').value.trim(),
+        description: document.getElementById('type-description').value.trim(),
+        image_url: document.getElementById('type-image-url').value.trim(),
+        is_active: document.getElementById('type-active').checked
     };
 
     const formData = new FormData();

@@ -15,21 +15,26 @@ export async function initTracking() {
     
     renderTracking(orders);
     
+    // replace polling with realtime socket updates
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = null;
 
+    // initialize socket client for realtime updates
+    async function loadSocketIoClient() {
+        if (window.io) return;
+        return new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = '/socket.io/socket.io.js';
+            s.async = true;
+            s.onload = () => resolve();
+            s.onerror = (e) => reject(e);
+            document.head.appendChild(s);
+        });
+    }
+
     (async () => {
         try {
-            if (!window.io) {
-                await new Promise((resolve, reject) => {
-                    const s = document.createElement('script');
-                    s.src = '/socket.io/socket.io.js';
-                    s.async = true;
-                    s.onload = () => resolve();
-                    s.onerror = (e) => reject(e);
-                    document.head.appendChild(s);
-                });
-            }
+            await loadSocketIoClient();
             if (!window.io) return;
             const socket = io();
             const debounced = debounce(async () => {
@@ -41,6 +46,7 @@ export async function initTracking() {
             socket.on('new_order', debounced);
             socket.on('order_status_changed', debounced);
         } catch (err) {
+            // fallback: do nothing, store subscription will still update UI
             console.warn('socket init failed', err);
         }
     })();

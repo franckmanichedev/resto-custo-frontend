@@ -50,17 +50,17 @@ function showTablesSkeleton() {
     tablesList.innerHTML = `
         <div class="space-y-3">
             ${[1, 2, 3, 4].map(() => `
-                <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4 opacity-70">
+                <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4">
                     <div class="flex items-center gap-4">
-                        <div class="skeleton h-20 w-20"></div>
-                        <div class="space-y-2">
-                            <div class="skeleton h-5 w-36"></div>
+                        <div class="skeleton h-20 w-20 rounded-xl"></div>
+                        <div>
+                            <div class="skeleton mb-2 h-5 w-36"></div>
                             <div class="skeleton h-4 w-24"></div>
                         </div>
                     </div>
                     <div class="flex gap-2">
-                        <div class="skeleton h-9 w-9"></div>
-                        <div class="skeleton h-9 w-9"></div>
+                        <div class="skeleton h-9 w-9 rounded-lg"></div>
+                        <div class="skeleton h-9 w-9 rounded-lg"></div>
                     </div>
                 </div>
             `).join('')}
@@ -78,10 +78,10 @@ function renderSummary(tables) {
     }, {});
 
     summaryEl.innerHTML = `
-        <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-0.5 text-xs font-bold text-gray-600 border border-gray-200/50">${tables.length} Table(s)</span>
-        <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700 border border-emerald-200">${counts.free || 0} Libre(s)</span>
-        <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-xs font-bold text-blue-700 border border-blue-200">${counts.occupied || 0} Occupée(s)</span>
-        <span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 border border-amber-200">${counts.reserved || 0} Réservée(s)</span>
+        <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-white">${tables.length} table(s)</span>
+        <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">${counts.free || 0} libre(s)</span>
+        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">${counts.occupied || 0} occupee(s)</span>
+        <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">${counts.reserved || 0} reservee(s)</span>
     `;
 }
 
@@ -116,42 +116,26 @@ function renderListTable(table) {
     const menuUrl = table.menu_url || tablesService.getClientMenuUrl(table);
 
     return `
-        <article class="group flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200 md:flex-row md:items-center justify-between">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center flex-1 min-w-0">
-                <div class="relative flex-shrink-0 mx-auto sm:mx-0 p-1.5 bg-gray-50 rounded-xl ring-1 ring-gray-100">
-                    ${renderQrPreview(table, 'h-20 w-20 md:h-24 md:w-24')}
-                </div>
-                <div class="space-y-1.5 flex-1 min-w-0 text-center sm:text-left">
-                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                        <h3 class="text-lg font-bold tracking-tight text-gray-900 truncate">
-                            ${escapeHtml(table.name || `Table ${table.number || ''}`)}
-                        </h3>
-                        <span class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold shadow-sm uppercase tracking-wide border ${status.className}">
-                            ${escapeHtml(status.label)}
-                        </span>
+        <article class="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md md:flex-row md:items-center">
+            <div class="flex items-center gap-4">
+                ${renderQrPreview(table, 'h-24 w-24')}
+                <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-lg font-bold text-gray-900">${escapeHtml(table.name || `Table ${table.number || ''}`)}</h3>
+                        <span class="rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}">${escapeHtml(status.label)}</span>
                     </div>
-                    <p class="text-sm font-medium text-gray-500">
-                        Numéro : <span class="font-bold text-gray-900">${escapeHtml(table.number || '-')}</span>
-                    </p>
-                    <div class="pt-0.5 flex flex-col gap-1 text-xs">
-                        <a href="${escapeHtml(menuUrl)}" target="_blank" class="inline-flex items-center justify-center sm:justify-start gap-1.5 font-semibold text-orange-600 hover:text-orange-700 hover:underline group/link">
-                            <i class="fas fa-external-link-alt text-[10px] text-orange-500 transition-transform group-hover/link:translate-x-0.5"></i>
-                            Ouvrir le menu en ligne
-                        </a>
-                        <p class="font-mono text-[10px] text-gray-400 truncate max-w-md mx-auto sm:mx-0" title="${escapeHtml(table.qr_code)}">
-                            ID QR: ${escapeHtml(table.qr_code || 'Généré automatiquement')}
-                        </p>
-                    </div>
+                    <p class="mt-1 text-sm text-gray">Numero: <strong>${escapeHtml(table.number || '-')}</strong></p>
+                    <p class="mt-2 max-w-2xl break-all text-xs text-gray-400">QR: ${escapeHtml(table.qr_code || 'Genere automatiquement')}</p>
+                    <a href="${escapeHtml(menuUrl)}" target="_blank" class="mt-1 inline-flex max-w-2xl break-all text-xs font-medium text-primary hover:underline">
+                        ${escapeHtml(menuUrl)}
+                    </a>
                 </div>
             </div>
-            <div class="flex items-center justify-center gap-2 border-t border-gray-50 pt-3 md:pt-0 md:border-0 md:ml-6 flex-shrink-0">
-                <button class="inline-flex h-9 px-3 items-center justify-center rounded-xl border border-gray-200 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">
-                    <i class="fas fa-print mr-1.5 text-gray-400"></i> Imprimer
-                </button>
-                <button class="edit-table inline-flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-gray-500 hover:bg-gray-100 hover:text-orange-600 transition-all" data-id="${escapeHtml(table.id)}" aria-label="Modifier table">
+            <div class="flex gap-2 md:ml-auto">
+                <button class="edit-table inline-flex h-10 w-10 items-center justify-center rounded-xl text-primary hover:bg-yellow-100" data-id="${escapeHtml(table.id)}" aria-label="Modifier ${escapeHtml(table.name || table.number || 'table')}">
                     <i class="fas fa-edit"></i>
                 </button>
-                <button class="delete-table inline-flex h-9 w-9 items-center justify-center rounded-xl border border-transparent text-red-400 hover:bg-red-50 hover:text-red-600 transition-all" data-id="${escapeHtml(table.id)}" aria-label="Supprimer table">
+                <button class="delete-table inline-flex h-10 w-10 items-center justify-center rounded-xl text-red-500 hover:bg-red-50" data-id="${escapeHtml(table.id)}" aria-label="Supprimer ${escapeHtml(table.name || table.number || 'table')}">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
@@ -163,37 +147,25 @@ function renderPlanTable(table) {
     const status = getTableStatus(table);
 
     return `
-        <article class="group relative rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-gray-200">
-            <div class="flex items-start justify-between gap-4">
-                <div class="space-y-1">
-                    <span class="inline-flex items-center gap-1.5 rounded-md bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">Table</span>
-                    <h3 class="text-3xl font-extrabold tracking-tight text-gray-900">${escapeHtml(table.number || '-')}</h3>
-                    <p class="text-sm font-medium text-gray-500">${escapeHtml(table.name || 'Sans nom')}</p>
+        <article class="rounded-2xl border border-gray-100 bg-white p-2 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-400">Table</p>
+                    <h3 class="mt-1 text-2xl font-bold text-gray-900">${escapeHtml(table.number || '-')}</h3>
+                    <p class="mt-1 text-sm text-gray">${escapeHtml(table.name || 'Sans nom')}</p>
                 </div>
-                <div class="flex flex-col items-end gap-3">
-                    <span class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-bold shadow-sm uppercase border ${status.className}">
-                        ${escapeHtml(status.label)}
-                    </span>
-                    <div class="flex gap-1 opacity-80 transition-opacity group-hover:opacity-100">
-                        <button class="edit-table inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-orange-600 transition-colors" data-id="${escapeHtml(table.id)}" aria-label="Modifier table"><i class="fas fa-edit text-sm"></i></button>
-                        <button class="delete-table inline-flex h-8 w-8 items-center justify-center rounded-lg text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors" data-id="${escapeHtml(table.id)}" aria-label="Supprimer table"><i class="fas fa-trash-alt text-sm"></i></button>
-                    </div>
-                </div>
+                <span class="rounded-full px-2.5 py-1 text-xs font-semibold ${status.className}">${escapeHtml(status.label)}</span>
             </div>
-            <div class="my-3 border-t border-gray-100"></div>
-            <div class="flex flex-col gap-3 bg-gray-50/50 -mx-4 -mb-4 p-3 rounded-b-2xl border-t border-gray-100">
-                <div class="flex items-center gap-3">
-                    <div class="p-1 bg-white rounded-lg shadow-sm ring-1 ring-gray-200/50">
-                        ${renderQrPreview(table, 'h-12 w-12')}
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-gray-900">Menu QR Code</p>
-                        <p class="text-[11px] font-medium text-gray-500">Scannable par les clients</p>
-                    </div>
+            <div class="mt-4 flex items-end justify-between gap-4">
+                ${renderQrPreview(table, 'h-20 w-20')}
+                <div class="flex gap-2">
+                    <button class="edit-table inline-flex h-9 w-9 items-center justify-center rounded-xl text-primary hover:bg-yellow-100" data-id="${escapeHtml(table.id)}" aria-label="Modifier ${escapeHtml(table.name || table.number || 'table')}">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="delete-table inline-flex h-9 w-9 items-center justify-center rounded-xl text-red-500 hover:bg-red-50" data-id="${escapeHtml(table.id)}" aria-label="Supprimer ${escapeHtml(table.name || table.number || 'table')}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
-                <button class="inline-flex w-full items-center justify-center h-9 px-4 rounded-xl text-xs font-bold bg-white text-gray-700 border border-gray-200 shadow-sm hover:bg-gray-50 hover:text-gray-900 transition-all active:scale-[0.98]">
-                    <i class="fas fa-print mr-2 text-gray-400 group-hover:text-gray-600"></i> Imprimer le QR Code
-                </button>
             </div>
         </article>
     `;
