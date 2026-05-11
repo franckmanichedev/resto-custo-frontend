@@ -1,4 +1,4 @@
-// Centralized timer service for UI countdowns and ticks
+// Centralized timer service for UI countdowns and ticks (public copy)
 export const timerService = (() => {
     const subs = new Set();
     let intervalId = null;
